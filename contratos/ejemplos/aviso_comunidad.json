@@ -1,0 +1,25 @@
+{
+  "esquema_version": "1.0",
+  "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+  "creado_en": "2026-10-16T18:00:00-05:00",
+  "origen": "sintetico",
+  "aviso_id": "db64aef6-ab01-5724-be6f-23cdb88f471a",
+  "plan_id": "46bf9c62-595d-5ae4-9879-d29191f8de05",
+  "version": 1,
+  "aprobacion_id": "a54b2a56-c748-5c1d-ab29-3f7052b9dc00",
+  "sector_id": "973bc96c-73f6-578e-9873-be50e57cb2eb",
+  "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+  "destino_id": "e039c449-16c2-5e8b-ab72-b2be67e7849e",
+  "tipo": "distribucion",
+  "ventana_estimada": {
+    "inicio": "2026-10-17T08:10:00-05:00",
+    "fin": "2026-10-17T08:20:00-05:00"
+  },
+  "litros_asignados": 2500.0,
+  "texto": "SIMULACIÓN P1: se estiman 2500 litros entre 08:10 y 08:20 del 17/10/2026, hora de Panamá. Plan demo versión 1.",
+  "audio_adjunto_id": null,
+  "estado_envio": "pendiente",
+  "proveedor_mensaje_id": null,
+  "enviado_en": null,
+  "ultimo_error": null
+}

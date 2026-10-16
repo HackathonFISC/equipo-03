@@ -1,0 +1,19 @@
+{
+  "esquema_version": "1.0",
+  "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+  "creado_en": "2026-10-16T18:00:00-05:00",
+  "origen": "sintetico",
+  "evento_id": "1524b251-ec11-5f8a-b7b7-020873b3c773",
+  "agente": "ingesta",
+  "decision": "Interpretar texto y conservar incertidumbre",
+  "herramienta": "extraer_reporte",
+  "entrada_ids": [
+    "bc815641-f5cc-5c37-aaf5-e85bf7d84f23"
+  ],
+  "salida_ids": [
+    "bc815641-f5cc-5c37-aaf5-e85bf7d84f23"
+  ],
+  "resultado": "Objeto de ejemplo válido; no ejecuta un proveedor real",
+  "duracion_ms": 0,
+  "siguiente_estado": "ejecutando"
+}

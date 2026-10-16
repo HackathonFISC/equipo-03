@@ -1,0 +1,23 @@
+{
+  "esquema_version": "1.0",
+  "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+  "creado_en": "2026-10-16T18:00:00-05:00",
+  "origen": "sintetico",
+  "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+  "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+  "datos_version": "escenario-1.0",
+  "metodo": "formula",
+  "estado": "pendiente",
+  "demanda_litros": null,
+  "fuente": "Parámetros sintéticos",
+  "confirmacion": null,
+  "faltantes": [
+    "reserva_utilizable_litros"
+  ],
+  "motivos": [
+    "No convertir reserva desconocida en cero."
+  ],
+  "supuestos": [
+    "Dotación de 20 usada solo para probar aritmética, no recomendación operativa."
+  ]
+}

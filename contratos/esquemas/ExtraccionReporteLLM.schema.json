@@ -1,0 +1,141 @@
+{
+  "$defs": {
+    "CamposReporte": {
+      "additionalProperties": false,
+      "properties": {
+        "horas_sin_agua": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Horas Sin Agua"
+        },
+        "personas_afectadas": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Personas Afectadas"
+        },
+        "vulnerabilidad_declarada": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vulnerabilidad Declarada"
+        },
+        "institucion_declarada": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Institucion Declarada"
+        },
+        "tipo_problema": {
+          "enum": [
+            "sin_suministro",
+            "intermitencia",
+            "otro",
+            "desconocido"
+          ],
+          "title": "Tipo Problema",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tipo_problema"
+      ],
+      "title": "CamposReporte",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Única forma de extracción para el LLM; no acepta IDs, coordenadas o permisos.",
+  "properties": {
+    "resumen": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Resumen",
+      "type": "string"
+    },
+    "ubicacion_declarada": {
+      "anyOf": [
+        {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Ubicacion Declarada"
+    },
+    "campos": {
+      "$ref": "#/$defs/CamposReporte"
+    },
+    "evidencia_textual": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Evidencia Textual",
+      "type": "array"
+    },
+    "faltantes": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Faltantes",
+      "type": "array"
+    },
+    "requiere_aclaracion": {
+      "title": "Requiere Aclaracion",
+      "type": "boolean"
+    },
+    "fuera_de_alcance": {
+      "title": "Fuera De Alcance",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "resumen",
+    "ubicacion_declarada",
+    "campos",
+    "evidencia_textual",
+    "faltantes",
+    "requiere_aclaracion",
+    "fuera_de_alcance"
+  ],
+  "title": "ExtraccionReporteLLM",
+  "type": "object"
+}

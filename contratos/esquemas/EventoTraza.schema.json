@@ -1,0 +1,132 @@
+{
+  "$defs": {
+    "Agente": {
+      "enum": [
+        "ingesta",
+        "territorial",
+        "priorizacion",
+        "planificacion",
+        "comunicacion"
+      ],
+      "title": "Agente",
+      "type": "string"
+    },
+    "EstadoEjecucion": {
+      "enum": [
+        "pendiente",
+        "ejecutando",
+        "espera_aclaracion",
+        "espera_validacion",
+        "espera_revision",
+        "completada",
+        "fallida"
+      ],
+      "title": "EstadoEjecucion",
+      "type": "string"
+    },
+    "OrigenDato": {
+      "enum": [
+        "real",
+        "estimado",
+        "sintetico"
+      ],
+      "title": "OrigenDato",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "esquema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Esquema Version",
+      "type": "string"
+    },
+    "ejecucion_id": {
+      "format": "uuid",
+      "title": "Ejecucion Id",
+      "type": "string"
+    },
+    "creado_en": {
+      "format": "date-time",
+      "title": "Creado En",
+      "type": "string"
+    },
+    "origen": {
+      "$ref": "#/$defs/OrigenDato"
+    },
+    "evento_id": {
+      "format": "uuid",
+      "title": "Evento Id",
+      "type": "string"
+    },
+    "agente": {
+      "$ref": "#/$defs/Agente"
+    },
+    "decision": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Decision",
+      "type": "string"
+    },
+    "herramienta": {
+      "anyOf": [
+        {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Herramienta"
+    },
+    "entrada_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Entrada Ids",
+      "type": "array"
+    },
+    "salida_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Salida Ids",
+      "type": "array"
+    },
+    "resultado": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Resultado",
+      "type": "string"
+    },
+    "duracion_ms": {
+      "minimum": 0,
+      "title": "Duracion Ms",
+      "type": "integer"
+    },
+    "siguiente_estado": {
+      "$ref": "#/$defs/EstadoEjecucion"
+    }
+  },
+  "required": [
+    "ejecucion_id",
+    "creado_en",
+    "origen",
+    "evento_id",
+    "agente",
+    "decision",
+    "entrada_ids",
+    "salida_ids",
+    "resultado",
+    "duracion_ms",
+    "siguiente_estado"
+  ],
+  "title": "EventoTraza",
+  "type": "object"
+}

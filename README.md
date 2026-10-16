@@ -23,7 +23,17 @@ Agentes, herramientas, flujos y punto de intervención humana (incluir el diagra
 
 ## Instalación y ejecución
 
-Pasos para instalar y correr el proyecto. Credenciales de demo sin claves reales (usar `.env.example`).
+Para preparar el entorno de cálculo V0, desde la raíz del repositorio en Windows con Python 3.12:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip check
+.\.venv\Scripts\python.exe scripts/verificar_entorno.py
+.\.venv\Scripts\python.exe -m pytest contratos/tests -q
+```
+
+Consulta [la guía del entorno V0](docs/entorno_v0.md) para el alcance y las versiones comprobadas. Estas verificaciones no necesitan credenciales. La integración con API, agentes, Supabase y Telegram se prepara por separado; no se arranca con estos comandos. Para esa integración se usa `.env.example` sin publicar claves reales.
 
 ## Evals
 

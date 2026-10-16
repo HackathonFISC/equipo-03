@@ -1,0 +1,201 @@
+{
+  "$defs": {
+    "EstadoAviso": {
+      "enum": [
+        "pendiente",
+        "enviado",
+        "fallido",
+        "incierto",
+        "cancelado"
+      ],
+      "title": "EstadoAviso",
+      "type": "string"
+    },
+    "OrigenDato": {
+      "enum": [
+        "real",
+        "estimado",
+        "sintetico"
+      ],
+      "title": "OrigenDato",
+      "type": "string"
+    },
+    "VentanaTiempo": {
+      "additionalProperties": false,
+      "properties": {
+        "inicio": {
+          "format": "date-time",
+          "title": "Inicio",
+          "type": "string"
+        },
+        "fin": {
+          "format": "date-time",
+          "title": "Fin",
+          "type": "string"
+        }
+      },
+      "required": [
+        "inicio",
+        "fin"
+      ],
+      "title": "VentanaTiempo",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Solo distribución autorizada. Aclaraciones usan SolicitudAclaracion.",
+  "properties": {
+    "esquema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Esquema Version",
+      "type": "string"
+    },
+    "ejecucion_id": {
+      "format": "uuid",
+      "title": "Ejecucion Id",
+      "type": "string"
+    },
+    "creado_en": {
+      "format": "date-time",
+      "title": "Creado En",
+      "type": "string"
+    },
+    "origen": {
+      "$ref": "#/$defs/OrigenDato"
+    },
+    "aviso_id": {
+      "format": "uuid",
+      "title": "Aviso Id",
+      "type": "string"
+    },
+    "plan_id": {
+      "format": "uuid",
+      "title": "Plan Id",
+      "type": "string"
+    },
+    "version": {
+      "exclusiveMinimum": 0,
+      "title": "Version",
+      "type": "integer"
+    },
+    "aprobacion_id": {
+      "format": "uuid",
+      "title": "Aprobacion Id",
+      "type": "string"
+    },
+    "sector_id": {
+      "format": "uuid",
+      "title": "Sector Id",
+      "type": "string"
+    },
+    "punto_atencion_id": {
+      "format": "uuid",
+      "title": "Punto Atencion Id",
+      "type": "string"
+    },
+    "destino_id": {
+      "format": "uuid",
+      "title": "Destino Id",
+      "type": "string"
+    },
+    "tipo": {
+      "enum": [
+        "distribucion",
+        "actualizacion"
+      ],
+      "title": "Tipo",
+      "type": "string"
+    },
+    "ventana_estimada": {
+      "$ref": "#/$defs/VentanaTiempo"
+    },
+    "litros_asignados": {
+      "exclusiveMinimum": 0,
+      "title": "Litros Asignados",
+      "type": "number"
+    },
+    "texto": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Texto",
+      "type": "string"
+    },
+    "audio_adjunto_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Audio Adjunto Id"
+    },
+    "estado_envio": {
+      "$ref": "#/$defs/EstadoAviso"
+    },
+    "proveedor_mensaje_id": {
+      "anyOf": [
+        {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Proveedor Mensaje Id"
+    },
+    "enviado_en": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Enviado En"
+    },
+    "ultimo_error": {
+      "anyOf": [
+        {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ultimo Error"
+    }
+  },
+  "required": [
+    "ejecucion_id",
+    "creado_en",
+    "origen",
+    "aviso_id",
+    "plan_id",
+    "version",
+    "aprobacion_id",
+    "sector_id",
+    "punto_atencion_id",
+    "destino_id",
+    "tipo",
+    "ventana_estimada",
+    "litros_asignados",
+    "texto",
+    "estado_envio"
+  ],
+  "title": "AvisoComunidad",
+  "type": "object"
+}
