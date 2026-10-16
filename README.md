@@ -7,9 +7,9 @@ Reto: 0
 
 ## Equipo
 
-- Integrante 1
-- Integrante 2
-- Integrante 3
+- José Saavedra (@jos051225)
+- Noel Echeverría (@NoelRevotn)
+- Emilia Demercado (@Mochi-coder-star)
 
 ## Problema
 
