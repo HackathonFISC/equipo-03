@@ -1,0 +1,22 @@
+{
+  "esquema_version": "1.0",
+  "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+  "creado_en": "2026-10-16T18:00:00-05:00",
+  "origen": "sintetico",
+  "plan_id": "46bf9c62-595d-5ae4-9879-d29191f8de05",
+  "version": 1,
+  "datos_version": "escenario-1.0",
+  "politica_version": "demo-1.0",
+  "valido": true,
+  "violaciones": [],
+  "comprobaciones": [
+    "capacidad",
+    "horarios",
+    "ventanas",
+    "retorno",
+    "asignacion_unica",
+    "demanda_completa",
+    "version_entradas",
+    "cobertura_critica"
+  ]
+}

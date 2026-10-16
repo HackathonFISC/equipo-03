@@ -1,0 +1,144 @@
+{
+  "$defs": {
+    "OrigenDato": {
+      "enum": [
+        "real",
+        "estimado",
+        "sintetico"
+      ],
+      "title": "OrigenDato",
+      "type": "string"
+    },
+    "ViolacionPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "codigo": {
+          "enum": [
+            "capacidad",
+            "horario",
+            "ventana",
+            "retorno",
+            "asignacion",
+            "demanda",
+            "version",
+            "cobertura_critica",
+            "otro"
+          ],
+          "title": "Codigo",
+          "type": "string"
+        },
+        "detalle": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Detalle",
+          "type": "string"
+        },
+        "referencia_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Referencia Id"
+        }
+      },
+      "required": [
+        "codigo",
+        "detalle"
+      ],
+      "title": "ViolacionPlan",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "esquema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Esquema Version",
+      "type": "string"
+    },
+    "ejecucion_id": {
+      "format": "uuid",
+      "title": "Ejecucion Id",
+      "type": "string"
+    },
+    "creado_en": {
+      "format": "date-time",
+      "title": "Creado En",
+      "type": "string"
+    },
+    "origen": {
+      "$ref": "#/$defs/OrigenDato"
+    },
+    "plan_id": {
+      "format": "uuid",
+      "title": "Plan Id",
+      "type": "string"
+    },
+    "version": {
+      "exclusiveMinimum": 0,
+      "title": "Version",
+      "type": "integer"
+    },
+    "datos_version": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Datos Version",
+      "type": "string"
+    },
+    "politica_version": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Politica Version",
+      "type": "string"
+    },
+    "valido": {
+      "title": "Valido",
+      "type": "boolean"
+    },
+    "violaciones": {
+      "items": {
+        "$ref": "#/$defs/ViolacionPlan"
+      },
+      "title": "Violaciones",
+      "type": "array"
+    },
+    "comprobaciones": {
+      "items": {
+        "enum": [
+          "capacidad",
+          "horarios",
+          "ventanas",
+          "retorno",
+          "asignacion_unica",
+          "demanda_completa",
+          "version_entradas",
+          "cobertura_critica"
+        ],
+        "type": "string"
+      },
+      "title": "Comprobaciones",
+      "type": "array"
+    }
+  },
+  "required": [
+    "ejecucion_id",
+    "creado_en",
+    "origen",
+    "plan_id",
+    "version",
+    "datos_version",
+    "politica_version",
+    "valido",
+    "violaciones",
+    "comprobaciones"
+  ],
+  "title": "InformeVerificacion",
+  "type": "object"
+}

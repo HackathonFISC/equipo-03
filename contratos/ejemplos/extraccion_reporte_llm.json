@@ -1,0 +1,17 @@
+{
+  "resumen": "El remitente declara tres días sin agua en el punto de demo P1.",
+  "ubicacion_declarada": "Punto de demo P1",
+  "campos": {
+    "horas_sin_agua": 72.0,
+    "personas_afectadas": 120,
+    "vulnerabilidad_declarada": "personas con barreras para recoger agua",
+    "institucion_declarada": null,
+    "tipo_problema": "sin_suministro"
+  },
+  "evidencia_textual": [
+    "Llevamos tres días sin agua en P1; somos unas 120 personas."
+  ],
+  "faltantes": [],
+  "requiere_aclaracion": false,
+  "fuera_de_alcance": false
+}

@@ -1,0 +1,65 @@
+{
+  "esquema_version": "1.0",
+  "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+  "creado_en": "2026-10-16T18:00:00-05:00",
+  "origen": "sintetico",
+  "datos_version": "escenario-1.0",
+  "politica_version": "demo-1.0",
+  "evaluaciones": [
+    {
+      "esquema_version": "1.0",
+      "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+      "creado_en": "2026-10-16T18:00:00-05:00",
+      "origen": "sintetico",
+      "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+      "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+      "datos_version": "escenario-1.0",
+      "politica_version": "demo-1.0",
+      "estado_demanda": "validada",
+      "demanda_litros": 2500.0,
+      "metodo_demanda": "directa",
+      "confirmacion_demanda": {
+        "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+        "confirmado_en": "2026-10-16T18:00:00-05:00",
+        "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+      },
+      "clase_prioridad": "critico",
+      "confirmacion_clase": {
+        "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+        "confirmado_en": "2026-10-16T18:00:00-05:00",
+        "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+      },
+      "ventana_atencion": {
+        "inicio": "2026-10-17T08:00:00-05:00",
+        "fin": "2026-10-17T09:00:00-05:00"
+      },
+      "horas_sin_agua": 72.0,
+      "personas_atendidas": 130,
+      "vulnerabilidad": "alta",
+      "confirmacion_vulnerabilidad": {
+        "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+        "confirmado_en": "2026-10-16T18:00:00-05:00",
+        "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+      },
+      "ultima_atencion_confirmada_en": null,
+      "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+      "estado_prioridad": "calculada",
+      "puntaje": 56.628571428571426,
+      "componentes": {
+        "duracion_normalizada": 0.42857142857142855,
+        "vulnerabilidad_normalizada": 1.0,
+        "poblacion_normalizada": 0.26,
+        "aporte_duracion": 21.428571428571427,
+        "aporte_vulnerabilidad": 30.0,
+        "aporte_poblacion": 5.2
+      },
+      "posicion": 1,
+      "pendientes": [],
+      "supuestos": [
+        "Demanda y factores sintéticos; no se calculó una dotación oficial."
+      ],
+      "requiere_revision_urgente": false
+    }
+  ],
+  "alertas_revision": []
+}

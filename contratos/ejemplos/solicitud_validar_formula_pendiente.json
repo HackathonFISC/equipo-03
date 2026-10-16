@@ -1,0 +1,26 @@
+{
+  "esquema_version": "1.0",
+  "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+  "creado_en": "2026-10-16T18:00:00-05:00",
+  "origen": "sintetico",
+  "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+  "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+  "datos_version": "escenario-1.0",
+  "demanda": {
+    "metodo": "formula",
+    "personas_atendidas": 100,
+    "dotacion_litros_persona_dia": 20.0,
+    "dias_cobertura": 1.0,
+    "reserva_utilizable_litros": null,
+    "fuente": "Parámetros sintéticos, no dotación oficial",
+    "confirmacion": {
+      "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+      "confirmado_en": "2026-10-16T18:00:00-05:00",
+      "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+    }
+  },
+  "capacidad_recepcion_litros": 3000.0,
+  "supuestos": [
+    "Dotación de 20 usada solo para probar aritmética, no recomendación operativa."
+  ]
+}

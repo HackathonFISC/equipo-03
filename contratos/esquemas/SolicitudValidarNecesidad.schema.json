@@ -1,0 +1,261 @@
+{
+  "$defs": {
+    "ConfirmacionCoordinador": {
+      "additionalProperties": false,
+      "properties": {
+        "usuario_id": {
+          "format": "uuid",
+          "title": "Usuario Id",
+          "type": "string"
+        },
+        "confirmado_en": {
+          "format": "date-time",
+          "title": "Confirmado En",
+          "type": "string"
+        },
+        "motivo": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Motivo",
+          "type": "string"
+        }
+      },
+      "required": [
+        "usuario_id",
+        "confirmado_en",
+        "motivo"
+      ],
+      "title": "ConfirmacionCoordinador",
+      "type": "object"
+    },
+    "DemandaDirecta": {
+      "additionalProperties": false,
+      "properties": {
+        "metodo": {
+          "const": "directa",
+          "title": "Metodo",
+          "type": "string"
+        },
+        "litros_declarados": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Litros Declarados"
+        },
+        "fuente": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Fuente",
+          "type": "string"
+        },
+        "confirmacion": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConfirmacionCoordinador"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "metodo",
+        "fuente"
+      ],
+      "title": "DemandaDirecta",
+      "type": "object"
+    },
+    "DemandaPorFormula": {
+      "additionalProperties": false,
+      "properties": {
+        "metodo": {
+          "const": "formula",
+          "title": "Metodo",
+          "type": "string"
+        },
+        "personas_atendidas": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Personas Atendidas"
+        },
+        "dotacion_litros_persona_dia": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dotacion Litros Persona Dia"
+        },
+        "dias_cobertura": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dias Cobertura"
+        },
+        "reserva_utilizable_litros": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reserva Utilizable Litros"
+        },
+        "fuente": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Fuente",
+          "type": "string"
+        },
+        "confirmacion": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConfirmacionCoordinador"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "metodo",
+        "fuente"
+      ],
+      "title": "DemandaPorFormula",
+      "type": "object"
+    },
+    "OrigenDato": {
+      "enum": [
+        "real",
+        "estimado",
+        "sintetico"
+      ],
+      "title": "OrigenDato",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "esquema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Esquema Version",
+      "type": "string"
+    },
+    "ejecucion_id": {
+      "format": "uuid",
+      "title": "Ejecucion Id",
+      "type": "string"
+    },
+    "creado_en": {
+      "format": "date-time",
+      "title": "Creado En",
+      "type": "string"
+    },
+    "origen": {
+      "$ref": "#/$defs/OrigenDato"
+    },
+    "incidente_id": {
+      "format": "uuid",
+      "title": "Incidente Id",
+      "type": "string"
+    },
+    "punto_atencion_id": {
+      "format": "uuid",
+      "title": "Punto Atencion Id",
+      "type": "string"
+    },
+    "datos_version": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Datos Version",
+      "type": "string"
+    },
+    "demanda": {
+      "discriminator": {
+        "mapping": {
+          "directa": "#/$defs/DemandaDirecta",
+          "formula": "#/$defs/DemandaPorFormula"
+        },
+        "propertyName": "metodo"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/DemandaDirecta"
+        },
+        {
+          "$ref": "#/$defs/DemandaPorFormula"
+        }
+      ],
+      "title": "Demanda"
+    },
+    "capacidad_recepcion_litros": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Capacidad Recepcion Litros"
+    },
+    "supuestos": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Supuestos",
+      "type": "array"
+    }
+  },
+  "required": [
+    "ejecucion_id",
+    "creado_en",
+    "origen",
+    "incidente_id",
+    "punto_atencion_id",
+    "datos_version",
+    "demanda"
+  ],
+  "title": "SolicitudValidarNecesidad",
+  "type": "object"
+}

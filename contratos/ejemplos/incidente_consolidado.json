@@ -1,0 +1,33 @@
+{
+  "esquema_version": "1.0",
+  "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+  "creado_en": "2026-10-16T18:00:00-05:00",
+  "origen": "sintetico",
+  "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+  "version": 1,
+  "sector_id": "973bc96c-73f6-578e-9873-be50e57cb2eb",
+  "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+  "reportes_ids": [
+    "bc815641-f5cc-5c37-aaf5-e85bf7d84f23",
+    "54c360e4-0f60-517b-9e88-430aa9984154",
+    "0bf57912-73fa-5bd2-b4c5-a75201d54b78"
+  ],
+  "reportes_independientes": 2,
+  "ubicacion": {
+    "latitud": 8.901,
+    "longitud": -79.699,
+    "fuente": "escenario",
+    "precision_metros": null,
+    "representa_punto_atencion": true
+  },
+  "estado_validacion": "validada",
+  "confianza": 0.8,
+  "conflictos": [],
+  "faltantes": [],
+  "requiere_revision_urgente": false,
+  "periodo_incidente": {
+    "inicio": "2026-10-16T14:00:00-05:00",
+    "fin": "2026-10-16T18:00:00-05:00"
+  },
+  "primera_deteccion_en": "2026-10-16T14:00:00-05:00"
+}
