@@ -1,0 +1,40 @@
+{
+  "esquema_version": "1.0",
+  "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+  "creado_en": "2026-10-16T18:00:00-05:00",
+  "origen": "sintetico",
+  "reporte_id": "bc815641-f5cc-5c37-aaf5-e85bf7d84f23",
+  "modalidad": "texto",
+  "interpretacion": {
+    "resumen": "El remitente declara tres días sin agua en el punto de demo P1.",
+    "ubicacion_declarada": "Punto de demo P1",
+    "campos": {
+      "horas_sin_agua": 72.0,
+      "personas_afectadas": 120,
+      "vulnerabilidad_declarada": "personas con barreras para recoger agua",
+      "institucion_declarada": null,
+      "tipo_problema": "sin_suministro"
+    },
+    "evidencia_textual": [
+      "Llevamos tres días sin agua en P1; somos unas 120 personas."
+    ],
+    "faltantes": [],
+    "requiere_aclaracion": false,
+    "fuera_de_alcance": false
+  },
+  "evidencias": [
+    {
+      "evidencia_id": "77ed620f-b594-5b03-8d62-56a4db112b4e",
+      "reporte_id": "bc815641-f5cc-5c37-aaf5-e85bf7d84f23",
+      "tipo": "texto",
+      "referencia": "fixture:mensaje1",
+      "descripcion": "Texto sintético del escenario",
+      "campos_respaldados": [
+        "ubicacion_declarada",
+        "horas_sin_agua",
+        "personas_afectadas"
+      ]
+    }
+  ],
+  "ubicacion_compartida": null
+}

@@ -1,0 +1,124 @@
+{
+  "esquema_version": "1.0",
+  "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+  "creado_en": "2026-10-16T18:00:00-05:00",
+  "origen": "sintetico",
+  "plan_id": "46bf9c62-595d-5ae4-9879-d29191f8de05",
+  "version": 1,
+  "datos_version": "escenario-1.0",
+  "politica_version": "demo-1.0",
+  "estado": "pendiente_revision",
+  "estado_solver": "factible",
+  "rutas": [
+    {
+      "vehiculo_id": "a014bc90-b2af-5e84-96da-7e18802c8af8",
+      "deposito_id": "8fb94d35-9d63-5074-9df0-b0acd3f2412c",
+      "salida_estimada": "2026-10-17T08:00:00-05:00",
+      "retorno_estimado": "2026-10-17T09:10:00-05:00",
+      "paradas": [
+        {
+          "parada_id": "82fa1ca5-5d56-50f2-b43f-26d5aeceada6",
+          "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+          "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+          "orden": 1,
+          "litros_asignados": 2500.0,
+          "llegada_estimada": "2026-10-17T08:10:00-05:00",
+          "inicio_descarga": "2026-10-17T08:10:00-05:00",
+          "fin_descarga": "2026-10-17T08:20:00-05:00",
+          "estado": "programada"
+        },
+        {
+          "parada_id": "33b0685f-b7f5-5f08-998b-a4bf9641f390",
+          "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+          "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+          "orden": 2,
+          "litros_asignados": 3000.0,
+          "llegada_estimada": "2026-10-17T08:30:00-05:00",
+          "inicio_descarga": "2026-10-17T08:30:00-05:00",
+          "fin_descarga": "2026-10-17T08:40:00-05:00",
+          "estado": "programada"
+        },
+        {
+          "parada_id": "cf304240-45e5-574d-bf13-e31b84b2d4b5",
+          "punto_atencion_id": "01b0918b-4d9d-5dc7-af69-b652621df104",
+          "incidente_id": "b4e16617-eecc-5fb1-ba85-f60e51412545",
+          "orden": 3,
+          "litros_asignados": 3500.0,
+          "llegada_estimada": "2026-10-17T08:50:00-05:00",
+          "inicio_descarga": "2026-10-17T08:50:00-05:00",
+          "fin_descarga": "2026-10-17T09:00:00-05:00",
+          "estado": "programada"
+        }
+      ]
+    },
+    {
+      "vehiculo_id": "6d9980c2-e440-52e4-bec4-e042ed5a4f8b",
+      "deposito_id": "8fb94d35-9d63-5074-9df0-b0acd3f2412c",
+      "salida_estimada": "2026-10-17T08:00:00-05:00",
+      "retorno_estimado": "2026-10-17T09:10:00-05:00",
+      "paradas": [
+        {
+          "parada_id": "86a63e5a-7ca2-5c5f-8392-add1385a117a",
+          "punto_atencion_id": "9da59967-8d01-56df-b087-969033099193",
+          "incidente_id": "efd26685-0f5c-5ac8-afb0-c90371eeb8ab",
+          "orden": 1,
+          "litros_asignados": 2500.0,
+          "llegada_estimada": "2026-10-17T08:10:00-05:00",
+          "inicio_descarga": "2026-10-17T08:10:00-05:00",
+          "fin_descarga": "2026-10-17T08:20:00-05:00",
+          "estado": "programada"
+        },
+        {
+          "parada_id": "d599387c-9c86-5e38-8477-bd008fd9982a",
+          "punto_atencion_id": "f5cc6900-9694-5bb7-9dc9-13d568635dcf",
+          "incidente_id": "10ba5cd9-55ed-5420-8806-29a0fe789983",
+          "orden": 2,
+          "litros_asignados": 3000.0,
+          "llegada_estimada": "2026-10-17T08:30:00-05:00",
+          "inicio_descarga": "2026-10-17T08:30:00-05:00",
+          "fin_descarga": "2026-10-17T08:40:00-05:00",
+          "estado": "programada"
+        },
+        {
+          "parada_id": "6c3a527e-3c67-5e53-ae13-64265ab4c221",
+          "punto_atencion_id": "1833d60c-30f3-5c23-9e0a-a2a0ad523c42",
+          "incidente_id": "f21766cc-bd03-50d6-87bf-112631451f25",
+          "orden": 3,
+          "litros_asignados": 3500.0,
+          "llegada_estimada": "2026-10-17T08:50:00-05:00",
+          "inicio_descarga": "2026-10-17T08:50:00-05:00",
+          "fin_descarga": "2026-10-17T09:00:00-05:00",
+          "estado": "programada"
+        }
+      ]
+    }
+  ],
+  "no_atendidos": [],
+  "verificacion": {
+    "esquema_version": "1.0",
+    "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+    "creado_en": "2026-10-16T18:00:00-05:00",
+    "origen": "sintetico",
+    "plan_id": "46bf9c62-595d-5ae4-9879-d29191f8de05",
+    "version": 1,
+    "datos_version": "escenario-1.0",
+    "politica_version": "demo-1.0",
+    "valido": true,
+    "violaciones": [],
+    "comprobaciones": [
+      "capacidad",
+      "horarios",
+      "ventanas",
+      "retorno",
+      "asignacion_unica",
+      "demanda_completa",
+      "version_entradas",
+      "cobertura_critica"
+    ]
+  },
+  "supuestos": [
+    "FIXTURE construido a mano; NO es una ejecución de OR-Tools ni del verificador."
+  ],
+  "bloqueos_publicacion": [],
+  "aprobacion": null
+}

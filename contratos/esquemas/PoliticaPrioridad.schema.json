@@ -1,0 +1,137 @@
+{
+  "$defs": {
+    "ConfirmacionCoordinador": {
+      "additionalProperties": false,
+      "properties": {
+        "usuario_id": {
+          "format": "uuid",
+          "title": "Usuario Id",
+          "type": "string"
+        },
+        "confirmado_en": {
+          "format": "date-time",
+          "title": "Confirmado En",
+          "type": "string"
+        },
+        "motivo": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Motivo",
+          "type": "string"
+        }
+      },
+      "required": [
+        "usuario_id",
+        "confirmado_en",
+        "motivo"
+      ],
+      "title": "ConfirmacionCoordinador",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "politica_version": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Politica Version",
+      "type": "string"
+    },
+    "estado": {
+      "enum": [
+        "propuesta_demo",
+        "activa"
+      ],
+      "title": "Estado",
+      "type": "string"
+    },
+    "origen": {
+      "const": "sintetico",
+      "default": "sintetico",
+      "title": "Origen",
+      "type": "string"
+    },
+    "peso_duracion": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Peso Duracion",
+      "type": "number"
+    },
+    "peso_vulnerabilidad": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Peso Vulnerabilidad",
+      "type": "number"
+    },
+    "peso_poblacion": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Peso Poblacion",
+      "type": "number"
+    },
+    "tope_horas": {
+      "exclusiveMinimum": 0,
+      "title": "Tope Horas",
+      "type": "number"
+    },
+    "tope_personas": {
+      "exclusiveMinimum": 0,
+      "title": "Tope Personas",
+      "type": "integer"
+    },
+    "vulnerabilidad_moderada": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Vulnerabilidad Moderada",
+      "type": "number"
+    },
+    "fundamento": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Fundamento",
+      "type": "string"
+    },
+    "confirmacion_activacion": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ConfirmacionCoordinador"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "criticos_obligatorios": {
+      "const": true,
+      "default": true,
+      "title": "Criticos Obligatorios",
+      "type": "boolean"
+    },
+    "faltantes_fuera_ranking": {
+      "const": true,
+      "default": true,
+      "title": "Faltantes Fuera Ranking",
+      "type": "boolean"
+    },
+    "orden_desempate": {
+      "const": "ultima_atencion_luego_incidente_luego_id",
+      "default": "ultima_atencion_luego_incidente_luego_id",
+      "title": "Orden Desempate",
+      "type": "string"
+    }
+  },
+  "required": [
+    "politica_version",
+    "estado",
+    "peso_duracion",
+    "peso_vulnerabilidad",
+    "peso_poblacion",
+    "tope_horas",
+    "tope_personas",
+    "vulnerabilidad_moderada",
+    "fundamento"
+  ],
+  "title": "PoliticaPrioridad",
+  "type": "object"
+}

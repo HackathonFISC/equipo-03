@@ -1,0 +1,172 @@
+{
+  "$defs": {
+    "ConfirmacionCoordinador": {
+      "additionalProperties": false,
+      "properties": {
+        "usuario_id": {
+          "format": "uuid",
+          "title": "Usuario Id",
+          "type": "string"
+        },
+        "confirmado_en": {
+          "format": "date-time",
+          "title": "Confirmado En",
+          "type": "string"
+        },
+        "motivo": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Motivo",
+          "type": "string"
+        }
+      },
+      "required": [
+        "usuario_id",
+        "confirmado_en",
+        "motivo"
+      ],
+      "title": "ConfirmacionCoordinador",
+      "type": "object"
+    },
+    "EstadoValidacion": {
+      "enum": [
+        "pendiente",
+        "validada",
+        "rechazada"
+      ],
+      "title": "EstadoValidacion",
+      "type": "string"
+    },
+    "OrigenDato": {
+      "enum": [
+        "real",
+        "estimado",
+        "sintetico"
+      ],
+      "title": "OrigenDato",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "esquema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Esquema Version",
+      "type": "string"
+    },
+    "ejecucion_id": {
+      "format": "uuid",
+      "title": "Ejecucion Id",
+      "type": "string"
+    },
+    "creado_en": {
+      "format": "date-time",
+      "title": "Creado En",
+      "type": "string"
+    },
+    "origen": {
+      "$ref": "#/$defs/OrigenDato"
+    },
+    "incidente_id": {
+      "format": "uuid",
+      "title": "Incidente Id",
+      "type": "string"
+    },
+    "punto_atencion_id": {
+      "format": "uuid",
+      "title": "Punto Atencion Id",
+      "type": "string"
+    },
+    "datos_version": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Datos Version",
+      "type": "string"
+    },
+    "metodo": {
+      "enum": [
+        "directa",
+        "formula"
+      ],
+      "title": "Metodo",
+      "type": "string"
+    },
+    "estado": {
+      "$ref": "#/$defs/EstadoValidacion"
+    },
+    "demanda_litros": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Demanda Litros"
+    },
+    "fuente": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Fuente",
+      "type": "string"
+    },
+    "confirmacion": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ConfirmacionCoordinador"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "faltantes": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Faltantes",
+      "type": "array"
+    },
+    "motivos": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Motivos",
+      "type": "array"
+    },
+    "supuestos": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Supuestos",
+      "type": "array"
+    }
+  },
+  "required": [
+    "ejecucion_id",
+    "creado_en",
+    "origen",
+    "incidente_id",
+    "punto_atencion_id",
+    "datos_version",
+    "metodo",
+    "estado",
+    "fuente",
+    "faltantes",
+    "motivos",
+    "supuestos"
+  ],
+  "title": "ResultadoValidarNecesidad",
+  "type": "object"
+}

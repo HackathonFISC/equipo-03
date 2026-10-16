@@ -1,0 +1,192 @@
+{
+  "$defs": {
+    "EntradaReporte": {
+      "additionalProperties": false,
+      "description": "Adaptador de Noel; IDs externos sirven para deduplicar, no para autorizar.",
+      "properties": {
+        "canal": {
+          "enum": [
+            "telegram",
+            "panel"
+          ],
+          "title": "Canal",
+          "type": "string"
+        },
+        "mensaje_externo_id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Mensaje Externo Id",
+          "type": "string"
+        },
+        "remitente_ref": {
+          "format": "uuid",
+          "title": "Remitente Ref",
+          "type": "string"
+        },
+        "modalidad": {
+          "enum": [
+            "texto",
+            "voz",
+            "foto",
+            "ubicacion"
+          ],
+          "title": "Modalidad",
+          "type": "string"
+        },
+        "texto": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Texto"
+        },
+        "adjunto_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Adjunto Id"
+        },
+        "ubicacion_compartida": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Ubicacion"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "canal",
+        "mensaje_externo_id",
+        "remitente_ref",
+        "modalidad"
+      ],
+      "title": "EntradaReporte",
+      "type": "object"
+    },
+    "OrigenDato": {
+      "enum": [
+        "real",
+        "estimado",
+        "sintetico"
+      ],
+      "title": "OrigenDato",
+      "type": "string"
+    },
+    "Ubicacion": {
+      "additionalProperties": false,
+      "properties": {
+        "latitud": {
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Latitud",
+          "type": "number"
+        },
+        "longitud": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Longitud",
+          "type": "number"
+        },
+        "fuente": {
+          "enum": [
+            "catalogo",
+            "compartida",
+            "coordinador",
+            "escenario"
+          ],
+          "title": "Fuente",
+          "type": "string"
+        },
+        "precision_metros": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Precision Metros"
+        },
+        "representa_punto_atencion": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Representa Punto Atencion"
+        }
+      },
+      "required": [
+        "latitud",
+        "longitud",
+        "fuente"
+      ],
+      "title": "Ubicacion",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "esquema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Esquema Version",
+      "type": "string"
+    },
+    "ejecucion_id": {
+      "format": "uuid",
+      "title": "Ejecucion Id",
+      "type": "string"
+    },
+    "creado_en": {
+      "format": "date-time",
+      "title": "Creado En",
+      "type": "string"
+    },
+    "origen": {
+      "$ref": "#/$defs/OrigenDato"
+    },
+    "reporte_id": {
+      "format": "uuid",
+      "title": "Reporte Id",
+      "type": "string"
+    },
+    "entrada": {
+      "$ref": "#/$defs/EntradaReporte"
+    }
+  },
+  "required": [
+    "ejecucion_id",
+    "creado_en",
+    "origen",
+    "reporte_id",
+    "entrada"
+  ],
+  "title": "ReporteRegistrado",
+  "type": "object"
+}

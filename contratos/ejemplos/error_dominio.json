@@ -1,0 +1,12 @@
+{
+  "esquema_version": "1.0",
+  "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+  "creado_en": "2026-10-16T18:00:00-05:00",
+  "origen": "sintetico",
+  "codigo": "datos_insuficientes",
+  "mensaje": "Reserva desconocida",
+  "recuperable": true,
+  "campos": [
+    "reserva_utilizable_litros"
+  ]
+}

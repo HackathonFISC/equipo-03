@@ -1,0 +1,85 @@
+{
+  "$defs": {
+    "CodigoError": {
+      "enum": [
+        "contrato_invalido",
+        "datos_insuficientes",
+        "ubicacion_ambigua",
+        "fuera_de_area",
+        "politica_no_activa",
+        "version_obsoleta",
+        "sin_permiso",
+        "plan_no_verificado",
+        "cobertura_critica_pendiente",
+        "proveedor_no_disponible",
+        "envio_incierto"
+      ],
+      "title": "CodigoError",
+      "type": "string"
+    },
+    "OrigenDato": {
+      "enum": [
+        "real",
+        "estimado",
+        "sintetico"
+      ],
+      "title": "OrigenDato",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "esquema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Esquema Version",
+      "type": "string"
+    },
+    "ejecucion_id": {
+      "format": "uuid",
+      "title": "Ejecucion Id",
+      "type": "string"
+    },
+    "creado_en": {
+      "format": "date-time",
+      "title": "Creado En",
+      "type": "string"
+    },
+    "origen": {
+      "$ref": "#/$defs/OrigenDato"
+    },
+    "codigo": {
+      "$ref": "#/$defs/CodigoError"
+    },
+    "mensaje": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Mensaje",
+      "type": "string"
+    },
+    "recuperable": {
+      "title": "Recuperable",
+      "type": "boolean"
+    },
+    "campos": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Campos",
+      "type": "array"
+    }
+  },
+  "required": [
+    "ejecucion_id",
+    "creado_en",
+    "origen",
+    "codigo",
+    "mensaje",
+    "recuperable",
+    "campos"
+  ],
+  "title": "ErrorDominio",
+  "type": "object"
+}

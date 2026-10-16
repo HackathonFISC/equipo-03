@@ -1,0 +1,1406 @@
+{
+  "$defs": {
+    "AprobacionPlan": {
+      "additionalProperties": false,
+      "description": "Registro emitido por servicio autorizado, no salida de un agente.",
+      "properties": {
+        "aprobacion_id": {
+          "format": "uuid",
+          "title": "Aprobacion Id",
+          "type": "string"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "version": {
+          "exclusiveMinimum": 0,
+          "title": "Version",
+          "type": "integer"
+        },
+        "datos_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Datos Version",
+          "type": "string"
+        },
+        "politica_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Politica Version",
+          "type": "string"
+        },
+        "coordinador": {
+          "$ref": "#/$defs/ConfirmacionCoordinador"
+        }
+      },
+      "required": [
+        "aprobacion_id",
+        "plan_id",
+        "version",
+        "datos_version",
+        "politica_version",
+        "coordinador"
+      ],
+      "title": "AprobacionPlan",
+      "type": "object"
+    },
+    "ClasePrioridad": {
+      "enum": [
+        "critico",
+        "general"
+      ],
+      "title": "ClasePrioridad",
+      "type": "string"
+    },
+    "ComponentesPrioridad": {
+      "additionalProperties": false,
+      "properties": {
+        "duracion_normalizada": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Duracion Normalizada",
+          "type": "number"
+        },
+        "vulnerabilidad_normalizada": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Vulnerabilidad Normalizada",
+          "type": "number"
+        },
+        "poblacion_normalizada": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Poblacion Normalizada",
+          "type": "number"
+        },
+        "aporte_duracion": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Aporte Duracion",
+          "type": "number"
+        },
+        "aporte_vulnerabilidad": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Aporte Vulnerabilidad",
+          "type": "number"
+        },
+        "aporte_poblacion": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Aporte Poblacion",
+          "type": "number"
+        }
+      },
+      "required": [
+        "duracion_normalizada",
+        "vulnerabilidad_normalizada",
+        "poblacion_normalizada",
+        "aporte_duracion",
+        "aporte_vulnerabilidad",
+        "aporte_poblacion"
+      ],
+      "title": "ComponentesPrioridad",
+      "type": "object"
+    },
+    "ConfirmacionCoordinador": {
+      "additionalProperties": false,
+      "properties": {
+        "usuario_id": {
+          "format": "uuid",
+          "title": "Usuario Id",
+          "type": "string"
+        },
+        "confirmado_en": {
+          "format": "date-time",
+          "title": "Confirmado En",
+          "type": "string"
+        },
+        "motivo": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Motivo",
+          "type": "string"
+        }
+      },
+      "required": [
+        "usuario_id",
+        "confirmado_en",
+        "motivo"
+      ],
+      "title": "ConfirmacionCoordinador",
+      "type": "object"
+    },
+    "Deposito": {
+      "additionalProperties": false,
+      "properties": {
+        "deposito_id": {
+          "format": "uuid",
+          "title": "Deposito Id",
+          "type": "string"
+        },
+        "nombre": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Nombre",
+          "type": "string"
+        },
+        "ubicacion": {
+          "$ref": "#/$defs/Ubicacion"
+        },
+        "origen": {
+          "$ref": "#/$defs/OrigenDato"
+        }
+      },
+      "required": [
+        "deposito_id",
+        "nombre",
+        "ubicacion",
+        "origen"
+      ],
+      "title": "Deposito",
+      "type": "object"
+    },
+    "EstadoParada": {
+      "enum": [
+        "programada",
+        "iniciada",
+        "atendida",
+        "con_incidencia"
+      ],
+      "title": "EstadoParada",
+      "type": "string"
+    },
+    "EstadoPlan": {
+      "enum": [
+        "calculando",
+        "pendiente_revision",
+        "aprobado",
+        "rechazado",
+        "invalidado"
+      ],
+      "title": "EstadoPlan",
+      "type": "string"
+    },
+    "EstadoSolver": {
+      "enum": [
+        "factible",
+        "timeout_sin_solucion",
+        "inviabilidad_demostrada",
+        "error"
+      ],
+      "title": "EstadoSolver",
+      "type": "string"
+    },
+    "EstadoValidacion": {
+      "enum": [
+        "pendiente",
+        "validada",
+        "rechazada"
+      ],
+      "title": "EstadoValidacion",
+      "type": "string"
+    },
+    "EvaluacionNecesidades": {
+      "additionalProperties": false,
+      "properties": {
+        "esquema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Esquema Version",
+          "type": "string"
+        },
+        "ejecucion_id": {
+          "format": "uuid",
+          "title": "Ejecucion Id",
+          "type": "string"
+        },
+        "creado_en": {
+          "format": "date-time",
+          "title": "Creado En",
+          "type": "string"
+        },
+        "origen": {
+          "$ref": "#/$defs/OrigenDato"
+        },
+        "incidente_id": {
+          "format": "uuid",
+          "title": "Incidente Id",
+          "type": "string"
+        },
+        "punto_atencion_id": {
+          "format": "uuid",
+          "title": "Punto Atencion Id",
+          "type": "string"
+        },
+        "datos_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Datos Version",
+          "type": "string"
+        },
+        "politica_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Politica Version",
+          "type": "string"
+        },
+        "estado_demanda": {
+          "$ref": "#/$defs/EstadoValidacion"
+        },
+        "demanda_litros": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Demanda Litros"
+        },
+        "metodo_demanda": {
+          "enum": [
+            "directa",
+            "formula"
+          ],
+          "title": "Metodo Demanda",
+          "type": "string"
+        },
+        "confirmacion_demanda": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConfirmacionCoordinador"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "clase_prioridad": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClasePrioridad"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "confirmacion_clase": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConfirmacionCoordinador"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ventana_atencion": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VentanaTiempo"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "horas_sin_agua": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Horas Sin Agua"
+        },
+        "personas_atendidas": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Personas Atendidas"
+        },
+        "vulnerabilidad": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NivelVulnerabilidad"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "confirmacion_vulnerabilidad": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConfirmacionCoordinador"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ultima_atencion_confirmada_en": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ultima Atencion Confirmada En"
+        },
+        "primera_deteccion_en": {
+          "format": "date-time",
+          "title": "Primera Deteccion En",
+          "type": "string"
+        },
+        "estado_prioridad": {
+          "enum": [
+            "pendiente",
+            "calculada"
+          ],
+          "title": "Estado Prioridad",
+          "type": "string"
+        },
+        "puntaje": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Puntaje"
+        },
+        "componentes": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ComponentesPrioridad"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "posicion": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Posicion"
+        },
+        "pendientes": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Pendientes",
+          "type": "array"
+        },
+        "supuestos": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Supuestos",
+          "type": "array"
+        },
+        "requiere_revision_urgente": {
+          "default": false,
+          "title": "Requiere Revision Urgente",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "ejecucion_id",
+        "creado_en",
+        "origen",
+        "incidente_id",
+        "punto_atencion_id",
+        "datos_version",
+        "politica_version",
+        "estado_demanda",
+        "metodo_demanda",
+        "primera_deteccion_en",
+        "estado_prioridad"
+      ],
+      "title": "EvaluacionNecesidades",
+      "type": "object"
+    },
+    "InformeVerificacion": {
+      "additionalProperties": false,
+      "properties": {
+        "esquema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Esquema Version",
+          "type": "string"
+        },
+        "ejecucion_id": {
+          "format": "uuid",
+          "title": "Ejecucion Id",
+          "type": "string"
+        },
+        "creado_en": {
+          "format": "date-time",
+          "title": "Creado En",
+          "type": "string"
+        },
+        "origen": {
+          "$ref": "#/$defs/OrigenDato"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "version": {
+          "exclusiveMinimum": 0,
+          "title": "Version",
+          "type": "integer"
+        },
+        "datos_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Datos Version",
+          "type": "string"
+        },
+        "politica_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Politica Version",
+          "type": "string"
+        },
+        "valido": {
+          "title": "Valido",
+          "type": "boolean"
+        },
+        "violaciones": {
+          "items": {
+            "$ref": "#/$defs/ViolacionPlan"
+          },
+          "title": "Violaciones",
+          "type": "array"
+        },
+        "comprobaciones": {
+          "items": {
+            "enum": [
+              "capacidad",
+              "horarios",
+              "ventanas",
+              "retorno",
+              "asignacion_unica",
+              "demanda_completa",
+              "version_entradas",
+              "cobertura_critica"
+            ],
+            "type": "string"
+          },
+          "title": "Comprobaciones",
+          "type": "array"
+        }
+      },
+      "required": [
+        "ejecucion_id",
+        "creado_en",
+        "origen",
+        "plan_id",
+        "version",
+        "datos_version",
+        "politica_version",
+        "valido",
+        "violaciones",
+        "comprobaciones"
+      ],
+      "title": "InformeVerificacion",
+      "type": "object"
+    },
+    "MatrizTiempos": {
+      "additionalProperties": false,
+      "properties": {
+        "matriz_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Matriz Version",
+          "type": "string"
+        },
+        "origen": {
+          "enum": [
+            "sintetico",
+            "estimado"
+          ],
+          "title": "Origen",
+          "type": "string"
+        },
+        "nodos_ids": {
+          "items": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "minItems": 2,
+          "title": "Nodos Ids",
+          "type": "array"
+        },
+        "minutos": {
+          "items": {
+            "items": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array"
+          },
+          "title": "Minutos",
+          "type": "array"
+        },
+        "descripcion": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Descripcion",
+          "type": "string"
+        }
+      },
+      "required": [
+        "matriz_version",
+        "origen",
+        "nodos_ids",
+        "minutos",
+        "descripcion"
+      ],
+      "title": "MatrizTiempos",
+      "type": "object"
+    },
+    "NivelVulnerabilidad": {
+      "enum": [
+        "sin_condicion_identificada",
+        "moderada",
+        "alta"
+      ],
+      "title": "NivelVulnerabilidad",
+      "type": "string"
+    },
+    "NoAtendido": {
+      "additionalProperties": false,
+      "properties": {
+        "incidente_id": {
+          "format": "uuid",
+          "title": "Incidente Id",
+          "type": "string"
+        },
+        "punto_atencion_id": {
+          "format": "uuid",
+          "title": "Punto Atencion Id",
+          "type": "string"
+        },
+        "clase_prioridad": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClasePrioridad"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "demanda_pendiente_litros": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Demanda Pendiente Litros"
+        },
+        "codigo": {
+          "enum": [
+            "sin_capacidad",
+            "demanda_supera_vehiculo",
+            "ventana",
+            "sin_acceso",
+            "datos_pendientes",
+            "timeout",
+            "otro"
+          ],
+          "title": "Codigo",
+          "type": "string"
+        },
+        "motivo": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Motivo",
+          "type": "string"
+        }
+      },
+      "required": [
+        "incidente_id",
+        "punto_atencion_id",
+        "clase_prioridad",
+        "demanda_pendiente_litros",
+        "codigo",
+        "motivo"
+      ],
+      "title": "NoAtendido",
+      "type": "object"
+    },
+    "OrigenDato": {
+      "enum": [
+        "real",
+        "estimado",
+        "sintetico"
+      ],
+      "title": "OrigenDato",
+      "type": "string"
+    },
+    "ParadaPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "parada_id": {
+          "format": "uuid",
+          "title": "Parada Id",
+          "type": "string"
+        },
+        "punto_atencion_id": {
+          "format": "uuid",
+          "title": "Punto Atencion Id",
+          "type": "string"
+        },
+        "incidente_id": {
+          "format": "uuid",
+          "title": "Incidente Id",
+          "type": "string"
+        },
+        "orden": {
+          "exclusiveMinimum": 0,
+          "title": "Orden",
+          "type": "integer"
+        },
+        "litros_asignados": {
+          "exclusiveMinimum": 0,
+          "title": "Litros Asignados",
+          "type": "number"
+        },
+        "llegada_estimada": {
+          "format": "date-time",
+          "title": "Llegada Estimada",
+          "type": "string"
+        },
+        "inicio_descarga": {
+          "format": "date-time",
+          "title": "Inicio Descarga",
+          "type": "string"
+        },
+        "fin_descarga": {
+          "format": "date-time",
+          "title": "Fin Descarga",
+          "type": "string"
+        },
+        "estado": {
+          "$ref": "#/$defs/EstadoParada",
+          "default": "programada"
+        }
+      },
+      "required": [
+        "parada_id",
+        "punto_atencion_id",
+        "incidente_id",
+        "orden",
+        "litros_asignados",
+        "llegada_estimada",
+        "inicio_descarga",
+        "fin_descarga"
+      ],
+      "title": "ParadaPlan",
+      "type": "object"
+    },
+    "PoliticaPrioridad": {
+      "additionalProperties": false,
+      "properties": {
+        "politica_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Politica Version",
+          "type": "string"
+        },
+        "estado": {
+          "enum": [
+            "propuesta_demo",
+            "activa"
+          ],
+          "title": "Estado",
+          "type": "string"
+        },
+        "origen": {
+          "const": "sintetico",
+          "default": "sintetico",
+          "title": "Origen",
+          "type": "string"
+        },
+        "peso_duracion": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Peso Duracion",
+          "type": "number"
+        },
+        "peso_vulnerabilidad": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Peso Vulnerabilidad",
+          "type": "number"
+        },
+        "peso_poblacion": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Peso Poblacion",
+          "type": "number"
+        },
+        "tope_horas": {
+          "exclusiveMinimum": 0,
+          "title": "Tope Horas",
+          "type": "number"
+        },
+        "tope_personas": {
+          "exclusiveMinimum": 0,
+          "title": "Tope Personas",
+          "type": "integer"
+        },
+        "vulnerabilidad_moderada": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Vulnerabilidad Moderada",
+          "type": "number"
+        },
+        "fundamento": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Fundamento",
+          "type": "string"
+        },
+        "confirmacion_activacion": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConfirmacionCoordinador"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "criticos_obligatorios": {
+          "const": true,
+          "default": true,
+          "title": "Criticos Obligatorios",
+          "type": "boolean"
+        },
+        "faltantes_fuera_ranking": {
+          "const": true,
+          "default": true,
+          "title": "Faltantes Fuera Ranking",
+          "type": "boolean"
+        },
+        "orden_desempate": {
+          "const": "ultima_atencion_luego_incidente_luego_id",
+          "default": "ultima_atencion_luego_incidente_luego_id",
+          "title": "Orden Desempate",
+          "type": "string"
+        }
+      },
+      "required": [
+        "politica_version",
+        "estado",
+        "peso_duracion",
+        "peso_vulnerabilidad",
+        "peso_poblacion",
+        "tope_horas",
+        "tope_personas",
+        "vulnerabilidad_moderada",
+        "fundamento"
+      ],
+      "title": "PoliticaPrioridad",
+      "type": "object"
+    },
+    "PropuestaDistribucion": {
+      "additionalProperties": false,
+      "properties": {
+        "esquema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Esquema Version",
+          "type": "string"
+        },
+        "ejecucion_id": {
+          "format": "uuid",
+          "title": "Ejecucion Id",
+          "type": "string"
+        },
+        "creado_en": {
+          "format": "date-time",
+          "title": "Creado En",
+          "type": "string"
+        },
+        "origen": {
+          "$ref": "#/$defs/OrigenDato"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "version": {
+          "exclusiveMinimum": 0,
+          "title": "Version",
+          "type": "integer"
+        },
+        "datos_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Datos Version",
+          "type": "string"
+        },
+        "politica_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Politica Version",
+          "type": "string"
+        },
+        "estado": {
+          "$ref": "#/$defs/EstadoPlan"
+        },
+        "estado_solver": {
+          "$ref": "#/$defs/EstadoSolver"
+        },
+        "rutas": {
+          "items": {
+            "$ref": "#/$defs/RutaVehiculo"
+          },
+          "title": "Rutas",
+          "type": "array"
+        },
+        "no_atendidos": {
+          "items": {
+            "$ref": "#/$defs/NoAtendido"
+          },
+          "title": "No Atendidos",
+          "type": "array"
+        },
+        "verificacion": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InformeVerificacion"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "supuestos": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Supuestos",
+          "type": "array"
+        },
+        "bloqueos_publicacion": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Bloqueos Publicacion",
+          "type": "array"
+        },
+        "aprobacion": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AprobacionPlan"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "ejecucion_id",
+        "creado_en",
+        "origen",
+        "plan_id",
+        "version",
+        "datos_version",
+        "politica_version",
+        "estado",
+        "estado_solver",
+        "rutas",
+        "no_atendidos",
+        "supuestos",
+        "bloqueos_publicacion"
+      ],
+      "title": "PropuestaDistribucion",
+      "type": "object"
+    },
+    "PuntoAtencion": {
+      "additionalProperties": false,
+      "properties": {
+        "punto_atencion_id": {
+          "format": "uuid",
+          "title": "Punto Atencion Id",
+          "type": "string"
+        },
+        "sector_id": {
+          "format": "uuid",
+          "title": "Sector Id",
+          "type": "string"
+        },
+        "nombre": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Nombre",
+          "type": "string"
+        },
+        "ubicacion": {
+          "$ref": "#/$defs/Ubicacion"
+        },
+        "origen": {
+          "$ref": "#/$defs/OrigenDato"
+        }
+      },
+      "required": [
+        "punto_atencion_id",
+        "sector_id",
+        "nombre",
+        "ubicacion",
+        "origen"
+      ],
+      "title": "PuntoAtencion",
+      "type": "object"
+    },
+    "RutaVehiculo": {
+      "additionalProperties": false,
+      "properties": {
+        "vehiculo_id": {
+          "format": "uuid",
+          "title": "Vehiculo Id",
+          "type": "string"
+        },
+        "deposito_id": {
+          "format": "uuid",
+          "title": "Deposito Id",
+          "type": "string"
+        },
+        "salida_estimada": {
+          "format": "date-time",
+          "title": "Salida Estimada",
+          "type": "string"
+        },
+        "retorno_estimado": {
+          "format": "date-time",
+          "title": "Retorno Estimado",
+          "type": "string"
+        },
+        "paradas": {
+          "items": {
+            "$ref": "#/$defs/ParadaPlan"
+          },
+          "minItems": 1,
+          "title": "Paradas",
+          "type": "array"
+        }
+      },
+      "required": [
+        "vehiculo_id",
+        "deposito_id",
+        "salida_estimada",
+        "retorno_estimado",
+        "paradas"
+      ],
+      "title": "RutaVehiculo",
+      "type": "object"
+    },
+    "SolicitudResolverRutas": {
+      "additionalProperties": false,
+      "properties": {
+        "esquema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Esquema Version",
+          "type": "string"
+        },
+        "ejecucion_id": {
+          "format": "uuid",
+          "title": "Ejecucion Id",
+          "type": "string"
+        },
+        "creado_en": {
+          "format": "date-time",
+          "title": "Creado En",
+          "type": "string"
+        },
+        "origen": {
+          "$ref": "#/$defs/OrigenDato"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "version": {
+          "exclusiveMinimum": 0,
+          "title": "Version",
+          "type": "integer"
+        },
+        "datos_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Datos Version",
+          "type": "string"
+        },
+        "politica": {
+          "$ref": "#/$defs/PoliticaPrioridad"
+        },
+        "deposito": {
+          "$ref": "#/$defs/Deposito"
+        },
+        "vehiculos": {
+          "items": {
+            "$ref": "#/$defs/Vehiculo"
+          },
+          "maxItems": 2,
+          "title": "Vehiculos",
+          "type": "array"
+        },
+        "puntos": {
+          "items": {
+            "$ref": "#/$defs/PuntoAtencion"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Puntos",
+          "type": "array"
+        },
+        "necesidades": {
+          "items": {
+            "$ref": "#/$defs/EvaluacionNecesidades"
+          },
+          "minItems": 1,
+          "title": "Necesidades",
+          "type": "array"
+        },
+        "matriz": {
+          "$ref": "#/$defs/MatrizTiempos"
+        },
+        "servicios": {
+          "items": {
+            "$ref": "#/$defs/TiempoServicio"
+          },
+          "title": "Servicios",
+          "type": "array"
+        },
+        "limite_solver_segundos": {
+          "exclusiveMinimum": 0,
+          "title": "Limite Solver Segundos",
+          "type": "integer"
+        },
+        "recargas_permitidas": {
+          "const": false,
+          "default": false,
+          "title": "Recargas Permitidas",
+          "type": "boolean"
+        },
+        "entregas_parciales_permitidas": {
+          "const": false,
+          "default": false,
+          "title": "Entregas Parciales Permitidas",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "ejecucion_id",
+        "creado_en",
+        "origen",
+        "plan_id",
+        "version",
+        "datos_version",
+        "politica",
+        "deposito",
+        "vehiculos",
+        "puntos",
+        "necesidades",
+        "matriz",
+        "servicios",
+        "limite_solver_segundos"
+      ],
+      "title": "SolicitudResolverRutas",
+      "type": "object"
+    },
+    "TiempoServicio": {
+      "additionalProperties": false,
+      "properties": {
+        "punto_atencion_id": {
+          "format": "uuid",
+          "title": "Punto Atencion Id",
+          "type": "string"
+        },
+        "descarga_minutos": {
+          "exclusiveMinimum": 0,
+          "title": "Descarga Minutos",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "punto_atencion_id",
+        "descarga_minutos"
+      ],
+      "title": "TiempoServicio",
+      "type": "object"
+    },
+    "Ubicacion": {
+      "additionalProperties": false,
+      "properties": {
+        "latitud": {
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Latitud",
+          "type": "number"
+        },
+        "longitud": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Longitud",
+          "type": "number"
+        },
+        "fuente": {
+          "enum": [
+            "catalogo",
+            "compartida",
+            "coordinador",
+            "escenario"
+          ],
+          "title": "Fuente",
+          "type": "string"
+        },
+        "precision_metros": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Precision Metros"
+        },
+        "representa_punto_atencion": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Representa Punto Atencion"
+        }
+      },
+      "required": [
+        "latitud",
+        "longitud",
+        "fuente"
+      ],
+      "title": "Ubicacion",
+      "type": "object"
+    },
+    "Vehiculo": {
+      "additionalProperties": false,
+      "properties": {
+        "vehiculo_id": {
+          "format": "uuid",
+          "title": "Vehiculo Id",
+          "type": "string"
+        },
+        "capacidad_litros": {
+          "exclusiveMinimum": 0,
+          "title": "Capacidad Litros",
+          "type": "number"
+        },
+        "disponible": {
+          "title": "Disponible",
+          "type": "boolean"
+        },
+        "turno": {
+          "$ref": "#/$defs/VentanaTiempo"
+        },
+        "origen": {
+          "$ref": "#/$defs/OrigenDato"
+        }
+      },
+      "required": [
+        "vehiculo_id",
+        "capacidad_litros",
+        "disponible",
+        "turno",
+        "origen"
+      ],
+      "title": "Vehiculo",
+      "type": "object"
+    },
+    "VentanaTiempo": {
+      "additionalProperties": false,
+      "properties": {
+        "inicio": {
+          "format": "date-time",
+          "title": "Inicio",
+          "type": "string"
+        },
+        "fin": {
+          "format": "date-time",
+          "title": "Fin",
+          "type": "string"
+        }
+      },
+      "required": [
+        "inicio",
+        "fin"
+      ],
+      "title": "VentanaTiempo",
+      "type": "object"
+    },
+    "ViolacionPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "codigo": {
+          "enum": [
+            "capacidad",
+            "horario",
+            "ventana",
+            "retorno",
+            "asignacion",
+            "demanda",
+            "version",
+            "cobertura_critica",
+            "otro"
+          ],
+          "title": "Codigo",
+          "type": "string"
+        },
+        "detalle": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Detalle",
+          "type": "string"
+        },
+        "referencia_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Referencia Id"
+        }
+      },
+      "required": [
+        "codigo",
+        "detalle"
+      ],
+      "title": "ViolacionPlan",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "esquema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Esquema Version",
+      "type": "string"
+    },
+    "ejecucion_id": {
+      "format": "uuid",
+      "title": "Ejecucion Id",
+      "type": "string"
+    },
+    "creado_en": {
+      "format": "date-time",
+      "title": "Creado En",
+      "type": "string"
+    },
+    "origen": {
+      "$ref": "#/$defs/OrigenDato"
+    },
+    "solicitud_original": {
+      "$ref": "#/$defs/SolicitudResolverRutas"
+    },
+    "propuesta": {
+      "$ref": "#/$defs/PropuestaDistribucion"
+    }
+  },
+  "required": [
+    "ejecucion_id",
+    "creado_en",
+    "origen",
+    "solicitud_original",
+    "propuesta"
+  ],
+  "title": "SolicitudVerificarPlan",
+  "type": "object"
+}
