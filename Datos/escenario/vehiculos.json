@@ -1,0 +1,45 @@
+{
+  "esquema_version": "1.0",
+  "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+  "creado_en": "2026-10-16T18:00:00-05:00",
+  "origen": "sintetico",
+  "datos_version": "escenario-1.0",
+  "descripcion": "Escenario sintético V0 derivado de los ejemplos de Emilia. Capacidades, disponibilidad y turnos son propuestas de prueba, no recursos operativos confirmados.",
+  "fuente": "contratos/ejemplos/solicitud_resolver_rutas.json",
+  "deposito": {
+    "deposito_id": "8fb94d35-9d63-5074-9df0-b0acd3f2412c",
+    "nombre": "Depósito sintético",
+    "ubicacion": {
+      "latitud": 8.9,
+      "longitud": -79.7,
+      "fuente": "escenario",
+      "precision_metros": null,
+      "representa_punto_atencion": true
+    },
+    "origen": "sintetico"
+  },
+  "vehiculos": [
+    {
+      "vehiculo_id": "a014bc90-b2af-5e84-96da-7e18802c8af8",
+      "capacidad_litros": 10000.0,
+      "disponible": true,
+      "turno": {
+        "inicio": "2026-10-17T08:00:00-05:00",
+        "fin": "2026-10-17T12:00:00-05:00"
+      },
+      "origen": "sintetico"
+    },
+    {
+      "vehiculo_id": "6d9980c2-e440-52e4-bec4-e042ed5a4f8b",
+      "capacidad_litros": 10000.0,
+      "disponible": true,
+      "turno": {
+        "inicio": "2026-10-17T08:00:00-05:00",
+        "fin": "2026-10-17T12:00:00-05:00"
+      },
+      "origen": "sintetico"
+    }
+  ],
+  "recargas_permitidas": false,
+  "entregas_parciales_permitidas": false
+}

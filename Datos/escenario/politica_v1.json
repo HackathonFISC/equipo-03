@@ -1,0 +1,16 @@
+{
+  "politica_version": "demo-1.0",
+  "estado": "propuesta_demo",
+  "origen": "sintetico",
+  "peso_duracion": 0.5,
+  "peso_vulnerabilidad": 0.3,
+  "peso_poblacion": 0.2,
+  "tope_horas": 168.0,
+  "tope_personas": 500,
+  "vulnerabilidad_moderada": 0.5,
+  "fundamento": "Heurística de demo: espera y vulnerabilidad predominan; población tiene menor peso. No es una norma OMS/Sphere ni una política operativa oficial.",
+  "confirmacion_activacion": null,
+  "criticos_obligatorios": true,
+  "faltantes_fuera_ranking": true,
+  "orden_desempate": "ultima_atencion_luego_incidente_luego_id"
+}
