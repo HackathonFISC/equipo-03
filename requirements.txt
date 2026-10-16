@@ -1,1 +1,15 @@
-# Dependencias de Python. Dueño: José. Agregar líneas nuevas avisando al equipo.
+# Versiones comprobadas del entorno V0.
+-c requirements-lock.txt
+
+# Contratos compartidos de Emilia.
+-r contratos/requirements.txt
+
+# API, persistencia y bot de Noel.
+fastapi
+uvicorn[standard]
+supabase
+python-telegram-bot
+
+# Cálculo y pruebas de José.
+ortools==9.15.6755
+pytest==9.1.1
