@@ -240,8 +240,8 @@ function PuntoRevision({ item, valor, incluir, alCambiar, alIncluir, problemaLug
             <h4 id={`${base}-vent`}>Ventana de entrega {valor.clase === 'critico' ? <span className="rev-obligatorio">obligatoria</span> : <span className="rev-opcional">opcional</span>}</h4>
             <p className="rev-ayuda">Entre qué horas debe llegar el agua. Hora de Panamá.</p>
             <div className="rev-grilla">
-              <Campo id={`${base}-ini`} etiqueta="Desde"><input id={`${base}-ini`} type="datetime-local" value={valor.inicio} onChange={set('inicio')} /></Campo>
-              <Campo id={`${base}-fin`} etiqueta="Hasta"><input id={`${base}-fin`} type="datetime-local" value={valor.fin} onChange={set('fin')} /></Campo>
+              <Campo id={`${base}-ini`} etiqueta="Desde"><input id={`${base}-ini`} type="datetime-local" value={valor.inicio} onInput={set('inicio')} onChange={set('inicio')} /></Campo>
+              <Campo id={`${base}-fin`} etiqueta="Hasta"><input id={`${base}-fin`} type="datetime-local" value={valor.fin} onInput={set('fin')} onChange={set('fin')} /></Campo>
             </div>
           </section>
 
