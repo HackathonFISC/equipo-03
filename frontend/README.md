@@ -63,7 +63,8 @@ La barra superior cambia de página; la página activa queda en la dirección
 
 ### Reportes (`src/paginas/Reportes.jsx`)
 
-- Lista de `GET /reportes`, del más reciente al más antiguo.
+- Lista de `GET /reportes` con sesión iniciada, del más reciente al más antiguo.
+- Muestra el pin fijo aceptado por Telegram, su precisión y un enlace para abrirlo en el mapa, incluso fuera del catálogo. Localiza el reporte automáticamente; no aprueba un punto de distribución.
 - Se actualiza automáticamente cinco segundos después de cada consulta completada,
   sin solapar peticiones. Al salir de la página se detiene el sondeo y se ignoran
   respuestas tardías. No es necesario pulsar F5 para ver una interpretación nueva.
@@ -248,3 +249,8 @@ Georgia es la serif local para títulos editoriales; Inter se conserva en contro
 cuerpo y datos. No se cambian contratos, permisos, cálculos ni selección de origen.
 Lint y build con configLoader native aprobados. No hubo inspección visual en navegador.
 Las tres imágenes nuevas adjuntas no se incorporaron porque su descarga falló.
+
+
+### Rutas Google en Plan
+
+La página Plan permite previsualizar un recorrido de hasta seis reportes localizados desde un depósito activo. Los planes de cisternas tienen navegación completa y por tramos con retorno. Activación: [Rutas Google](../docs/RUTAS_GOOGLE.md).

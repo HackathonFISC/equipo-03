@@ -68,7 +68,8 @@ MENSAJE_LIMITE_GLOBAL = (
 )
 MENSAJE_SOLO_TEXTO = (
     "Para reportar, escribe el problema con texto. "
-    "La ubicación solo se usa para responder a una pregunta del bot."
+    "Si ya reportaste, espera la pregunta de ubicación y pulsa Responder sobre ella; "
+    "luego usa Adjuntar → Ubicación para enviar un pin fijo del lugar donde falta agua."
 )
 MENSAJE_AYUDA = (
     "Hola. Soy el bot de H2Oeste y sirvo para reportar falta de agua.\n\n"
@@ -82,6 +83,8 @@ MENSAJE_AYUDA = (
     "En un grupo, pulsa «Reportar falta de agua» o menciona al bot; "
     "los demás mensajes del grupo no se registran.\n"
     "Si te hago una pregunta, respóndela con «Responder» sobre mi mensaje.\n"
+    "Si no reconocemos el lugar, puedes responder a nuestra pregunta con un pin fijo "
+    "(Adjuntar → Ubicación) del sitio donde falta agua, aunque no esté en el catálogo.\n"
     "Tus mensajes se guardan para poder atender el reporte."
 )
 MENSAJE_BIENVENIDA = (
@@ -211,7 +214,13 @@ async def _responder_aclaracion(mensaje, chat, usuario, cliente, contenido: dict
     if resultado is None:
         await mensaje.reply_text(MENSAJE_FALLO_RESPUESTA)
     elif resultado in MENSAJES_RESULTADO:
-        await mensaje.reply_text(MENSAJES_RESULTADO[resultado])
+        if "ubicacion" in contenido and resultado in {"aceptada", "repetida"}:
+            await mensaje.reply_text(
+                "Recibimos la ubicación del problema y quedó asociada a tu reporte para localizarlo automáticamente. "
+                "No confirma un punto de distribución."
+            )
+        else:
+            await mensaje.reply_text(MENSAJES_RESULTADO[resultado])
     return resultado
 
 

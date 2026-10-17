@@ -6,6 +6,7 @@ No calcula ni modifica nada: aprobar y rechazar están en servicios/aprobacion.p
 import logging
 
 from pydantic import ValidationError
+from geografia.rutas_google import enlaces_recorrido
 
 from api.errores_http import ErrorApi
 from api.esquemas import PlanPanel, RutaPanel, ParadaPanel
@@ -17,7 +18,7 @@ logger = logging.getLogger("api.planes")
 LIMITE = 20
 COLUMNAS_PLAN = (
     "plan_id,version,ejecucion_id,estado,estado_solver,datos_version,politica_version,verificado,"
-    "bloqueos_publicacion,no_atendidos,supuestos,aprobacion_id,origen,creado_en"
+    "bloqueos_publicacion,no_atendidos,supuestos,aprobacion_id,origen,creado_en,solicitud_snapshot"
 )
 COLUMNAS_RUTA = "ruta_id,plan_id,version,vehiculo_id,salida_estimada,retorno_estimado"
 COLUMNAS_PARADA = (
@@ -48,9 +49,20 @@ def listar_planes(db, limite: int = LIMITE) -> list[PlanPanel]:
         paradas_por_ruta.setdefault(str(fila["ruta_id"]), []).append(
             ParadaPanel.model_validate({**fila, "punto": punto.model_dump() if punto else None})
         )
+    snapshots = {(str(p['plan_id']), int(p['version'])): p.get('solicitud_snapshot') for p in planes}
     rutas_por_plan: dict[tuple[str, int], list[RutaPanel]] = {}
     for fila in sorted(rutas, key=lambda f: str(f["salida_estimada"])):
-        ruta = RutaPanel.model_validate({**fila, "paradas": paradas_por_ruta.get(str(fila["ruta_id"]), [])})
+        paradas_ruta = paradas_por_ruta.get(str(fila['ruta_id']), [])
+        enlaces = {}
+        snapshot = snapshots.get((str(fila['plan_id']), int(fila['version'])))
+        if snapshot and paradas_ruta:
+            try:
+                ubicaciones = {str(p['punto_atencion_id']): p['ubicacion'] for p in snapshot['puntos']}
+                enlaces = enlaces_recorrido(snapshot['deposito']['ubicacion'],
+                    [ubicaciones[str(p.punto_atencion_id)] for p in paradas_ruta])
+            except (KeyError, TypeError, ValidationError):
+                logger.warning('Snapshot sin coordenadas de navegación completas; se omiten enlaces.')
+        ruta = RutaPanel.model_validate({**fila, 'paradas': paradas_ruta, **enlaces})
         rutas_por_plan.setdefault((str(fila["plan_id"]), int(fila["version"])), []).append(ruta)
 
     resultado = []

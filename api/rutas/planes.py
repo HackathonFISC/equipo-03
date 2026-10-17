@@ -10,7 +10,9 @@ from postgrest.exceptions import APIError
 from api.auth import UsuarioAutenticado, coordinador_actual, usuario_autenticado
 from api.dependencias import obtener_db
 from api.errores_http import ErrorApi
-from api.esquemas import AprobarPlan, PlanPanel, RechazarPlan, ResultadoPlan
+from api.esquemas import (AprobarPlan, PlanPanel, RechazarPlan, ResultadoPlan,
+    PeticionRutaLocalizada, OpcionesRutaLocalizada, VistaRutaLocalizada)
+from api.servicios import rutas_google
 from api.servicios import aprobacion, planes
 from contratos.errores import CodigoError, ErrorDominio
 
@@ -48,6 +50,24 @@ def _proveedor_no_disponible(error: Exception) -> ErrorApi:
 def listar(db=Depends(obtener_db)):
     try:
         return planes.listar_planes(db)
+    except ERRORES_INFRAESTRUCTURA as error:
+        raise _proveedor_no_disponible(error) from None
+
+
+@router.get('/destinos-localizados', response_model=OpcionesRutaLocalizada,
+            dependencies=[Depends(usuario_autenticado)])
+def destinos_localizados(db=Depends(obtener_db)):
+    try:
+        return rutas_google.opciones(db)
+    except ERRORES_INFRAESTRUCTURA as error:
+        raise _proveedor_no_disponible(error) from None
+
+
+@router.post('/ruta-localizada', response_model=VistaRutaLocalizada,
+             dependencies=[Depends(usuario_autenticado)])
+def ruta_localizada(datos: PeticionRutaLocalizada, db=Depends(obtener_db)):
+    try:
+        return rutas_google.previsualizar(db, datos)
     except ERRORES_INFRAESTRUCTURA as error:
         raise _proveedor_no_disponible(error) from None
 

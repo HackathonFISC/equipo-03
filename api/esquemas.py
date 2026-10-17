@@ -5,7 +5,7 @@ from uuid import UUID
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from contratos.estados import Agente, EstadoEjecucion
-from contratos.modelos import EvaluacionNecesidades, ExtraccionReporteLLM
+from contratos.modelos import EvaluacionNecesidades, ExtraccionReporteLLM, Ubicacion
 
 IdPositivo = Annotated[int, Field(strict=True, gt=0)]
 
@@ -59,7 +59,16 @@ class SeguimientoPanel(BaseModel):
     etapa: Etapa
 
 
+class LocalizacionPanel(BaseModel):
+    ubicacion: Ubicacion | None = None
+    place_id: str | None = None
+    resuelta_en: AwareDatetime
+    expira_en: AwareDatetime | None = None
+
+
 class ReporteListado(BaseModel):
+    localizacion_resuelta: LocalizacionPanel | None = None
+    ubicacion_reportada: Ubicacion | None = None
     registrado: RegistradoPanel
     interpretado: InterpretadoPanel | None
     seguimiento: SeguimientoPanel | None
@@ -113,6 +122,7 @@ class ReservaAclaracion(Peticion):
 class AclaracionPorEnviar(BaseModel):
     aclaracion_id: UUID
     pregunta: str
+    campos_solicitados: list[str] = Field(default_factory=list)
     chat_id: int
     # Mensaje del reporte original, para enviar la pregunta como reply. None si no se puede leer.
     mensaje_original_id: int | None
@@ -268,6 +278,8 @@ class ParadaPanel(BaseModel):
 
 
 class RutaPanel(BaseModel):
+    navegacion_url: str | None = None
+    tramos_navegacion: list[str] = Field(default_factory=list)
     ruta_id: UUID
     vehiculo_id: UUID
     salida_estimada: AwareDatetime
@@ -437,3 +449,43 @@ class PoliticaActiva(BaseModel):
     tope_horas: float
     tope_personas: int
     origen: Literal["real", "estimado", "sintetico"]
+
+
+class PeticionRutaLocalizada(Peticion):
+    deposito_id: UUID
+    reportes_ids: list[UUID] = Field(min_length=1, max_length=6)
+
+    @field_validator('reportes_ids')
+    @classmethod
+    def sin_duplicados(cls, ids):
+        if len(set(ids)) != len(ids):
+            raise ValueError('No repetir reportes en el recorrido')
+        return ids
+
+
+class DestinoLocalizado(BaseModel):
+    reporte_id: UUID
+    nombre: str
+    ubicacion: Ubicacion
+
+
+class DepositoRuta(BaseModel):
+    deposito_id: UUID
+    nombre: str
+    ubicacion: Ubicacion
+
+
+class OpcionesRutaLocalizada(BaseModel):
+    destinos: list[DestinoLocalizado]
+    depositos: list[DepositoRuta]
+
+
+class VistaRutaLocalizada(BaseModel):
+    deposito: DepositoRuta
+    paradas: list[DestinoLocalizado]
+    duracion_minutos: int
+    distancia_metros: int
+    consultado_en: AwareDatetime
+    proveedor: Literal['Google Maps']
+    navegacion_url: str
+    tramos_navegacion: list[str]
