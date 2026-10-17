@@ -1,0 +1,35 @@
+{
+  "fecha": "2026-10-16T23:02:41-05:00",
+  "supabase_real": {
+    "conexion": "ok",
+    "columnas_0006_reportes": "ok",
+    "columnas_0006_aclaraciones": "ok",
+    "columnas_0007_incidentes": "ok",
+    "catalogo": {
+      "puntos_esperados_presentes": 6,
+      "puntos_activos": 6
+    },
+    "firmas_rpc": {
+      "ra_reservar_aclaracion": "22023 ante trabajador vacío, antes de mantenimiento/reserva",
+      "ra_registrar_envio_aclaracion": "55000 ante aclaración inexistente",
+      "ra_aceptar_respuesta_aclaracion": "no_encontrada para chat sintético sin coincidencia"
+    },
+    "modificaciones": false
+  },
+  "gemini_real": {
+    "estado": "ok",
+    "modelo": "gemini-3.8-flash",
+    "horas_extraidas": 48,
+    "personas_extraidas": 120,
+    "evidencias": 2,
+    "siguiente_etapa": "territorial",
+    "entrada": "Reporte y respuesta sintéticos de Escuela El Coco; sin datos ciudadanos reales",
+    "persistencia": false
+  },
+  "limites": [
+    "No se reservó trabajo ni se guardaron filas",
+    "Sin envío Telegram",
+    "Firmas/validaciones RPC comprobadas; no ciclo positivo de envío/respuesta en Supabase",
+    "Prueba integral real con bot/API/trabajador todavía pendiente"
+  ]
+}

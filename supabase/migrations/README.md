@@ -19,3 +19,7 @@ Requiere 0001; no sustituye 0002/0003 de Noel. El cierre guarda interpretación,
 evidencias, traza y transición atómicamente y comprueba reserva/snapshot.
 Probar con `../tests/0005_ingesta_smoke.sql`. Probada en PostgreSQL temporal;
 no aplicada a Supabase real por Codex. Ver `../../agentes/INGESTA_V1.md`.
+
+## V2 de Emilia
+
+Aplicar una vez 0006_aclaraciones_v2.sql y después 0007_territorial_orquestador_v2.sql; requieren 0001/0004/0005. Ejecutar sus smoke completos. No habilitar destino_origen_id en la API hasta aplicar 0006. [Guía](../../docs/V2_EMILIA.md).

@@ -461,8 +461,17 @@ class SolicitudAclaracion(Contexto):
 class RespuestaAclaracion(Contexto):
     aclaracion_id: UUID
     reporte_id: UUID
-    texto: Texto
+    texto: Texto | None = None
     ubicacion_compartida: Ubicacion | None = None
+
+    @model_validator(mode="after")
+    def contenido_respuesta(self):
+        if (self.texto is None) == (self.ubicacion_compartida is None):
+            raise ValueError("Responder con texto o ubicación, exactamente uno")
+        if self.ubicacion_compartida and (self.ubicacion_compartida.fuente != "compartida"
+                or self.ubicacion_compartida.representa_punto_atencion is not None):
+            raise ValueError("Ubicación de respuesta compartida, sin validación de punto")
+        return self
 
 
 class EventoTraza(Contexto):
