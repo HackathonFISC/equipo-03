@@ -1,0 +1,39 @@
+{
+  "esquema_version": "1.0",
+  "consultado_en": "2026-10-16T18:05:00-05:00",
+  "origen": "sintetico",
+  "sector": {
+    "sector_id": "973bc96c-73f6-578e-9873-be50e57cb2eb",
+    "nombre": "Sector sintético de consulta V4",
+    "distrito": "Arraiján",
+    "corregimiento": null,
+    "origen": "sintetico",
+    "estado_informacion": "necesidad_conocida"
+  },
+  "estado": "sin_plan_vigente",
+  "plan_vigente": null,
+  "puntos": [
+    {
+      "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+      "sector_id": "973bc96c-73f6-578e-9873-be50e57cb2eb",
+      "nombre": "P1 SINTÉTICO no validado como lugar real",
+      "origen": "sintetico",
+      "estado": "sin_asignacion",
+      "parada_id": null,
+      "litros_asignados": null,
+      "ventana_estimada": null,
+      "motivo_sin_asignacion": "Sin plan aprobado y válido para comunicar."
+    },
+    {
+      "punto_atencion_id": "a2b617a0-3651-52f0-a313-9f27c552a32e",
+      "sector_id": "973bc96c-73f6-578e-9873-be50e57cb2eb",
+      "nombre": "Punto sintético adicional sin asignación",
+      "origen": "sintetico",
+      "estado": "sin_asignacion",
+      "parada_id": null,
+      "litros_asignados": null,
+      "ventana_estimada": null,
+      "motivo_sin_asignacion": "Sin plan aprobado y válido para comunicar."
+    }
+  ]
+}
