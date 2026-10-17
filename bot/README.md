@@ -68,7 +68,7 @@ El menú "/" de Telegram muestra `/ayuda`; se publica al arrancar.
 El acuse es neutral ("mensaje", no "reporte"): si un texto es un reporte de agua lo decide
 el agente de Ingesta, no el bot.
 
-## Circuito de aclaración (V2, decisión D005)
+## Circuito de aclaración (V2, decisiones D006 y D008)
 
 `adaptador.py`, si `ACLARACIONES_ACTIVAS` es `True`:
 

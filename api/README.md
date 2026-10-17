@@ -75,7 +75,7 @@ del mismo mensaje repara lo que falte sin duplicar):
 2. **Destino (chat de origen):** busca o crea `destinos` por ID del chat. En un chat
    privado (ID del chat = ID del usuario) se asocia al remitente; en un grupo queda sin
    remitente. Nunca modifica un destino existente. Queda sin autorizar: la autorización
-   es para los avisos de V4, no para las aclaraciones (D005).
+   es para los avisos de V4, no para las aclaraciones (D006 y D008).
 3. **Reporte:** `mensaje_externo_id = "<chat_id>:<message_id>"`
    (`supabase/IDENTIDAD_REPORTES.md`), `modalidad = "texto"`, `origen = "sintetico"` (D003)
    y, si está activo, `destino_origen_id`. Si el mismo mensaje ya existe con otro
@@ -102,7 +102,7 @@ Estado, etapa, intentos, código del último error (solo el código, nunca el me
 y eventos de traza: agente, decisión, herramienta, resultado, duración y siguiente estado.
 No expone `detalles`, `entrada_ids` ni `salida_ids`.
 
-### Aclaraciones (V2, decisión D005)
+### Aclaraciones (V2, decisiones D006 y D008)
 
 Las tres rutas llaman a las RPC de la migración `0006_aclaraciones_v2.sql` con
 `service_role`. La API no cambia estados de ejecución: lo hacen las RPC en una transacción.
