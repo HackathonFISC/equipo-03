@@ -4,6 +4,7 @@ import { iniciarSondeo } from '../api/sondeo.js'
 import { limpiarSesion, obtenerSesion } from '../api/sesion.js'
 import ComunicacionSector from './ComunicacionSector.jsx'
 import './Aprobacion.css'
+import { useBorrador } from '../useBorrador.js'
 
 const ESTADOS = {
   calculando: 'Calculando',
@@ -54,8 +55,9 @@ function Rutas({ rutas }) {
 }
 
 function Decision({ plan, alDecidir }) {
-  const [reconocidos, setReconocidos] = useState([])
-  const [motivo, setMotivo] = useState('')
+  const borrador = `aprobacion.${plan.plan_id}:${plan.version}`
+  const [reconocidos, setReconocidos] = useBorrador(`${borrador}.reconocidos`, [])
+  const [motivo, setMotivo] = useBorrador(`${borrador}.motivo`, '')
   const [confirmando, setConfirmando] = useState(false)
   const [trabajando, setTrabajando] = useState(false)
   const [error, setError] = useState(null)
@@ -74,6 +76,8 @@ function Decision({ plan, alDecidir }) {
     setError(null)
     try {
       await accion()
+      setMotivo('')
+      setReconocidos([])
       alDecidir()
     } catch (e) {
       setError(e.message)

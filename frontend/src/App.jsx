@@ -4,6 +4,7 @@ import Cuenta from './paginas/Cuenta.jsx'
 import Icono from './Iconos.jsx'
 import MenuCuenta from './MenuCuenta.jsx'
 import { cerrarSesion, obtenerSesion, obtenerToken } from './api/sesion.js'
+import { descartarBorradores } from './borradores.js'
 import { datosDelToken, perfilDe } from './perfil.js'
 import Aprobacion from './paginas/Aprobacion.jsx'
 import Eventos from './paginas/Eventos.jsx'
@@ -45,6 +46,7 @@ function App() {
   }, [])
   async function salir() {
     await cerrarSesion()
+    descartarBorradores()
     setAviso(null)
     setSesion(null)
     setConSesion(false)

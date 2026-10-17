@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { obtenerEjecucion, obtenerReportes, USAR_EJEMPLOS } from '../api/reportes.js'
 import { iniciarSondeo } from '../api/sondeo.js'
 import './Reportes.css'
+import { useBorrador } from '../useBorrador.js'
 
 // Estado que ve la persona operadora. Se deriva de la interpretación;
 // el contrato no guarda un campo "estado" para los reportes.
@@ -256,12 +257,12 @@ export default function Reportes() {
   const [reportes, setReportes] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
-  const [filtro, setFiltro] = useState('todos')
+  const [filtro, setFiltro] = useBorrador('reportes.filtro', 'todos')
   const [intento, setIntento] = useState(0)
-  const [rango, setRango] = useState('todo')
-  const [desde, setDesde] = useState('')
-  const [hasta, setHasta] = useState('')
-  const [orden, setOrden] = useState('recientes')
+  const [rango, setRango] = useBorrador('reportes.rango', 'todo')
+  const [desde, setDesde] = useBorrador('reportes.desde', '')
+  const [hasta, setHasta] = useBorrador('reportes.hasta', '')
+  const [orden, setOrden] = useBorrador('reportes.orden', 'recientes')
   // "Ahora" se refresca con cada consulta, para que "Últimos 15 min" se mueva solo.
   const [ahora, setAhora] = useState(() => Date.now())
 
