@@ -1,0 +1,11 @@
+ENSAYO SINTETICO V1 - no representa reparto real ni autorizacion
+Estado: factible; rutas: 2; pendientes: 0
+Cisterna 1 (6d9980c2-e440-52e4-bec4-e042ed5a4f8b): 10000 L; 08:00 a 09:10 (UTC-05:00 en el fixture)
+  P2: 3000 L; descarga 08:10-08:20
+  P6: 3500 L; descarga 08:30-08:40
+  P3: 3500 L; descarga 08:50-09:00
+Cisterna 2 (a014bc90-b2af-5e84-96da-7e18802c8af8): 8000 L; 08:00 a 09:10 (UTC-05:00 en el fixture)
+  P5: 3000 L; descarga 08:10-08:20
+  P1: 2500 L; descarga 08:30-08:40
+  P4: 2500 L; descarga 08:50-09:00
+Publicación bloqueada. Verificador independiente y selección parcial se implementan en V3.

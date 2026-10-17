@@ -1,0 +1,9 @@
+pydantic: 2.14.1
+ortools: 9.15.6755
+pytest: 9.1.1
+fastapi: 0.143.3
+uvicorn: 0.54.0
+supabase: 2.33.0
+python-telegram-bot: 22.8
+OK: motor nativo, escenario V0 e importaciones de API y bot compatibles. Sin uso de credenciales ni red.
+Politica: propuesta_demo; la validacion de formato no activa ni autoriza operaciones.

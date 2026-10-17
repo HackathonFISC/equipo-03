@@ -1,0 +1,19 @@
+ENSAYO SINTETICO V5: prioridad frente a orden de llegada; sin aprobacion ni envio
+completo
+  prioridad: 6/6 puntos; criticos 2/2; 15000 L; deficit conocido 0 L; demanda desconocida en 0 puntos; verificacion True
+  orden_llegada: 6/6 puntos; criticos 2/2; 15000 L; deficit conocido 0 L; demanda desconocida en 0 puntos; verificacion True
+retiro_cisterna
+  prioridad: 4/6 puntos; criticos 2/2; 9000 L; deficit conocido 6000 L; demanda desconocida en 0 puntos; verificacion True
+  orden_llegada: 4/6 puntos; criticos 0/2; 10000 L; deficit conocido 5000 L; demanda desconocida en 0 puntos; verificacion False
+critico_excesivo
+  prioridad: 5/6 puntos; criticos 1/2; 12000 L; deficit conocido 12000 L; demanda desconocida en 0 puntos; verificacion False
+  orden_llegada: 5/6 puntos; criticos 1/2; 12000 L; deficit conocido 12000 L; demanda desconocida en 0 puntos; verificacion False
+datos_insuficientes
+  prioridad: 5/6 puntos; criticos 1/2; 12000 L; deficit conocido 0 L; demanda desconocida en 1 puntos; verificacion False
+    Deficit TOTAL desconocido: el deficit conocido no representa la necesidad completa.
+  orden_llegada: 5/6 puntos; criticos 1/2; 12000 L; deficit conocido 0 L; demanda desconocida en 1 puntos; verificacion False
+    Deficit TOTAL desconocido: el deficit conocido no representa la necesidad completa.
+sin_flota
+  prioridad: 0/6 puntos; criticos 0/2; 0 L; deficit conocido 15000 L; demanda desconocida en 0 puntos; verificacion False
+  orden_llegada: 0/6 puntos; criticos 0/2; 0 L; deficit conocido 15000 L; demanda desconocida en 0 puntos; verificacion False
+V4 y V5 integradas siguen pendientes; resultados limitados a estos fixtures.

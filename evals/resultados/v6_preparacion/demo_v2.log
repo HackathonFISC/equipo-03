@@ -1,0 +1,13 @@
+ENSAYO SINTETICO V2 - las confirmaciones del fixture no son permisos reales
+directa: validada; demanda 2500 L
+formula: validada; demanda 1500 L
+formula: pendiente; demanda desconocida
+Ranking calculado con politica activa SOLO en el fixture sintetico:
+  1. P1: critico, 2500 L, puntaje 56.63
+  2. P2: general, 3000 L, puntaje 40.24
+  3. P3: general, 3500 L, puntaje 38.86
+  4. P4: general, 2500 L, puntaje 37.47
+  5. P5: general, 3000 L, puntaje 36.09
+  6. P6: general, 3500 L, puntaje 34.70
+Escenario V0 original: 6 necesidades pendientes, sin inventar confirmaciones.
+Sin planes, aprobaciones, mensajes ni cambios en politica_v1.json.
