@@ -1,0 +1,43 @@
+{
+  "estado": "ok",
+  "fecha": "2026-10-16T21:30:18.224589-05:00",
+  "servicios_reales": [
+    "Supabase",
+    "Gemini"
+  ],
+  "casos": [
+    {
+      "ejecucion_id": "9b8b1aa0-bdb8-4e63-b4f1-0c0c1f1be2b8",
+      "reporte_id": "2be33e79-1dc1-4a61-8e01-98387f19cef6",
+      "estado": "completada",
+      "etapa": "terminada",
+      "interpretacion_valida": true,
+      "evidencias_validas": 1,
+      "trazas_ingesta": 1,
+      "reserva_liberada": true,
+      "sin_error": true,
+      "origen": "sintetico",
+      "datos_desconocidos_sin_imputar": true
+    },
+    {
+      "ejecucion_id": "01a451ad-b6c4-4f07-a07e-d1e0213ed785",
+      "reporte_id": "7d592571-5633-4dfd-bc7d-20a795d8b294",
+      "estado": "pendiente",
+      "etapa": "territorial",
+      "interpretacion_valida": true,
+      "evidencias_validas": 1,
+      "trazas_ingesta": 1,
+      "reserva_liberada": true,
+      "sin_error": true,
+      "origen": "sintetico",
+      "datos_desconocidos_sin_imputar": true
+    }
+  ],
+  "reintento_fuera_alcance": {
+    "estado": "no_tomada",
+    "trazas_despues": 1,
+    "llamada_gemini": false
+  },
+  "api_post_get": "pendiente: localhost:8000 rechazó la conexión",
+  "alcance": "Prueba de Ingesta sobre filas sintéticas existentes. No acredita POST/GET ni panel de Noel."
+}
