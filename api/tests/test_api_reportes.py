@@ -448,13 +448,13 @@ def test_carrera_al_crear_el_destino_reutiliza_el_existente(cliente, db):
     assert [d["destino_id"] for d in db.tablas["destinos"]] == [existente["destino_id"]]
 
 
-def test_destino_origen_no_se_guarda_sin_la_migracion(cliente, db):
+def test_destino_origen_no_se_guarda_con_el_interruptor_apagado(cliente, db, monkeypatch):
+    monkeypatch.setattr(servicio_reportes, "GUARDAR_DESTINO_ORIGEN", False)
     cliente.post("/reportes", json=CUERPO, headers=CABECERA)
     assert "destino_origen_id" not in db.tablas["reportes"][0]
 
 
-def test_destino_origen_se_guarda_con_la_migracion(cliente, db, monkeypatch):
-    monkeypatch.setattr(servicio_reportes, "GUARDAR_DESTINO_ORIGEN", True)
+def test_destino_origen_se_guarda_por_defecto(cliente, db):
     cliente.post("/reportes", json=CUERPO, headers=CABECERA)
     assert db.tablas["reportes"][0]["destino_origen_id"] == db.tablas["destinos"][0]["destino_id"]
 

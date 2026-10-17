@@ -1,9 +1,9 @@
 // Necesidades de ejemplo para desarrollar la página sin la API.
 // Sintéticas: el primer par sale de contratos/ejemplos; las otras dos se derivaron de él
 // y se validaron con IncidenteConsolidado y EvaluacionNecesidades antes de copiarlas aquí.
-// 'punto.nombre' no está en los contratos: es una propuesta para que la API lo una desde puntos_atencion.
+// Al final se convierten a la forma de GET /incidentes (IncidentePanel en api/esquemas.py).
 
-export const necesidadesEjemplo = [
+const paresEjemplo = [
   {
     "punto": {
       "nombre": "Punto de demo P1"
@@ -270,4 +270,68 @@ export const necesidadesEjemplo = [
       "requiere_revision_urgente": true
     }
   }
+]
+
+
+// Misma forma que GET /incidentes. Los conteos de vínculos salen de reportes_ids.
+function aIncidentePanel({ punto, incidente, evaluacion }) {
+  return {
+    incidente_id: incidente.incidente_id,
+    ejecucion_id: incidente.ejecucion_id,
+    version: incidente.version,
+    origen: incidente.origen,
+    sector_id: incidente.sector_id,
+    punto_atencion_id: incidente.punto_atencion_id,
+    punto: punto && {
+      punto_atencion_id: incidente.punto_atencion_id,
+      nombre: punto.nombre,
+      distrito: null,
+      corregimiento: null,
+    },
+    estado_validacion: incidente.estado_validacion,
+    tipo_problema: 'sin_suministro',
+    episodio_establecido: true,
+    periodo_inicio: incidente.periodo_incidente.inicio,
+    periodo_fin: incidente.periodo_incidente.fin,
+    primera_deteccion_en: incidente.primera_deteccion_en,
+    confianza: incidente.confianza,
+    conflictos: incidente.conflictos,
+    faltantes: incidente.faltantes,
+    requiere_revision_urgente: incidente.requiere_revision_urgente,
+    reportes_vinculados: incidente.reportes_ids.length,
+    reportes_independientes: incidente.reportes_independientes,
+    evaluacion_necesidad: evaluacion,
+    pendientes_calculo: evaluacion.pendientes,
+  }
+}
+
+const base = aIncidentePanel(paresEjemplo[0])
+
+export const necesidadesEjemplo = [
+  ...paresEjemplo.map(aIncidentePanel),
+  // Sin lote de cálculo: así queda un incidente recién consolidado por el trabajador.
+  {
+    ...base,
+    incidente_id: '00000000-0000-4000-8000-00000000e004',
+    punto: null,
+    punto_atencion_id: null,
+    sector_id: null,
+    estado_validacion: 'pendiente',
+    confianza: null,
+    faltantes: ['ubicacion_declarada'],
+    reportes_vinculados: 1,
+    reportes_independientes: 1,
+    evaluacion_necesidad: null,
+    pendientes_calculo: ['Sin evaluación de necesidad'],
+  },
+  // Después de separar un reporte: la RPC de Emilia invalida las evaluaciones.
+  {
+    ...base,
+    incidente_id: '00000000-0000-4000-8000-00000000e005',
+    punto: { ...base.punto, nombre: 'Punto de demo P4' },
+    reportes_vinculados: 2,
+    reportes_independientes: 2,
+    evaluacion_necesidad: null,
+    pendientes_calculo: ['Asociación corregida; revisar lote y recalcular'],
+  },
 ]

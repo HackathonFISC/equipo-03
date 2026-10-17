@@ -5,7 +5,7 @@ from uuid import UUID
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from contratos.estados import Agente, EstadoEjecucion
-from contratos.modelos import ExtraccionReporteLLM
+from contratos.modelos import EvaluacionNecesidades, ExtraccionReporteLLM
 
 IdPositivo = Annotated[int, Field(strict=True, gt=0)]
 
@@ -158,3 +158,42 @@ ResultadoAclaracion = Literal[
 class ResultadoRespuesta(BaseModel):
     resultado: ResultadoAclaracion
     ejecucion_id: UUID | None = None
+
+
+# --- Incidentes para la página Necesidades (V2) ---
+
+
+class PuntoPanel(BaseModel):
+    """Nombre del punto según el catálogo activo (ra_catalogo_v2)."""
+
+    punto_atencion_id: UUID
+    nombre: str
+    distrito: str | None = None
+    corregimiento: str | None = None
+
+
+class IncidentePanel(BaseModel):
+    """Un incidente con vínculos activos. Sin remitentes, chats ni textos de reportes."""
+
+    incidente_id: UUID
+    ejecucion_id: UUID
+    version: int
+    origen: Literal["real", "estimado", "sintetico"]
+    sector_id: UUID | None
+    punto_atencion_id: UUID | None
+    punto: PuntoPanel | None
+    estado_validacion: Literal["pendiente", "validada", "rechazada"]
+    tipo_problema: str
+    episodio_establecido: bool
+    periodo_inicio: AwareDatetime
+    periodo_fin: AwareDatetime
+    primera_deteccion_en: AwareDatetime
+    confianza: float | None
+    conflictos: list[str]
+    faltantes: list[str]
+    requiere_revision_urgente: bool
+    # Reportes con vínculo activo; reportes_independientes cuenta remitentes distintos.
+    reportes_vinculados: int
+    reportes_independientes: int
+    evaluacion_necesidad: EvaluacionNecesidades | None
+    pendientes_calculo: list[str]

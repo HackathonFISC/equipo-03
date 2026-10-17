@@ -84,9 +84,9 @@ El plazo de 30 minutos y el cambio a `espera_revision` los controla la RPC de Em
 
 ## Interruptor
 
-`ACLARACIONES_ACTIVAS` en `adaptador.py`. Con `False` no se consultan preguntas, un reply al
-bot se trata como reporte nuevo y una ubicación pide texto. Requiere la migración `0006`
-aplicada y `GUARDAR_DESTINO_ORIGEN = True` en la API. Al arrancar, el bot indica si está apagado.
+`ACLARACIONES_ACTIVAS` en `adaptador.py`, en `True`: la migración `0006` está aplicada y la API
+tiene `GUARDAR_DESTINO_ORIGEN = True`. Con `False` no se consultan preguntas, un reply al bot se
+trata como reporte nuevo y una ubicación pide texto. Al arrancar, el bot indica si está apagado.
 
 ## Privacidad y seguridad
 
