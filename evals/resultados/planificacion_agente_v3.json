@@ -1,0 +1,193 @@
+{
+  "registrado_en": "2026-10-17T06:39:20.985027+00:00",
+  "origen": "sintetico",
+  "alcance": "15 evals locales V3: herramientas reales salvo fallos inyectados e identificados; no prueba LLM real ni concurrencia de servidores.",
+  "metricas": {
+    "casos": 15,
+    "aprobados": 15,
+    "tasa_exito": 1.0,
+    "aprobaciones_indebidas": 0
+  },
+  "casos": [
+    {
+      "caso": "completo",
+      "esperado": "espera_validacion",
+      "obtenido": "espera_validacion",
+      "atendidos_esperados": 6,
+      "atendidos_obtenidos": 6,
+      "verificacion_valida": true,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 345.568
+    },
+    {
+      "caso": "una_cisterna",
+      "esperado": "espera_validacion",
+      "obtenido": "espera_validacion",
+      "atendidos_esperados": 4,
+      "atendidos_obtenidos": 4,
+      "verificacion_valida": true,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 19.785
+    },
+    {
+      "caso": "sin_flota",
+      "esperado": "espera_revision",
+      "obtenido": "espera_revision",
+      "atendidos_esperados": 0,
+      "atendidos_obtenidos": 0,
+      "verificacion_valida": false,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 2.313
+    },
+    {
+      "caso": "critico_excede_capacidad",
+      "esperado": "espera_revision",
+      "obtenido": "espera_revision",
+      "atendidos_esperados": 5,
+      "atendidos_obtenidos": 5,
+      "verificacion_valida": false,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 16.058
+    },
+    {
+      "caso": "general_excede_capacidad",
+      "esperado": "espera_validacion",
+      "obtenido": "espera_validacion",
+      "atendidos_esperados": 5,
+      "atendidos_obtenidos": 5,
+      "verificacion_valida": true,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 14.726
+    },
+    {
+      "caso": "general_sin_acceso",
+      "esperado": "espera_validacion",
+      "obtenido": "espera_validacion",
+      "atendidos_esperados": 5,
+      "atendidos_obtenidos": 5,
+      "verificacion_valida": true,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 25.375
+    },
+    {
+      "caso": "critico_ventana_insuficiente",
+      "esperado": "espera_revision",
+      "obtenido": "espera_revision",
+      "atendidos_esperados": 5,
+      "atendidos_obtenidos": 5,
+      "verificacion_valida": false,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 55.521
+    },
+    {
+      "caso": "general_cero_validado",
+      "esperado": "espera_validacion",
+      "obtenido": "espera_validacion",
+      "atendidos_esperados": 5,
+      "atendidos_obtenidos": 5,
+      "verificacion_valida": true,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 14.407
+    },
+    {
+      "caso": "cantidad_negativa",
+      "esperado": "contrato_rechazado",
+      "obtenido": "contrato_rechazado",
+      "atendidos_esperados": null,
+      "atendidos_obtenidos": null,
+      "verificacion_valida": false,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 0.107
+    },
+    {
+      "caso": "punto_duplicado",
+      "esperado": "contrato_rechazado",
+      "obtenido": "contrato_rechazado",
+      "atendidos_esperados": null,
+      "atendidos_obtenidos": null,
+      "verificacion_valida": false,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 0.095
+    },
+    {
+      "caso": "matriz_incompleta",
+      "esperado": "contrato_rechazado",
+      "obtenido": "contrato_rechazado",
+      "atendidos_esperados": null,
+      "atendidos_obtenidos": null,
+      "verificacion_valida": false,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 0.097
+    },
+    {
+      "caso": "llm_intenta_aprobar",
+      "esperado": "espera_revision",
+      "obtenido": "espera_revision",
+      "atendidos_esperados": null,
+      "atendidos_obtenidos": null,
+      "verificacion_valida": false,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "simulado_eval",
+      "duracion_ms": 0.196
+    },
+    {
+      "caso": "proveedor_no_disponible",
+      "esperado": "espera_revision",
+      "obtenido": "espera_revision",
+      "atendidos_esperados": null,
+      "atendidos_obtenidos": null,
+      "verificacion_valida": false,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "simulado_eval",
+      "duracion_ms": 0.179
+    },
+    {
+      "caso": "informe_otra_version",
+      "esperado": "espera_revision",
+      "obtenido": "espera_revision",
+      "atendidos_esperados": null,
+      "atendidos_obtenidos": null,
+      "verificacion_valida": false,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 36.325
+    },
+    {
+      "caso": "solver_muta_entrada",
+      "esperado": "espera_revision",
+      "obtenido": "espera_revision",
+      "atendidos_esperados": null,
+      "atendidos_obtenidos": null,
+      "verificacion_valida": false,
+      "sin_aprobacion_automatica": true,
+      "coincide": true,
+      "decisor": "reglas",
+      "duracion_ms": 35.016
+    }
+  ]
+}
