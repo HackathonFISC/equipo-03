@@ -1,4 +1,4 @@
-"""Bandeja de salida de avisos (V4): llamadas a las RPC de la migración 0009.
+"""Bandeja de salida de avisos (V4): llamadas a las RPC de la migración 0010.
 
 La API no crea avisos (los crea Comunicación) ni cambia su estado por su cuenta: las RPC reservan el
 siguiente aviso vigente y registran el resultado en una sola transacción. Un aviso que dejó de ser

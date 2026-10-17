@@ -53,7 +53,7 @@ CORS admite solo `http://localhost:5173` (servidor de desarrollo del panel).
 | `POST /aclaraciones/{aclaracion_id}/envio` | Bot | Sí | Registra `enviado`, `fallido` o `incierto`. 204. |
 | `POST /aclaraciones/respuestas` | Bot | Sí | Entrega un reply a una pregunta. Siempre 200 con un resultado. |
 | `GET /incidentes` | Panel | No (V2) | Incidentes con vínculos activos, su necesidad calculada o sus pendientes. |
-| `POST /avisos/reservar` | Bot | Sí | Reserva el siguiente aviso vigente. 204 si no hay. Requiere la migración 0009. |
+| `POST /avisos/reservar` | Bot | Sí | Reserva el siguiente aviso vigente. 204 si no hay. Requiere la migración 0010. |
 | `POST /avisos/{aviso_id}/envio` | Bot | Sí | Registra `enviado`, `fallido` o `incierto`. 204. |
 
 Las rutas de lectura del panel no tienen autenticación por decisión del equipo. Separar un
@@ -119,7 +119,7 @@ no existe, devuelve `autor_distinto` sin llamar a la RPC. Una ubicación se env�
 contrato `Ubicacion` con `fuente = "compartida"` y `representa_punto_atencion = null`.
 Los nombres de las RPC están solo en `servicios/aclaraciones.py`.
 
-### Bandeja de salida de avisos (V4, migración 0009)
+### Bandeja de salida de avisos (V4, migración 0010)
 
 Las dos rutas llaman a `ra_reservar_aviso` y `ra_registrar_envio_aviso` con `service_role`. La API no
 crea avisos (los crea Comunicación) ni los aprueba: solo entrega al bot uno a la vez.
@@ -209,4 +209,4 @@ Usan una base de datos y RPC simuladas: no necesitan red, claves ni Supabase.
 - V2: separar un reporte de un incidente (`ra_separar_reporte`), con la sesión mínima del
   coordinador acordada con Emilia.
 - V4: `auth.py` (rol de coordinador), `servicios/aprobacion.py` y migraciones `0002`/`0003`.
-  La bandeja de salida ya está (migración `0009`, sin aplicar todavía).
+  La bandeja de salida ya está (migración `0010`, sin aplicar todavía).
