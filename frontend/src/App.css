@@ -1,42 +1,47 @@
-.barra {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 1.5rem;
-  padding: 0.9rem 1rem;
-  background: var(--agua);
-  color: #fff;
+.app-shell { min-height: 100vh; }
+.sidebar { position: fixed; inset: 0 auto 0 0; width: 232px; padding: 32px 16px 20px; background: var(--agua-profunda); color: white; display: flex; flex-direction: column; z-index: 20; overflow-y: auto; }
+.marca { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; font-size: 18px; letter-spacing: -.5px; }
+.marca strong { font-weight: 400; color: #b7d8e8; }
+.marca small { display: block; color: #b7c9d8; font-size: 10px; letter-spacing: .2px; margin-top: 4px; }
+.marca-simbolo { display: grid; place-items: center; flex-shrink: 0; width: 38px; height: 44px; background: #20445f; border: 1px solid #45677d; border-radius: 12px; color: #bdeaf7; }
+.navegacion { display: flex; flex-direction: column; flex: 1; gap: 8px; margin-top: 44px; }
+.nav-etiqueta { margin: 0 10px 10px; font-size: 10px; font-weight: 600; letter-spacing: 1.4px; color: #a8c1d4; }
+.nav-enlace { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid transparent; border-radius: 8px; color: #d9e5ef; text-decoration: none; font-size: 14px; font-weight: 600; }
+.nav-numero { font-size: 11px; color: #b6c9d8; }
+.nav-enlace small { display: block; font-weight: 400; font-size: 11px; color: #b6c9d8; margin-top: 3px; }
+.nav-enlace:hover { background: #1b3b56; }
+.nav-enlace[aria-current='page'] { background: #234e6d; border-color: #47718d; color: white; }
+.nav-enlace[aria-current='page'] small { color: #d9e9f2; }
+.sidebar :focus-visible { outline-color: #bdeaf7; }
+.sidebar-nota { margin-top: auto; padding: 40px 12px 0; color: #c3d9e8; }
+.sidebar-nota p { font-size: 13px; margin-bottom: 0; }
+.sidebar-nota small { display: block; font-size: 11px; color: #a8c1d4; margin-top: 6px; }
+.app-workspace { margin-left: 232px; min-height: 100vh; display: flex; flex-direction: column; }
+.workspace-header { min-height: 72px; padding: 16px 32px; background: var(--papel); border-bottom: 1px solid var(--borde); display: flex; align-items: center; justify-content: space-between; gap: 16px; color: var(--tinta-suave); font-size: 13px; }
+.workspace-header strong { color: var(--tinta); font-weight: 500; }
+.workspace-header span[aria-hidden] { margin: 0 12px; color: #8293a5; }
+.contexto-region { border-left: 1px solid var(--borde); padding-left: 20px; white-space: nowrap; }
+.app-main { flex: 1; min-width: 0; width: 100%; }
+.app-main:focus { outline: none; }
+.workspace-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 0 32px; padding: 20px 0; border-top: 1px solid var(--borde); font-size: 12px; color: var(--tinta-suave); }
+.menu-boton { display: none; }
+.saltar-contenido { position: fixed; top: -100px; left: 16px; z-index: 100; background: white; padding: 12px 20px; color: var(--agua); border-radius: 8px; }
+.saltar-contenido:focus { top: 12px; }
+@media (max-width: 900px) {
+  .sidebar { position: static; width: 100%; padding: 16px 20px; display: grid; grid-template-columns: 1fr auto; overflow: visible; }
+  .menu-boton { display: flex; align-items: center; gap: 12px; padding: 8px 12px; color: white; border: 1px solid #648096; background: transparent; border-radius: 8px; }
+  .navegacion { display: none; grid-column: 1 / -1; margin-top: 24px; }
+  .navegacion-abierta { display: flex; }
+  .sidebar-nota { display: none; }
+  .app-workspace { margin-left: 0; }
+  .workspace-header { min-height: 56px; padding: 12px 20px; }
+  .workspace-footer { margin: 0 20px; }
 }
-
-.barra strong {
-  font-size: 1.1rem;
-  letter-spacing: -0.01em;
-}
-
-.barra nav {
-  display: flex;
-  gap: 1rem;
-}
-
-.barra-enlace {
-  padding-bottom: 0.15rem;
-  border-bottom: 2px solid transparent;
-  color: #fff;
-  text-decoration: none;
-  opacity: 0.8;
-}
-
-.barra-enlace:hover {
-  opacity: 1;
-}
-
-.barra-enlace[aria-current='page'] {
-  border-bottom-color: #fff;
-  font-weight: 600;
-  opacity: 1;
-}
-
-.barra-enlace:focus-visible {
-  outline: 3px solid #fff;
-  outline-offset: 3px;
+@media (max-width: 480px) {
+  .sidebar { padding: 12px 16px; }
+  .marca { font-size: 16px; }
+  .marca-simbolo { width: 32px; height: 38px; }
+  .menu-boton { font-size: 13px; gap: 8px; padding: 8px; }
+  .contexto-region { display: none; }
+  .workspace-header { padding-inline: 16px; }
 }
