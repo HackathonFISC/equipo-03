@@ -38,7 +38,7 @@ Límites: aceptar el contrato no activa la política `demo-1.0`, no confirma los
 ## D003 Acuerdo de integración comunicado por Noel
 
 - Fecha: 16 de octubre de 2026, 20:23 (UTC−05:00).
-- Estado: aceptación de los tres integrantes comunicada por Noel; falta que Emilia y José la confirmen por escrito.
+- Estado: aceptación de los tres integrantes comunicada por Noel, con la aprobación de José (indicada por Noel) a las 20:33 (UTC−05:00). La confirmación escrita de Emilia no consta en este registro.
 - Aceptado sin cambios: contrato `estado_sector` (`ESTADO_SECTOR.md`); clave de idempotencia de avisos con `punto_atencion_id`; identidad de remitentes con `mensaje_externo_id = "<chat_id>:<message_id>"` (`supabase/IDENTIDAD_REPORTES.md`).
 - Aceptado como propuesta de Noel: todos los reportes de V1 se guardan con origen `"sintetico"`; errores de dominio a HTTP: 422 (`contrato_invalido`, `datos_insuficientes`, `ubicacion_ambigua`, `fuera_de_area`), 403 (`sin_permiso`), 409 (`politica_no_activa`, `version_obsoleta`, `plan_no_verificado`, `cobertura_critica_pendiente`), 503 (`proveedor_no_disponible`), 502 (`envio_incierto`), con el `ErrorDominio` completo como cuerpo.
 - Python: sin impedimento declarado; no se fija una versión obligatoria.
