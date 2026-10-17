@@ -26,11 +26,11 @@ const VALIDACION = {
   rechazada: 'Rechazado',
 }
 
-// Máximo de cada aporte según la política demo-1.0 (pesos 50/30/20).
+// Aportes ya calculados por la política de cada evaluación, sobre 100 puntos totales.
 const APORTES = [
-  { clave: 'aporte_duracion', nombre: 'Tiempo sin agua', maximo: 50 },
-  { clave: 'aporte_vulnerabilidad', nombre: 'Vulnerabilidad', maximo: 30 },
-  { clave: 'aporte_poblacion', nombre: 'Personas atendidas', maximo: 20 },
+  { clave: 'aporte_duracion', nombre: 'Tiempo sin agua' },
+  { clave: 'aporte_vulnerabilidad', nombre: 'Vulnerabilidad' },
+  { clave: 'aporte_poblacion', nombre: 'Personas atendidas' },
 ]
 
 const numero = new Intl.NumberFormat('es-PA', { maximumFractionDigits: 0 })
@@ -97,6 +97,7 @@ function Urgencia({ evaluacion, recalculo }) {
             <span className="puntaje-valor">{decimales.format(evaluacion.puntaje)}</span>
             <span className="puntaje-escala"> de 100 puntos</span>
           </p>
+          <p className="sin-puntaje">Aportes al puntaje total, en una escala de 0 a 100.</p>
           <ul className="aportes">
             {APORTES.map((a) => {
               const valor = evaluacion.componentes[a.clave]
@@ -104,10 +105,10 @@ function Urgencia({ evaluacion, recalculo }) {
                 <li key={a.clave}>
                   <span className="aporte-nombre">{a.nombre}</span>
                   <span className="aporte-barra" aria-hidden="true">
-                    <span style={{ width: `${(valor / a.maximo) * 100}%` }} />
+                    <span style={{ width: `${Math.min(100, Math.max(0, valor))}%` }} />
                   </span>
                   <span className="aporte-valor">
-                    {decimales.format(valor)} de {a.maximo}
+                    {decimales.format(valor)} puntos
                   </span>
                 </li>
               )

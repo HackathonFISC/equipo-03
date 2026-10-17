@@ -1,5 +1,12 @@
 # Escenario territorial oeste-1.0: preparación de V3
 
+> Alcance: este documento describe la preparación y los archivos de este escenario,
+> no el estado completo del repositorio. Los bloques 4/5 ya tienen
+> [solver y verificador](../../../calculo/PLAN_V3.md). La integración local del
+> fixture separado está en [V3 de Emilia](../../../docs/V3_EMILIA.md); aplicación
+> en Supabase, panel y cierre integral deben comprobarse por separado.
+
+
 Dueño: José. Versión de datos: `oeste-1.0-ensayo-1`.
 
 Esta carpeta prepara el bloque 3 con los seis UUID de Emilia. Se conserva el catálogo `datos/geografia/puntos.csv` sin modificarlo. No se reasignan P1–P6 ni se sobrescriben los fixtures históricos V0/V1/V2.
@@ -60,4 +67,4 @@ La evidencia de esta preparación está en `evals/resultados/escenario_territori
 
 José con Emilia y el usuario deben acordar depósito, flota, demandas, recepción, criticidad, vulnerabilidad, ventanas, descargas, política y aceptación de los tiempos del ensayo. Una decisión nueva requiere actualizar versión y evidencias; el script no confirma datos automáticamente.
 
-El solver mínimo V1 acepta exclusivamente puntos sintéticos y confirmados: este escenario mixto y pendiente no debe enviarse a él ni transformarse para eludir sus comprobaciones. Completar `solve_routes` y `verify_plan` corresponde a los bloques 4 y 5. No se ha acreditado factibilidad, plan verificado, aprobación, publicación ni cierre conjunto V3.
+El solver mínimo V1 acepta exclusivamente puntos sintéticos y confirmados: este escenario mixto y pendiente no debe enviarse a él ni transformarse para eludir sus comprobaciones. Los bloques 4 y 5 se implementaron después de esta preparación; ver [PLAN_V3](../../../calculo/PLAN_V3.md). Este fixture pendiente no se convirtió automáticamente en uno válido para rutas. Sus archivos no acreditan plan calculado, verificación, aprobación, publicación ni cierre conjunto V3.

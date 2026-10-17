@@ -25,3 +25,8 @@ La matriz de tiempos sigue en el ejemplo de contratos; su preparación correspon
 `politica_apoyo_panama_v1.json` define la nueva propuesta de prioridad del proyecto: 40 % duración, 40 % vulnerabilidad y 20 % población, con críticos confirmados primero. Su fundamento y límites están en `docs/politica_prioridad_oeste.md`; los porcentajes no son oficiales del Estado. Se incorpora en `oeste-1.0-ensayo-2/` sin activar política ni confirmar demandas. Comprobar con `python scripts/verificar_escenario_v3.py --carpeta datos/escenario/oeste-1.0-ensayo-2`.
 
 `oeste-1.0-ensayo-3/` añade perfiles domésticos ficticios, demanda por fórmula y recepción calculada a partir de tanques/agua almacenada/margen. Su copia de política y confirmaciones son ficticias para probar validate_need y score_needs: no son activación operativa. Ejecutar `python -m calculo.demo_escenario_v3`; su README documenta hipótesis, fuentes y límites. Los ensayos 1/2 y la política compartida se conservan sin activar.
+
+Estado de implementación: [solver/verificador V3](../../calculo/PLAN_V3.md),
+[Planificación integrada localmente](../../docs/V3_EMILIA.md) y
+[casos aislados para cerrar priorización V2](../../docs/ENSAYO_PRIORIZACION_V2.md).
+Los README de cada ensayo describen sus propios archivos y no prueban despliegue.

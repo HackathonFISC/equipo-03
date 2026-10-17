@@ -1,5 +1,12 @@
 # Ensayo 3: demanda, recepción y prioridad sintéticas calculadas
 
+> Alcance: este documento describe la preparación y los archivos de este escenario,
+> no el estado completo del repositorio. Los bloques 4/5 ya tienen
+> [solver y verificador](../../../calculo/PLAN_V3.md). La integración local del
+> fixture separado está en [V3 de Emilia](../../../docs/V3_EMILIA.md); aplicación
+> en Supabase, panel y cierre integral deben comprobarse por separado.
+
+
 Este escenario permite continuar V3 sin esperar datos de campo. Modelo doméstico de emergencia con grupos vecinales ficticios asociados a los seis UUID del catálogo de Emilia. No describe la población, tanques, usuarios, funcionamiento o desabastecimiento actuales de esas instalaciones; tampoco estima su demanda institucional. No es un modelo calibrado con mediciones de Panamá Oeste.
 
 ## Referencias y decisiones del ensayo
@@ -57,4 +64,4 @@ Para conservar otra salida, añadir `--salida ruta_nueva.json`; no sobrescribe a
 
 El bloque 3 queda preparado para desarrollo y pruebas sintéticas: cantidades y recepción calculadas, demandas validadas y ranking calculado con confirmaciones ficticias. Para uso real siguen faltando operador autorizado, calidad del agua, flota, depósito, acceso, recepción y evidencias de campo.
 
-No hay rutas calculadas, `verify_plan`, aprobación ni publicación. El resultado declara `autorizacion_operativa=false` y bloqueos explícitos. El solver mínimo V1 no admite referencias reales mezcladas con este ensayo; no se eluden sus guardas. Los bloques 4, 5 y 6 de V3 siguen pendientes.
+La salida de esta demo de demanda/prioridad no incluye rutas calculadas ni informe de `verify_plan`, aprobación o publicación. El resultado declara `autorizacion_operativa=false` y bloqueos explícitos. El solver mínimo V1 no admite referencias reales mezcladas con este ensayo; no se eluden sus guardas. Los bloques 4/5 ya están implementados en [PLAN_V3](../../../calculo/PLAN_V3.md). El bloque 6 tiene integración local de Planificación en [V3 de Emilia](../../../docs/V3_EMILIA.md); eso no acredita despliegue, API/panel ni cierre conjunto.

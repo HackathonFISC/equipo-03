@@ -1,5 +1,12 @@
 # Ensayo territorial 2: nueva política de prioridad
 
+> Alcance: este documento describe la preparación y los archivos de este escenario,
+> no el estado completo del repositorio. Los bloques 4/5 ya tienen
+> [solver y verificador](../../../calculo/PLAN_V3.md). La integración local del
+> fixture separado está en [V3 de Emilia](../../../docs/V3_EMILIA.md); aplicación
+> en Supabase, panel y cierre integral deben comprobarse por separado.
+
+
 Versión de datos: `oeste-1.0-ensayo-2`. Conserva los seis UUID y referencias del catálogo de Emilia.
 
 Esta versión conserva las demandas, flota, depósito, ventanas, descargas y tiempos sintéticos del ensayo 1; cambia la política a `oeste-prioridad-apoyo-pa-1`, con pesos 40 % duración, 40 % vulnerabilidad y 20 % población. Se incrementan versión de solicitud y datos; ninguna propuesta anterior queda reutilizada como si empleara la nueva política.
@@ -18,3 +25,7 @@ Comprobar desde la raíz:
 ```
 
 La evidencia específica está en `evals/resultados/politica_apoyo_panama_v1.json` y `politica_apoyo_panama_v1_pruebas.xml`. El comprobador sigue usando por defecto el ensayo 1 para conservar su comando histórico; indicar `--carpeta` para el ensayo 2.
+
+La ausencia de confirmaciones describe este fixture pendiente. El ensayo 3 y
+el [lote V2 aislado](../../../docs/ENSAYO_PRIORIZACION_V2.md) son entregas posteriores
+con identidad y revisión propias; no modifican los archivos del ensayo 2.

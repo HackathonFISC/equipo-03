@@ -25,7 +25,9 @@ En Supabase SQL Editor ejecutar los archivos COMPLETOS en este orden:
 Los smoke usan transacción y ROLLBACK: deben ejecutarse enteros y revierten sus
 datos sintéticos. «Success. No rows returned» es compatible con éxito; cualquier
 incumplimiento lanza una excepción. 0006 requiere 0001/0004/0005 y 0007 requiere
-0006. No reinstalar migraciones ya aplicadas. Si 0006 detecta varias aclaraciones
+0006. No reinstalar migraciones ya aplicadas. Los smoke de priorización 0007/0008
+suponen un entorno de prueba sin otros incidentes activos; el smoke 0010 fue
+corregido y comprobado con incidentes previos. Si 0006 detecta varias aclaraciones
 antiguas activas por ejecución, detenerse y revisarlas; no elimina historial.
 
 Después de aplicar 0006, avisar a Noel para que active `destino_origen_id`.
@@ -42,7 +44,8 @@ python -m orquestador.trabajador
 
 `--una-vuelta` procesa una etapa por ejecución de la selección inicial; varias
 vueltas completan el recorrido. El modo continuo consulta cada cinco segundos.
-Ctrl+C lo detiene. Una reserva de agente dura 180 segundos. Si vence, queda en
+Ctrl+C lo detiene. Las reservas de las etapas V2 duran 180 segundos; Planificación
+V3 utiliza 300 segundos, según su guía. Si vence, queda en
 `espera_revision`; no se repite una operación cuyo resultado pueda ser incierto.
 
 ## Acuerdo de aclaraciones con Noel
@@ -124,9 +127,10 @@ como hospital/centro de salud genera una señal de revisión, sin confirmar clas
 crítica ni vulnerabilidad. Confianza permanece desconocida en lugar de inventar
 un porcentaje.
 
-Corrección desde la API de Noel:
+Corrección prevista para V4 (no expuesta por la API de V2):
 `ra_separar_reporte(p_reporte_id uuid, p_usuario_id uuid, p_motivo text)` requiere
-coordinador activo y motivo. Noel deriva usuario_id de la identidad autenticada,
+coordinador activo y motivo. La RPC backend existe y se prueba con smoke; su
+interfaz, sesión y autorización desde la API quedan para V4. Noel derivará usuario_id de la identidad autenticada,
 no de un UUID libre enviado por el navegador. Se cierra el vínculo anterior,
 se crea otro incidente y vínculo, se recomputan conteos/períodos y se invalidan
 cálculos afectados; la traza conserva el motivo y la asociación previa.
@@ -134,8 +138,10 @@ cálculos afectados; la traza conserva el motivo y la asociación previa.
 ## Priorización y entrega de José
 
 El trabajador invoca las funciones de José a través de `agentes/priorizacion.py`.
-En este árbol todavía no existen `calculo/demanda.py` y `calculo/prioridad.py`.
-No se sustituyen con fórmulas nuevas. Sin herramientas, lote o confirmaciones,
+`calculo/demanda.py` y `calculo/prioridad.py` ya implementan `validate_need` y
+`score_needs`; ver [reglas de cálculo V2](../calculo/NECESIDADES_V2.md).
+El adaptador usa esas funciones, sin sustituirlas por fórmulas nuevas. Si en un
+entorno faltan las herramientas, el lote o las confirmaciones,
 el incidente conserva `pendientes_calculo` y la ejecución espera validación.
 Eso no se presenta como una EvaluacionNecesidades calculada.
 
@@ -151,7 +157,9 @@ p_usuario_id uuid, p_lote jsonb)`. La estructura es:
 - La demanda y los factores provienen de la consolidación revisada y las entradas
   de José; no se rellenan desde el conteo de reportes.
 
-Se exige el lote completo y un solo incidente por punto. Si existen episodios
+Se exige el lote completo de cada ámbito y un solo incidente por punto. El
+ajuste 0010 aísla los casos sintéticos del incidente ciudadano; ver
+[ensayo de priorización V2](ENSAYO_PRIORIZACION_V2.md). Si existen episodios
 distintos de un punto sin resolución operativa, no se elige uno ni se suman sus
 demandas: ese conflicto bloquea el cálculo del lote para revisión. No se mezclan
 orígenes. Cambiar entradas exige nueva `datos_version`; versiones de incidentes
@@ -163,24 +171,40 @@ vulnerabilidad. Los resultados se validan con contratos; score_needs no puede
 alterar la demanda o los factores consolidados. No se calcula un ranking
 independiente por reporte. Se guardan EvaluacionNecesidades en el incidente y
 en necesidades, con entrada y traza. Un nuevo reporte o separación invalida el
-ranking derivado y obliga a revisar/recalcular el lote. Termina en
+ranking derivado de su ámbito y obliga a revisar/recalcular el lote. Termina en
 espera_validacion: no inicia rutas ni aprueba ni envía avisos comunitarios.
 
 ## Evidencia y cierre del equipo
 
-Probado localmente sin servicios externos: suite Python, migraciones en
-PostgreSQL temporal, regresión de Ingesta 0005 antes de instalar V2, y smoke V2
-de aclaraciones, consolidación/separación y persistencia de evaluación pendiente
-y calculada sintéticas. No se probó concurrencia de servidores reales.
+Los smoke locales comprueban aclaraciones, consolidación, corrección backend y
+persistencia de evaluación pendiente/calculada. No acreditan concurrencia de
+servidores reales ni habilitan una pantalla de separación en V2.
 
-Pendiente para cerrar V2 conjunta:
+En el recorrido real del 17/10/2026 se comprobó en Supabase: tres reportes en un
+incidente, aclaración por reply y reanudación (cuarto vínculo), y un POST repetido
+posterior al estado base sin cambios en reportes, ejecuciones, vínculos o eventos.
+Noel confirmó visualmente el incidente versión 5, cuatro vínculos y un remitente
+independiente, pendiente por falta de lote. El primer reply a otro mensaje del
+bot se trató como reporte nuevo según el acuerdo. El primer POST duplicado anterior
+al estado base no se cuenta como evidencia de esa comparación.
 
-1. Usuario aplica 0006/0007 y ejecuta sus smoke en Supabase.
-2. Noel integra las RPC, activa destino_origen_id y muestra incidentes/progreso.
-3. José entrega funciones y escenario adaptado a los UUID oeste-1.0; el equipo
-   registra las confirmaciones sintéticas de demo de forma explícita.
-4. Probar bot → API → Ingesta → Territorial → cálculo → panel; tres reportes,
-   ambigüedad/reply, duplicado sin alterar prioridad y separación con historial.
+Estado que aún debe comprobarse para cerrar V2:
 
-Este documento no acredita un ensayo Telegram real, una migración remota aplicada
-ni una validación operativa de los seis lugares.
+1. Registrar y ejecutar los dos casos de [priorización aislada](ENSAYO_PRIORIZACION_V2.md)
+   después de instalar 0010 y pasar su smoke. Su aprobación sintética no equivale
+   a una aprobación de plan ni valida condiciones de campo.
+2. Confirmar la visualización de cada caso con la consulta por ejecución de Noel.
+3. Probar un duplicado después de tener prioridad calculada y el vencimiento real
+   de una aclaración de 30 minutos. Los smoke no sustituyen esas pruebas vivas.
+
+0006/0007 y sus smoke fueron confirmados por Emilia. La presencia de archivos o
+un commit no acredita por sí sola que 0008/0010 estén aplicadas en otro entorno.
+El error del smoke 0010 por incidentes preexistentes fue corregido; volver a
+comprobar el resultado del archivo actualizado. No reinstalar migraciones para
+repetir una prueba.
+
+La sesión de coordinador y separar/reasociar desde la API se reservan a V4. Las
+RPC administrativas backend conservan sus controles de coordinador; en V2 no
+hay login ni se acepta un UID libre desde el navegador. Planificación integrada
+para el fixture separado está en [V3 de Emilia](V3_EMILIA.md), sin promoción
+automática de incidentes ni autorización de entregas.
