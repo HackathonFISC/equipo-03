@@ -27,6 +27,7 @@ import logging
 import os
 import re
 import sys
+import unicodedata
 from uuid import uuid4
 
 import httpx
@@ -55,6 +56,29 @@ MAX_TEXTO = 4000  # Máximo del contrato; Telegram admite hasta 4096.
 # Acuse neutral: el bot no sabe si es un reporte hasta que lo analiza la Ingesta.
 MENSAJE_RECIBIDO = "Recibimos tu mensaje. Código: {codigo}."
 MENSAJE_REPETIDO = "Ya habíamos recibido este mensaje. Código: {codigo}."
+# Mensaje sin relación con el agua (saludo, prueba, charla): la Ingesta lo cierra como fuera de alcance y no
+# puede preguntar. El bot lo orienta con preguntas concretas y abre la respuesta enlazada: lo que la persona
+# conteste llega como reporte nuevo.
+MENSAJE_ORIENTA = (
+    "Recibimos tu mensaje. Código: {codigo}.\n\n"
+    "Soy el bot de H2Oeste y atiendo reportes de falta de agua. Si es tu caso, cuéntame en un mensaje:\n"
+    "• ¿Dónde falta el agua? (barrio, escuela, centro de salud o punto de referencia)\n"
+    "• ¿Desde cuándo no llega?\n"
+    "• ¿Cuántas personas están afectadas?\n"
+    "• ¿Hay adultos mayores, niños pequeños, una escuela o un centro de salud?"
+)
+PISTA_ORIENTA = "Ej.: Sin agua desde el martes en…"
+_PALABRAS_DE_AGUA = re.compile(
+    r"\b(agua|aguas|acueducto|tuberia|tuberias|cisterna|cisternas|camion cisterna|idaan|grifo|llave|llaves|"
+    r"potable|suministro|racionamiento|fuga|fugas|sed|turbia|sucia|presion|medidor|pozo|tanque|sin servicio)\b"
+)
+
+
+def parece_reporte_de_agua(texto: str) -> bool:
+    """True si el texto menciona algo del servicio de agua. Solo decide cómo se acusa recibo, nunca si se guarda."""
+    plano = unicodedata.normalize("NFD", texto.lower())
+    plano = "".join(c for c in plano if not unicodedata.combining(c))
+    return _PALABRAS_DE_AGUA.search(plano) is not None
 MENSAJE_LARGO = f"Tu mensaje es demasiado largo (máximo {MAX_TEXTO} caracteres). Envíalo más corto."
 MENSAJE_FALLO = "No pudimos guardar tu reporte ahora. Inténtalo de nuevo en unos minutos."
 MENSAJE_FALLO_RESPUESTA = "No pudimos guardar tu respuesta ahora. Inténtalo de nuevo en unos minutos."
@@ -308,7 +332,13 @@ async def recibir_texto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
     codigo = _codigo(respuesta)
     if respuesta.status_code == 201 and codigo:
-        await mensaje.reply_text(MENSAJE_RECIBIDO.format(codigo=codigo))
+        if parece_reporte_de_agua(texto):
+            await mensaje.reply_text(MENSAJE_RECIBIDO.format(codigo=codigo))
+        else:
+            await mensaje.reply_text(
+                MENSAJE_ORIENTA.format(codigo=codigo),
+                reply_markup=ForceReply(selective=True, input_field_placeholder=PISTA_ORIENTA),
+            )
     elif respuesta.status_code == 200 and codigo:
         await mensaje.reply_text(MENSAJE_REPETIDO.format(codigo=codigo))
     else:

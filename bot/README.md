@@ -89,6 +89,7 @@ El menú "/" de Telegram muestra `/ayuda`; se publica al arrancar.
 | Situación | Mensaje |
 | --- | --- |
 | Reporte nuevo | Recibimos tu mensaje. Código: (8 caracteres del reporte). |
+| Mensaje nuevo sin relación con el agua (saludo, prueba) | El mismo acuse, más cuatro preguntas (dónde, desde cuándo, cuántas personas, si hay población vulnerable) y una respuesta enlazada: lo que la persona conteste entra como reporte nuevo. |
 | Mensaje ya registrado | Ya habíamos recibido este mensaje. Código: … |
 | API caída o con error | No pudimos guardar tu reporte ahora. Inténtalo de nuevo en unos minutos. |
 | Respuesta `aceptada` o `repetida` | Gracias, recibimos tu respuesta. |
@@ -97,7 +98,12 @@ El menú "/" de Telegram muestra `/ayuda`; se publica al arrancar.
 | `vencida` | El plazo para responder esta pregunta venció. Tu reporte sigue pendiente de revisión. |
 
 El acuse es neutral ("mensaje", no "reporte"): si un texto es un reporte de agua lo decide
-el agente de Ingesta, no el bot.
+el agente de Ingesta, no el bot. La Ingesta cierra como fuera de alcance lo que no es de agua y no puede
+preguntar (su contrato lo prohíbe), así que el bot orienta por su cuenta: `parece_reporte_de_agua` busca
+palabras del servicio (agua, tubería, cisterna, fuga…) solo para elegir el texto del acuse. No decide si el
+mensaje se guarda: todo se envía a la API igual. Se equivoca a veces (un reporte sin esas palabras recibe las
+preguntas; una charla que nombra el agua no). Orientar después de que la Ingesta clasifique requiere coordinarlo
+con Emilia.
 
 ## Circuito de aclaración (V2, decisiones D006 y D008)
 
