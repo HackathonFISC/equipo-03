@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { obtenerEjecucion, obtenerReportes, USAR_EJEMPLOS } from '../api/reportes.js'
+import { iniciarSondeo } from '../api/sondeo.js'
 import './Reportes.css'
 
 // Estado que ve la persona operadora. Se deriva de la interpretación;
@@ -88,7 +89,7 @@ function segundos(ms) {
   return `${(ms / 1000).toLocaleString('es-PA', { maximumFractionDigits: 1 })} s`
 }
 
-// Traza de la ejecución: se pide a la API la primera vez que se abre la fila.
+// La fila abierta consulta periódicamente la traza de su ejecución.
 function Seguimiento({ ejecucionId, seguimiento, traza, onReintentar }) {
   return (
     <div className="seguimiento">
@@ -139,6 +140,15 @@ function FilaReporte({ item }) {
   const campos = interpretacion?.campos
   const ejecucionId = registrado.ejecucion_id
   const [traza, setTraza] = useState({ estado: 'inactivo' })
+  const [abierto, setAbierto] = useState(false)
+
+  useEffect(() => {
+    if (!abierto || !ejecucionId || USAR_EJEMPLOS) return
+    return iniciarSondeo(() => obtenerEjecucion(ejecucionId), {
+      onDatos: (datos) => setTraza({ estado: 'listo', datos }),
+      onError: (e) => setTraza({ estado: 'error', error: e.message }),
+    })
+  }, [abierto, ejecucionId])
 
   function cargarTraza() {
     setTraza({ estado: 'cargando' })
@@ -148,9 +158,7 @@ function FilaReporte({ item }) {
   }
 
   function alAbrir(evento) {
-    if (evento.currentTarget.open && traza.estado === 'inactivo' && ejecucionId && !USAR_EJEMPLOS) {
-      cargarTraza()
-    }
+    setAbierto(evento.currentTarget.open)
   }
 
   return (
@@ -227,22 +235,18 @@ export default function Reportes() {
   const [intento, setIntento] = useState(0)
 
   useEffect(() => {
-    let cancelado = false
-    obtenerReportes()
-      .then((datos) => {
-        if (cancelado) return
+    return iniciarSondeo(obtenerReportes, {
+      onDatos: (datos) => {
         setReportes(datos)
         setError(null)
         setCargando(false)
-      })
-      .catch((e) => {
-        if (cancelado) return
+      },
+      onError: (e) => {
         setError(e.message)
         setCargando(false)
-      })
-    return () => {
-      cancelado = true
-    }
+      },
+      intervalo: USAR_EJEMPLOS ? null : 5000,
+    })
   }, [intento])
 
   function reintentar() {

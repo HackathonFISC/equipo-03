@@ -171,3 +171,13 @@ Referencia de la versión recibida de main: D005. Se registra como D008 para con
 - Caso 21: diseño de intercalado de transacciones pendiente de backend de ensayo con Noel; no se sustituye por sleep, llamadas secuenciales o un resultado simulado. Los escenarios reales de aprobación/vigencia, evidencia de Telegram y revisión del equipo siguen pendientes.
 - Seguridad de ensayo: credenciales HTTP solo por referencia al entorno, sin persistir respuestas/cuerpos/tokens en el informe; sin reintentos o redirecciones. Los guiones son perfiles de ensayo revisados, no nuevos contratos compartidos. No se ejecutó un perfil HTTP real, Gemini, SQL remoto, trabajador ni envío.
 - Evidencia preparatoria: evals/resultados/v4_preparacion/informe.json y regresion.xml; alcance e interfaces pendientes en evals/V4.md. El total de pruebas de JUnit incluye subpruebas; no confundir ese contador con casos oficiales de evaluación.
+
+## D015 Arranque automático de agentes y actualización de reportes
+
+- Fecha: 17 de octubre de 2026 (UTC−05:00).
+- Solicitud: José confirmó que arrancaba API, bot e interfaz sin trabajador y pidió que los agentes trabajaran sin activación separada. Autoriza esta integración de arranque en API/orquestador y actualización del panel; no cambia propietarios permanentes.
+- Decisión: el ciclo de vida de FastAPI administra un subprocess de orquestador.trabajador con el mismo intérprete. Activo por defecto; TRABAJADOR_AUTOMATICO=false permite un trabajador externo. Importar módulos no inicia procesos. Bloqueo local de archivo para hijos administrados; reservas de BD siguen controlando cada ejecución.
+- Cierre: señal para dejar de tomar trabajo entre etapas, espera de hasta 60 segundos y terminación si se excede. Reservas inciertas conservan controles de revisión existentes. No se implementa recuperación ante caída abrupta ni reinicio ciego del proceso.
+- Visibilidad: GET /salud/agentes informa estado del proceso local; no acredita éxito de servicios externos. Reportes y trazas abiertas se consultan sin solapar peticiones y cancelan su sondeo al cerrar; ya no necesitan F5.
+- Pruebas: conftest desactiva el trabajador real en pytest y los tests del arranque usan procesos ficticios. No se procesó la cola ni se llamó a Gemini, Supabase o Telegram para verificar este cambio. Configuración/migraciones y revisión del equipo siguen siendo necesarias.
+- Evidencia: evals/resultados/arranque_automatico/informe.json y regresion.xml. 527 pruebas Python y 66 subpruebas, cuatro pruebas de sondeo, lint y build aprobados. El arranque automático no concede permisos, confirma demanda/política, aprueba planes ni cierra V4 integrada.

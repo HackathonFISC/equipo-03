@@ -9,6 +9,7 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
+.runtime/
 
 # Node / React
 node_modules/
