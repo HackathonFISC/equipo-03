@@ -208,6 +208,22 @@ BEGIN
   IF pg_temp.intenta(format('SELECT public.ra_aprobar_plan(%L,%L,1,%L,%L,%L,%L::text[])',u,pl2,'smoke-b',pol,'m',bl::text)) NOT LIKE '55000|plan_ya_resuelto%' THEN
     RAISE EXCEPTION 'No se aprueba un plan rechazado'; END IF;
 
+  -- 12. Vigencia posterior: un cambio ajeno al plan no lo toca; un cambio en sus entradas lo invalida.
+  INSERT INTO public.vehiculos(vehiculo_id,nombre,capacidad_litros,turno_inicio,turno_fin,deposito_id,origen)
+    VALUES (gen_random_uuid(),'PRUEBA vehiculo ajeno',5000,now(),now()+interval '6 hours',d,'sintetico');
+  IF NOT EXISTS (SELECT 1 FROM public.planes WHERE plan_id=pl AND estado='aprobado') THEN
+    RAISE EXCEPTION 'Un vehículo ajeno al plan no debía invalidarlo'; END IF;
+  UPDATE public.vehiculos SET capacidad_litros=9000 WHERE vehiculo_id=v;
+  IF NOT EXISTS (SELECT 1 FROM public.planes WHERE plan_id=pl AND version=1 AND estado='invalidado' AND aprobacion_id IS NOT NULL) THEN
+    RAISE EXCEPTION 'Cambiar la flota de un plan aprobado debía invalidarlo'; END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.eventos WHERE ejecucion_id=e AND decision='Invalidar plan aprobado' AND actor_tipo='sistema'
+                   AND detalles->>'plan_id'=pl::text AND detalles->>'tabla'='vehiculos') THEN
+    RAISE EXCEPTION 'La invalidación debía dejar un evento'; END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.planes WHERE plan_id=pl2 AND estado='rechazado') THEN
+    RAISE EXCEPTION 'Un plan rechazado no debía cambiar'; END IF;
+  IF pg_temp.intenta(format('SELECT public.ra_aprobar_plan(%L,%L,1,%L,%L,%L,%L::text[])',u,pl,'smoke-a',pol,'motivo smoke',bl::text)) NOT LIKE '55000|plan_ya_resuelto%' THEN
+    RAISE EXCEPTION 'Un plan invalidado no se aprueba de nuevo'; END IF;
+
   RAISE NOTICE 'OK: 0003 aprobación atómica (permisos, versiones, vigencia, verificación, bloqueos, idempotencia, rechazo, integración con 0011)';
 END $$;
 

@@ -213,3 +213,71 @@ class AvisoPorEnviar(BaseModel):
     litros_asignados: Annotated[float, Field(gt=0, allow_inf_nan=False)]
     ventana_inicio: AwareDatetime
     ventana_fin: AwareDatetime
+
+
+# --- Aprobación de planes (V4, migración 0003) ---
+
+class AprobarPlan(Peticion):
+    """Lo que la persona revisó. Quién aprueba sale del token, nunca de este cuerpo."""
+
+    datos_version: Annotated[str, Field(min_length=1, max_length=200)]
+    politica_version: Annotated[str, Field(min_length=1, max_length=200)]
+    motivo: Annotated[str, Field(min_length=1, max_length=4000)]
+    # Cada bloqueo que el plan trae y que la persona reconoce de forma expresa.
+    bloqueos_reconocidos: Annotated[list[Annotated[str, Field(min_length=1, max_length=500)]], Field(max_length=20)]
+
+
+class RechazarPlan(Peticion):
+    motivo: Annotated[str, Field(min_length=1, max_length=4000)]
+
+
+class ResultadoPlan(BaseModel):
+    plan_id: UUID
+    version: Annotated[int, Field(gt=0)]
+    estado: Literal["aprobado", "rechazado"]
+    aprobacion_id: UUID | None = None
+    ejecucion_id: UUID | None = None
+    repetido: bool
+
+
+# --- Planes guardados para el panel (V4) ---
+
+class ParadaPanel(BaseModel):
+    parada_id: UUID
+    orden: int
+    punto_atencion_id: UUID
+    punto: PuntoPanel | None
+    litros_asignados: float
+    llegada_estimada: AwareDatetime
+    inicio_descarga: AwareDatetime
+    fin_descarga: AwareDatetime
+    estado: str
+
+
+class RutaPanel(BaseModel):
+    ruta_id: UUID
+    vehiculo_id: UUID
+    salida_estimada: AwareDatetime
+    retorno_estimado: AwareDatetime
+    paradas: list[ParadaPanel]
+
+
+class PlanPanel(BaseModel):
+    """Una versión de plan tal como quedó guardada. El panel manda de vuelta `datos_version` y
+    `politica_version` al aprobar: así la base sabe qué versión revisó la persona."""
+
+    plan_id: UUID
+    version: int
+    ejecucion_id: UUID
+    estado: Literal["calculando", "pendiente_revision", "aprobado", "rechazado", "invalidado"]
+    estado_solver: str | None
+    datos_version: str
+    politica_version: str
+    verificado: bool
+    bloqueos_publicacion: list[str]
+    no_atendidos: list[dict]
+    supuestos: list[str]
+    aprobacion_id: UUID | None
+    origen: Literal["real", "estimado", "sintetico"]
+    creado_en: AwareDatetime
+    rutas: list[RutaPanel]

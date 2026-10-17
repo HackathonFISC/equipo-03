@@ -3,6 +3,7 @@
 -- No crea cuentas ni roles, no envía nada y no crea avisos (los crea Comunicación después de aprobar).
 -- Solo service_role ejecuta las RPC; la API debe pasar el usuario tomado del token verificado,
 -- nunca uno enviado por el navegador. Los errores empiezan por el código de dominio de D003.
+-- Además bloquea las tablas de entradas al aprobar e invalida el plan aprobado si luego cambian.
 BEGIN;
 
 -- Aprobar un plan. Una sola transacción: coordinador activo, versión vigente, política activa,
@@ -31,6 +32,11 @@ BEGIN
   IF NOT FOUND THEN
     RAISE EXCEPTION 'sin_permiso: solo un coordinador activo puede aprobar planes' USING ERRCODE='42501';
   END IF;
+
+  -- Entradas estables hasta el commit: quien las modifique espera a que esta aprobación termine y, si
+  -- el plan ya quedó aprobado, el disparador de abajo lo invalida. Se bloquea ANTES de la fila del plan
+  -- (mismo orden que el disparador) para que ambos lados no se esperen entre sí.
+  LOCK TABLE public.depositos,public.vehiculos,public.incidentes,public.puntos_atencion,public.politicas_prioridad IN SHARE MODE;
 
   SELECT * INTO pl FROM public.planes WHERE plan_id=p_plan_id AND version=p_version FOR UPDATE;
   IF NOT FOUND THEN
@@ -146,11 +152,49 @@ BEGIN
   RETURN jsonb_build_object('plan_id',pl.plan_id,'version',pl.version,'estado','rechazado','repetido',false);
 END $$;
 
+-- Vigencia posterior: si cambia una entrada de un plan ya aprobado (depósito, flota, incidente, punto
+-- o política que usó el cálculo), el plan pasa a 'invalidado'. Los avisos pendientes los cancela
+-- ra_reservar_aviso al ver que el plan ya no está aprobado. Solo mira planes aprobados, que son pocos.
+-- SECURITY DEFINER: lo dispara quien escriba la tabla de entradas y debe poder invalidar el plan.
+CREATE FUNCTION public.ra_invalidar_planes_obsoletos()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
+DECLARE r record;
+BEGIN
+  FOR r IN
+    SELECT pl.plan_id, pl.version, pl.ejecucion_id, e.origen
+      FROM public.planes pl
+      JOIN public.escenarios_planificacion_v3 x
+        ON x.ejecucion_id=pl.ejecucion_id AND x.plan_id=pl.plan_id AND x.version=pl.version
+      JOIN public.ejecuciones e ON e.ejecucion_id=pl.ejecucion_id
+     WHERE pl.estado='aprobado'
+       AND public.ra_snapshot_planificacion_v3(pl.ejecucion_id) IS DISTINCT FROM x.cierre_snapshot
+     ORDER BY pl.plan_id, pl.version
+       FOR UPDATE OF pl
+  LOOP
+    UPDATE public.planes SET estado='invalidado' WHERE plan_id=r.plan_id AND version=r.version;
+    INSERT INTO public.eventos(ejecucion_id,actor_tipo,decision,resultado,duracion_ms,detalles,origen)
+    VALUES (r.ejecucion_id,'sistema','Invalidar plan aprobado','invalidado',0,
+      jsonb_build_object('plan_id',r.plan_id,'version',r.version,
+        'motivo','Cambió una entrada del cálculo después de la aprobación.',
+        'tabla',TG_TABLE_NAME),r.origen);
+  END LOOP;
+  RETURN NULL;
+END $$;
+
+DO $$
+DECLARE t text;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['depositos','vehiculos','incidentes','puntos_atencion','politicas_prioridad'] LOOP
+    EXECUTE format('CREATE TRIGGER ra_invalidar_planes AFTER INSERT OR UPDATE OR DELETE ON public.%I
+                    FOR EACH STATEMENT EXECUTE FUNCTION public.ra_invalidar_planes_obsoletos()',t);
+  END LOOP;
+END $$;
+
 DO $$
 DECLARE f record;
 BEGIN
   FOR f IN SELECT p.oid::regprocedure::text AS firma FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-           WHERE n.nspname='public' AND p.proname IN ('ra_aprobar_plan','ra_rechazar_plan') LOOP
+           WHERE n.nspname='public' AND p.proname IN ('ra_aprobar_plan','ra_rechazar_plan','ra_invalidar_planes_obsoletos') LOOP
     EXECUTE format('REVOKE ALL ON FUNCTION %s FROM PUBLIC, anon, authenticated',f.firma);
     EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO service_role',f.firma);
   END LOOP;
