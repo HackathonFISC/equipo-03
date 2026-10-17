@@ -28,3 +28,12 @@ Se preparó fuera del repositorio `tmp/recuperar_plan_sintetico_20261017.sql`, s
 La pantalla conserva un bloqueo genérico que menciona ausencia de verificación aunque el informe actual es válido; esa redacción no debe interpretarse como fallo del verificador. Los bloqueos de aprobación y ensayo siguen vigentes. La evidencia de este recorrido no sustituye los tres recorridos de cierre V6.
 
 No se hicieron commit ni push.
+
+
+## Confirmaciones por incidente al recalcular el lote
+
+La API conserva entradas de revisiones humanas persistidas para incidentes intactos, aunque otro punto invalide el ranking del lote. Compara por incidente el origen, ensayo, version, punto completo y huellas/vinculos de reportes, y usa la guarda existente de 0017 para politica, coordinadores activos, conflictos, faltantes y vigencia de ventana. No copia el puntaje ni la posicion: conserva las confirmaciones originales y adapta solo el contexto de calculo a una nueva datos_version. Una revision explicita del usuario prevalece sobre la conservada.
+
+El formulario consulta las identidades/versiones reutilizables y las muestra como confirmacion anterior vigente, con opcion de modificar. POST vuelve a comprobar; las confirmaciones vencidas o cambiadas requieren revision. El historial anterior a 0017 o sin una revision persistida compatible no se reconstruye automaticamente. No requiere migracion nueva; requiere 0017 ya aplicada, reiniciar API y recargar frontend. No restaura ni aprueba planes anteriores.
+
+Validacion local: 638 pruebas y 33 subpruebas correctas en API, contratos, calculo y lotes automaticos; despues de ampliar la prueba de idempotencia y agregar consulta autenticada, suite focalizada: 49 pruebas correctas. Frontend lint y build correctos. No se ejecutaron escrituras remotas ni envios para validar este cambio.
