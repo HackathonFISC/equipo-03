@@ -23,3 +23,35 @@ no aplicada a Supabase real por Codex. Ver `../../agentes/INGESTA_V1.md`.
 ## V2 de Emilia
 
 Aplicar una vez 0006_aclaraciones_v2.sql y después 0007_territorial_orquestador_v2.sql; requieren 0001/0004/0005. Ejecutar sus smoke completos. No habilitar destino_origen_id en la API hasta aplicar 0006. [Guía](../../docs/V2_EMILIA.md).
+
+
+## Idempotencia de lotes V2 (0008)
+
+Aplicar una vez `0008_idempotencia_lotes.sql`, completo, después de 0007.
+Después ejecutar `../tests/0008_idempotencia_lotes_smoke.sql`, completo: usa datos
+sintéticos y termina en ROLLBACK. Requiere el catálogo sembrado y un entorno de
+prueba sin otros incidentes activos, igual que el smoke de priorización 0007.
+
+`ra_preparar_priorizacion_v2` conserva su firma y permisos. Repetir el mismo lote
+para la misma ejecución devuelve `repetido: true` con su estado/etapa actuales y
+`ejecucion_id`, desde la primera aceptación. No añade eventos, guarda necesidades,
+borra errores, modifica la entrada original ni reinicia la ejecución o su reserva.
+Las comprobaciones de coordinador, política, incidentes activos y versiones se
+mantienen: una entrada que ya quedó obsoleta sigue rechazándose.
+
+La comparación ignora el orden de entradas y únicamente las fechas regeneradas
+`solicitud_demanda.creado_en`, `evaluacion.creado_en` y `confirmado_en` de las
+confirmaciones de demanda, clase y vulnerabilidad en esas entradas. Conserva los
+actores, motivos, cantidades y demás campos; la auditoría original no se sobrescribe.
+La política completa se compara sin quitar fechas.
+
+Cambiar datos exige una nueva `datos_version`; recalcular el mismo contenido
+requiere también una nueva versión explícita. No se puede sustituir un lote
+mientras está en ejecución. El nuevo auxiliar `ra_lote_comparable_v2` solo puede
+ser ejecutado por service_role. No se modifican contratos, API/bot, el cierre
+`ra_finalizar_priorizacion_v2` ni la coordinación entre agentes. No elimina
+posibles eventos duplicados históricos.
+
+Verificación local: cinco smoke SQL en PostgreSQL temporal, incluyendo prueba
+que falla con 0007 y pasa con 0008, permisos de backend y rechazo de anon y
+authenticated. Codex no ha aplicado esta migración a Supabase real.
