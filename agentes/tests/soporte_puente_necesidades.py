@@ -30,6 +30,9 @@ def ejecutar(datos):
         resultado=evaluar_lote(dict(esquema_version='1.0',ejecucion_id=e['ejecucion_id'],creado_en=e['creado_en'],origen=e['origen']),
             t['lote_calculo']['entradas'],t['lote_calculo']['politica'],HerramientasJose(),validaciones=validaciones)
         return dict(resultado=resultado.model_dump(mode='json'),validaciones=validaciones)
+    if accion=='lote_confirmado':
+        from agentes.lotes_confirmados import construir_lote_confirmado
+        return construir_lote_confirmado(datos['snapshot'])
     if accion=='puente':return construir_solicitud(datos['snapshot'])
     if accion=='planificacion':return planificar(datos['solicitud'],decisor=DecisorReglas()).model_dump(mode='json')
     raise ValueError('Acción de ensayo desconocida')

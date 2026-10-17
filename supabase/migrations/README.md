@@ -235,3 +235,13 @@ sin servicios externos y ROLLBACK. Probado en PGlite para real/estimado/sintéti
 con regresiones 0006/0009/0010/0012/0013/0014/0015. Integración local reproducible
 adicional en `../tests/0016_integracion_local.mjs`. No acredita aplicación remota ni
 concurrencia de servidores reales. Ver `../../docs/A1_PUENTE_NECESIDADES.md`.
+
+### 0017 — Lotes confirmados automáticos
+
+Después de 0016. Captura nuevas revisiones humanas con instantánea, conserva sus
+confirmaciones y permite al trabajador preparar otro cálculo del mismo ámbito sin
+intervención adicional cuando todo sigue vigente. Cambios/faltantes/conflictos
+quedan en revisión. No activa políticas, aprueba ni envía. Fuente y RPC restringidas
+a `service_role`; ejecutar `../tests/0017_lotes_confirmados_smoke.sql` completo,
+que revierte sus fixtures. Reiniciar el trabajador. Las revisiones anteriores sin
+instantánea no se reconstruyen; los lotes ya preparados siguen funcionando.

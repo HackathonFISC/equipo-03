@@ -109,3 +109,9 @@ Conflictos por punto y datos incompatibles quedan en revisión; errores transito
 no borran la cola. El preflight comprueba tabla de cola y columnas de 0015/0016.
 `--planificacion-id` continúa aislado, sin recorrer puentes globales.
 Guía y límites: `docs/A1_PUENTE_NECESIDADES.md`; relevo: `docs/HANDOFF_NOEL_A1.md`.
+
+Preparación automática de priorización: requiere **0017** y reinicio. Antes de
+reservar, reutiliza una revisión humana del ámbito exacto si conserva confirmaciones,
+política activa, lugar validado y ventana vigente. Si falta algo queda en revisión
+con motivo; no inventa datos ni confirma el mensaje. Los lotes existentes continúan.
+Detalle y despliegue: [LOTES_AUTOMATICOS_V2](../docs/LOTES_AUTOMATICOS_V2.md).

@@ -110,8 +110,9 @@ def main():
                 try:
                     db.table('ejecuciones').select('reintentos_ingesta,proximo_intento_ingesta').limit(0).execute()
                     db.table('puentes_necesidades_v3').select('ejecucion_id').limit(0).execute()
+                    db.table('revisiones_lote_v2').select('evento_id').limit(0).execute()
                 except Exception:
-                    logger.error('No se pudieron consultar columnas de 0015/0016; revisar migración, PostgREST y conexión BD.')
+                    logger.error('No se pudieron consultar columnas de 0015/0016/0017; revisar migración, PostgREST y conexión BD.')
                     raise
                 verificado = True
             return una_vuelta(db, extractor, planificacion_id=args.planificacion_id, detener=detener)

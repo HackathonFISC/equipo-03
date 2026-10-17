@@ -1,4 +1,5 @@
 // Integración aislada. PGlite es una herramienta temporal; no conecta a servicios.
+import {isDeepStrictEqual} from 'node:util';
 import {createRequire} from 'node:module';
 import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
@@ -10,12 +11,14 @@ const raiz=process.env.RA_REPO || fileURLToPath(new URL('../../',import.meta.url
 const python=process.env.RA_PYTHON || path.join(raiz,'.venv',process.platform==='win32'?'Scripts/python.exe':'bin/python');
 function py(obj){const r=spawnSync(python,['-m','agentes.tests.soporte_puente_necesidades'],{cwd:raiz,env:{...process.env,PYTHONDONTWRITEBYTECODE:'1'},input:JSON.stringify(obj),encoding:'utf8',maxBuffer:10*1024*1024});if(r.status!==0)throw Error('Python: '+r.stderr);return JSON.parse(r.stdout);}
 function comprobar(c,m){if(!c)throw Error(m);}
+const automatico=process.env.RA_PROBAR_LOTE_AUTOMATICO==='1';
 const db=new PGlite();
 async function sql(t,p=[]){return (await db.query(t,p)).rows;}
 async function rpc(n,p={}){const keys=Object.keys(p);return (await sql(`SELECT public.${n}(${keys.map((k,i)=>k+'=> $'+(i+1)).join(',')}) AS dato`,Object.values(p)))[0].dato;}
 try {
  await db.exec('CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS; CREATE SCHEMA auth; CREATE TABLE auth.users(id uuid PRIMARY KEY);');
  const migraciones=['0001_esquema.sql','0004_identidad_reportes.sql','0005_ingesta_transaccional.sql','0006_aclaraciones_v2.sql','0007_territorial_orquestador_v2.sql','0008_idempotencia_lotes.sql','0009_planificacion_v3.sql','0010_ensayos_priorizacion_v2.sql','0011_bandeja_salida.sql','0003_aprobacion.sql','0012_comunicacion_v4.sql','0013_feedback_aclaraciones.sql','0014_recuperacion_trabajador.sql','0015_ingesta_recuperable.sql','0016_puente_necesidades_v3.sql'];
+ if(automatico)migraciones.push('0017_lotes_confirmados_automaticos.sql');
  for(const m of migraciones)await db.exec(await fs.readFile(raiz+'/supabase/migrations/'+m,'utf8'));
  await db.exec(await fs.readFile(raiz+'/supabase/seed/01_sectores_puntos.sql','utf8'));
  const uid=(await sql('SELECT gen_random_uuid() AS id'))[0].id;
@@ -23,6 +26,7 @@ try {
  await sql("INSERT INTO public.usuarios_operativos(usuario_id,rol,activo,motivo) VALUES($1,'coordinador',true,'FIXTURE LOCAL A1')",[uid]);
  const {paquete,infraestructura:infra}=py({accion:'fixture',usuario_id:uid});
  const eid=paquete.ejecucion_id;const pol=paquete.lote.politica;
+ if(automatico){pol.politica_version='oeste-prioridad-apoyo-pa-1';for(const f of paquete.lote.entradas){f.evaluacion.politica_version=pol.politica_version;if(f.evaluacion.ventana_atencion)f.evaluacion.ventana_atencion.fin=new Date(Date.now()+86400000).toISOString();}}
  await sql(`INSERT INTO public.politicas_prioridad(politica_version,estado,origen,peso_duracion,peso_vulnerabilidad,peso_poblacion,tope_horas,tope_personas,vulnerabilidad_moderada,fundamento,confirmacion_activacion)
  VALUES($1,'activa','sintetico',$2,$3,$4,$5,$6,$7,$8,$9)`,[pol.politica_version,pol.peso_duracion,pol.peso_vulnerabilidad,pol.peso_poblacion,pol.tope_horas,pol.tope_personas,pol.vulnerabilidad_moderada,pol.fundamento,pol.confirmacion_activacion]);
  let primero=true;
@@ -49,7 +53,23 @@ try {
   for(const objeto of [entrada.solicitud_demanda,entrada.evaluacion])Object.assign(objeto,{ejecucion_id:eid,incidente_id:i.incidente_id,origen:'real'});
   entrada.evaluacion.primera_deteccion_en=i.primera_deteccion_en;
  }
- await rpc('ra_preparar_priorizacion_v2',{p_ejecucion_id:eid,p_usuario_id:uid,p_lote:paquete.lote});
+ if(automatico){
+  // FIXTURE: simular revisión humana previa del lugar, no validación automática.
+  await sql("UPDATE public.incidentes SET estado_validacion='validada',faltantes='{}' WHERE incidente_id=ANY($1::uuid[])",[incidentes.map(i=>i.incidente_id)]);
+  const fuente=(await sql("SELECT ejecucion_id FROM public.ejecuciones WHERE ejecucion_id<>$1 AND etapa='priorizacion' ORDER BY ejecucion_id LIMIT 1",[eid]))[0].ejecucion_id;
+  const revisado=structuredClone(paquete.lote);for(const f of revisado.entradas)for(const k of ['solicitud_demanda','evaluacion'])f[k].ejecucion_id=fuente;
+  await rpc('ra_preparar_priorizacion_v2',{p_ejecucion_id:fuente,p_usuario_id:uid,p_lote:revisado});
+  const s=await rpc('ra_contexto_lote_confirmado_v2',{p_ejecucion_id:eid});
+  const motivo=await rpc('ra_motivo_lote_confirmado_v2',{s});
+  comprobar(motivo===null,'Revisión vigente rechazada: '+motivo);
+  const lote=py({accion:'lote_confirmado',snapshot:s});
+  const r=await rpc('ra_registrar_lote_confirmado_v2',{p_ejecucion_id:eid,p_snapshot:s,p_lote:lote,p_motivo:null});
+  comprobar(r.estado==='preparado','No preparó automáticamente');
+  comprobar(lote.entradas.every((f,i)=>isDeepStrictEqual(f.evaluacion.confirmacion_clase,revisado.entradas[i].evaluacion.confirmacion_clase)),'Cambió confirmaciones originales');
+ }else{
+  await rpc('ra_preparar_priorizacion_v2',{p_ejecucion_id:eid,p_usuario_id:uid,p_lote:paquete.lote});
+ }
+
  let toma=await rpc('ra_tomar_etapa_v2',{p_ejecucion_id:eid,p_trabajador_id:'fixture-a1',p_etapa:'priorizacion'});
  const priorizacion=py({accion:'priorizacion',toma});
  await rpc('ra_finalizar_priorizacion_v2',{p_ejecucion_id:eid,p_trabajador_id:'fixture-a1',p_snapshot:toma,p_resultado:priorizacion.resultado,p_pendientes:[],p_validaciones:priorizacion.validaciones});
@@ -83,7 +103,7 @@ try {
  await sql("UPDATE public.necesidades SET motivo='FIXTURE: cambio después de aprobación' WHERE ejecucion_id=$1",[eid]);
  comprobar((await sql('SELECT estado FROM public.planes WHERE ejecucion_id=$1',[eid]))[0].estado==='invalidado','Cambio de necesidades no invalidó plan');
  comprobar((await sql("SELECT count(*)::int AS n FROM public.avisos WHERE ejecucion_id=$1 AND estado_envio='cancelado'",[eid]))[0].n===6,'Avisos no se cancelaron por cambio de entradas');
- const evidencia={fecha:new Date().toISOString(),modo:'integracion_local_controlada',datos_reales_usados:false,origen_probado:'real',origen_escenario:'sintetico',modo_plan:'ensayo',mismo_ejecucion_id:true,necesidades:6,litros_asignados:pl.rutas.flatMap(r=>r.paradas).reduce((a,p)=>a+p.litros_asignados,0),verificacion_valida:plan.informe.valido,agentes,traza_cinco_agentes:true,avisos_creados:avisos.length,telegram_real:false,gemini_real:false,aprobacion_humana:'simulada en fixture',destino_no_habilitado_bloqueado:true,plan_invalidado_tras_cambio_necesidades:true,avisos_cancelados_tras_cambio:6};
+ const evidencia={preparacion_lote_automatica:automatico,fecha:new Date().toISOString(),modo:'integracion_local_controlada',datos_reales_usados:false,origen_probado:'real',origen_escenario:'sintetico',modo_plan:'ensayo',mismo_ejecucion_id:true,necesidades:6,litros_asignados:pl.rutas.flatMap(r=>r.paradas).reduce((a,p)=>a+p.litros_asignados,0),verificacion_valida:plan.informe.valido,agentes,traza_cinco_agentes:true,avisos_creados:avisos.length,telegram_real:false,gemini_real:false,aprobacion_humana:'simulada en fixture',destino_no_habilitado_bloqueado:true,plan_invalidado_tras_cambio_necesidades:true,avisos_cancelados_tras_cambio:6};
  await fs.writeFile(process.env.RA_EVIDENCIA || raiz+'/agentes/evidencias/puente_necesidades_v3_local.json',JSON.stringify(evidencia,null,2)+'\n');
  console.log(JSON.stringify(evidencia));
 } catch(e){console.log('FALLO INTEGRACION:',e.message,e.code||'',e.where||'');process.exitCode=1;}

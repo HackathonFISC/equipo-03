@@ -71,3 +71,26 @@ Antes de las 10:00 comprobar juntos al menos un recorrido real en el chat de pru
 El recorrido corto aprobación→aviso sigue siendo un respaldo rotulado si falta
 el enlace de captura/revisión. Las 11:30 son referencia interna pendiente de
 confirmación organizativa; no se presenta esa hora como regla nueva del evento.
+
+## Ampliación autorizada: lotes automáticos (0017)
+
+El trabajador prepara un lote sin pulsar el botón si existe una revisión humana
+capturada después de 0017 para el mismo ámbito completo y todo sigue vigente.
+Política fijada por Emilia: `oeste-prioridad-apoyo-pa-1`. No se modificaron rutas,
+panel ni contratos. Tu llamada existente a `ra_preparar_priorizacion_v2` captura
+la fuente mediante un trigger; las preparaciones automáticas no son nuevas revisiones.
+
+**Pendiente de tu parte:** Territorial deja `estado_validacion=pendiente` y
+«Validación operativa del lugar y de la necesidad». El formulario de cantidades
+no valida el lugar ni elimina ese pendiente. Debe existir una acción humana
+autenticada que confirme el lugar con evidencia, versión y auditoría, y resuelva
+únicamente el faltante correspondiente. No borrar todos los faltantes ni activar
+esta condición desde texto de Telegram. Mientras no conste esa validación,
+el preparador mantiene el caso en revisión. Confirmaciones, cantidades y ventanas
+incompletas tampoco se rellenan automáticamente.
+
+Despliegue: 0017 + smoke 0017 + reinicio. Los lotes ya preparados continúan; no se
+reconstruyen instantáneas de revisiones históricas. Detalles en
+`docs/LOTES_AUTOMATICOS_V2.md`. Validación local: 894 pruebas y 66 subpruebas;
+integración de cinco agentes con preparación automática y seis avisos, sin envío
+real ni aprobación humana real. SQL remoto de 0017 pendiente.

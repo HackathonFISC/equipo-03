@@ -57,6 +57,10 @@ class HerramientasJose:
 
 
 def procesar_priorizacion(ejecucion_id, db, trabajador_id, herramientas=None):
+    from agentes.lotes_confirmados import preparar_lote_automatico
+    preparacion = preparar_lote_automatico(db, ejecucion_id, herramientas)
+    if preparacion['estado'] not in {'preparado', 'existente'}:
+        return preparacion
     filas = db.rpc('ra_tomar_etapa_v2', {'p_ejecucion_id': str(ejecucion_id),
         'p_trabajador_id': trabajador_id, 'p_etapa': 'priorizacion'}).execute().data
     if filas is None:
