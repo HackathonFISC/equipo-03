@@ -10,7 +10,7 @@ import asyncio
 import logging
 
 import httpx
-from telegram import ReplyParameters
+from telegram import ForceReply, ReplyParameters
 from telegram.error import BadRequest, Forbidden, TelegramError
 
 logger = logging.getLogger("bot.adaptador")
@@ -85,7 +85,12 @@ async def enviar_una(bot, cliente, trabajador_id: str, aclaracion: dict) -> None
     )
     try:
         enviado = await bot.send_message(
-            chat_id=aclaracion["chat_id"], text=aclaracion["pregunta"], reply_parameters=respuesta_a
+            chat_id=aclaracion["chat_id"],
+            text=aclaracion["pregunta"],
+            reply_parameters=respuesta_a,
+            # Telegram abre la respuesta ya enlazada a la pregunta: sin esto, quien escribe sin pulsar
+            # «Responder» crea un reporte nuevo en lugar de contestar.
+            reply_markup=ForceReply(selective=True, input_field_placeholder="Escribe tu respuesta aquí"),
         )
     except (BadRequest, Forbidden) as error:
         # Telegram rechazó el envío: es seguro que no llegó.

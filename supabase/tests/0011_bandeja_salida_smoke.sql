@@ -1,6 +1,14 @@
 -- Smoke de 0011_bandeja_salida.sql. Datos sintéticos; termina en ROLLBACK (no deja nada).
 -- Ejecutar con rol administrativo, completo, en un entorno SIN avisos previos (lo comprueba al inicio).
 -- Inserta un usuario temporal en auth.users solo para poder crear una aprobación de prueba.
+-- 0012 (Emilia) endurece ra_reservar_aviso: exige plan seleccionado por sector y destino de ensayo para lo sintético.
+-- Este smoke es de la reserva original de 0011; con 0012 instalada ese recorrido lo cubre 0012_comunicacion_v4_smoke.sql.
+SELECT to_regclass('public.planes_sector_v4') IS NOT NULL AS con0012 \gset
+\if :con0012
+\echo 'Con 0012 instalada este smoke no aplica: usar 0012_comunicacion_v4_smoke.sql.'
+\quit
+\endif
+
 BEGIN;
 
 DO $$

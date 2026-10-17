@@ -23,6 +23,7 @@ uvicorn api.main:app --reload
 | Variable | Uso |
 | --- | --- |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Conexión a Supabase mediante `comun/config.py` y `comun/db.py` (de Emilia). Solo backend. |
+| `SUPABASE_ANON_KEY` | Clave pública de Supabase. La API la usa solo para preguntarle a Supabase Auth quién es el dueño de un token (`auth.py`). Sin ella, `GET /sesion` y las rutas de coordinador responden 503. Reiniciar la API al cambiarla. |
 | `API_SECRETO_BOT` | Secreto compartido con el bot, mínimo 16 caracteres. Sin él, las rutas del bot responden 503. Reiniciar la API al cambiarlo. |
 
 CORS admite solo `http://localhost:5173` (servidor de desarrollo del panel).
@@ -40,6 +41,9 @@ CORS admite solo `http://localhost:5173` (servidor de desarrollo del panel).
 | `rutas/aclaraciones.py`, `servicios/aclaraciones.py` | Circuito de aclaración: reservar, registrar envío y entregar respuesta. |
 | `rutas/incidentes.py`, `servicios/incidentes.py` | Incidentes consolidados con su necesidad o sus pendientes. |
 | `rutas/avisos.py`, `servicios/bandeja_salida.py` | Bandeja de salida: reservar el siguiente aviso vigente y registrar su envío. |
+| `rutas/sectores.py`, `servicios/sectores.py` | Estado de un sector, selección del plan que Comunicación usará por sector y habilitación de un destino de ensayo. Llaman a las RPC de la migración 0012 (Emilia) y traducen sus errores. |
+| `rutas/planes.py`, `servicios/planes.py`, `servicios/aprobacion.py` | Listar planes guardados; aprobar y rechazar una versión del plan: solo coordinador activo; llaman a las RPC de la migración 0003 y traducen sus errores a códigos de D003. |
+| `auth.py`, `rutas/sesion.py` | Sesión (V4): verifica el token de Supabase Auth y exige coordinador activo. El usuario sale del token. |
 
 ## Rutas
 
@@ -63,6 +67,13 @@ de reportes; no equivale a una prueba de conectividad externa. Ver
 | `GET /incidentes` | Panel | No (V2) | Incidentes con vínculos activos, su necesidad calculada o sus pendientes. |
 | `POST /avisos/reservar` | Bot | Sí | Reserva el siguiente aviso vigente. 204 si no hay. Requiere la migración 0011. |
 | `POST /avisos/{aviso_id}/envio` | Bot | Sí | Registra `enviado`, `fallido` o `incierto`. 204. |
+| `GET /planes` | Panel | Token | Las 20 versiones de plan más recientes con rutas y paradas (nombre del punto del catálogo), `datos_version`, `politica_version` y bloqueos. Lectura de tablas; no expone la solicitud ni quién creó el plan. |
+| `POST /planes/{plan_id}/versiones/{version}/aprobar` | Panel | Token + coordinador | Cuerpo: `datos_version`, `politica_version`, `motivo`, `bloqueos_reconocidos`. 200 con `aprobacion_id`; repetir lo mismo da `repetido: true`. 403 / 409 (`version_obsoleta`, `politica_no_activa`, `plan_no_verificado`, `cobertura_critica_pendiente`) / 422 (`bloqueos_reconocidos` incompleto) / 503. |
+| `POST /planes/{plan_id}/versiones/{version}/rechazar` | Panel | Token + coordinador | Cuerpo: `motivo`. Deja el plan `rechazado` y la ejecución en revisión. Un plan ya resuelto da 409 `version_obsoleta`. |
+| `GET /sectores/{sector_id}/estado` | Panel o bot | Token o `X-Secreto-Bot` | `EstadoSector` (contrato de Emilia): plan vigente y estado de cada punto. Sector inexistente: 422; forma inesperada de la RPC: 503, nunca "sin plan". |
+| `POST /sectores/{sector_id}/plan-vigente` | Panel | Token + coordinador | Cuerpo: `plan_id`, `version`, `motivo`. Elige el plan aprobado que Comunicación usará en ese sector. 403 / 409 (`version_obsoleta`: sin aprobación vigente o entradas cambiadas) / 422 (sector ajeno al plan). |
+| `PUT /destinos/{destino_id}/ensayo` | Panel | Token + coordinador | Cuerpo: `habilitado`, `motivo`. Habilita o deshabilita un destino de Telegram autorizado para recibir planes sintéticos. 403 si el destino no está autorizado. |
+| `GET /sesion` | Panel | Token | Quién es la persona con sesión y si es coordinador activo (`usuario_id`, `rol`, `activo`, `es_coordinador`). 403 sin sesión válida. |
 
 Las rutas de lectura del panel no tienen autenticación por decisión del equipo. Separar un
 reporte de un incidente sí la necesitará: `ra_separar_reporte` exige un coordinador activo y
@@ -126,6 +137,19 @@ Resultados de una respuesta: `aceptada`, `repetida`, `ya_respondida`, `autor_dis
 no existe, devuelve `autor_distinto` sin llamar a la RPC. Una ubicación se envía según el
 contrato `Ubicacion` con `fuente = "compartida"` y `representa_punto_atencion = null`.
 Los nombres de las RPC están solo en `servicios/aclaraciones.py`.
+
+### Sesión y rol de coordinador (V4)
+
+El panel inicia sesión directamente con Supabase Auth (la contraseña no pasa por esta API) y envía solo
+el token en `Authorization: Bearer <token>`. `auth.py` le pregunta a Supabase Auth (`GET /auth/v1/user`) a quién
+pertenece, rechaza sesiones anónimas y devuelve el `usuario_id`. Un `usuario_id` enviado en el cuerpo, la URL o
+un encabezado **no se usa nunca**.
+
+- `usuario_autenticado`: sesión válida. Sin encabezado, con un token mal formado, vencido o rechazado: 403 `sin_permiso`.
+  Si Supabase Auth no responde o no está configurada la API: 503 `proveedor_no_disponible` (recuperable).
+- `coordinador_actual`: además exige fila activa de rol `coordinador` en `usuarios_operativos` (403 si no).
+  Es un control temprano; las RPC de aprobación (`0003`) lo repiten dentro de la transacción.
+- `GET /sesion` informa el rol y si la persona puede aprobar. Sirve al panel para mostrar u ocultar acciones.
 
 ### Bandeja de salida de avisos (V4, migración 0011)
 
@@ -209,6 +233,13 @@ Usan una base de datos y RPC simuladas: no necesitan red, claves ni Supabase.
   ubicación, remitente desconocido, secreto y errores de la base.
 - `tests/test_api_incidentes.py`: lista vacía, conteos, evaluación calculada e inválida,
   recálculo, punto ausente, orden, campos ocultos y errores de la base.
+- `tests/test_auth.py`: lectura del encabezado, verificación del token con Supabase Auth simulado (rechazos,
+  proveedor caído, respuesta inesperada, sesión anónima, sin redirecciones ni filtrar el token), rol de coordinador
+  y que el usuario salga siempre del token.
+- `tests/test_api_planes.py`: listar, aprobar y rechazar con RPC simuladas: usuario tomado del token, cuerpo inválido,
+  traducción de cada error de la RPC, acceso solo de coordinador activo y respuestas inesperadas.
+- `tests/test_api_sectores.py`: estado con sesión y con secreto del bot, rechazo sin credencial, forma inesperada de la RPC,
+  selección de plan y destino de ensayo con usuario tomado del token, cuerpo inválido, cada error de la RPC y solo coordinador.
 - `tests/test_api_avisos.py`: reserva, forma inesperada de la RPC, campos que no se exponen,
   registro de envío coherente, reserva ajena, secreto y errores de la base.
 
@@ -216,5 +247,6 @@ Usan una base de datos y RPC simuladas: no necesitan red, claves ni Supabase.
 
 - V2: separar un reporte de un incidente (`ra_separar_reporte`), con la sesión mínima del
   coordinador acordada con Emilia.
-- V4: `auth.py` (rol de coordinador), `servicios/aprobacion.py` y migraciones `0002`/`0003`.
+- V4: la migración `0002`. `auth.py`, el inicio de sesión del panel, las rutas de aprobar y rechazar y las de sector/destino
+  (sobre la migración `0012`) ya están, probadas con RPC simuladas; falta aplicar las migraciones en Supabase real.
   La bandeja de salida ya está (migración `0011`, sin aplicar todavía).

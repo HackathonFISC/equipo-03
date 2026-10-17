@@ -1,0 +1,12 @@
+✔ no solapa consultas; actualiza después de la primera respuesta (3.4223ms)
+✔ cierre ignora una respuesta tardía y no deja otro temporizador (0.4506ms)
+✔ cancela el temporizador pendiente al salir de la página (0.3394ms)
+✔ un error permite consultar de nuevo sin perder el ciclo (0.4601ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 122.8415

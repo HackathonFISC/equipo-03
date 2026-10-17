@@ -3,6 +3,8 @@
 -- No crea cuentas ni roles, no envía nada y no crea avisos (los crea Comunicación después de aprobar).
 -- Solo service_role ejecuta las RPC; la API debe pasar el usuario tomado del token verificado,
 -- nunca uno enviado por el navegador. Los errores empiezan por el código de dominio de D003.
+-- La vigencia posterior (invalidar un plan aprobado si cambian sus entradas) la da 0012 de Emilia; 0003 serializa la
+-- aprobación con su bloqueo común si 0012 está instalada, y con un bloqueo de tablas si no.
 BEGIN;
 
 -- Aprobar un plan. Una sola transacción: coordinador activo, versión vigente, política activa,
@@ -13,7 +15,7 @@ CREATE FUNCTION public.ra_aprobar_plan(
 RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path='' AS $$
 DECLARE
   pl public.planes%ROWTYPE; ap public.aprobaciones%ROWTYPE; ej public.ejecuciones%ROWTYPE;
-  esc public.escenarios_planificacion_v3%ROWTYPE; nuevo uuid; ajenos text[]; faltan text[];
+  esc public.escenarios_planificacion_v3%ROWTYPE; nuevo uuid; ajenos text[]; faltan text[]; vigente boolean;
   -- Bloqueos que la aprobación humana puede reconocer y levantar. Cualquier otro (cobertura crítica,
   -- solver sin solución, verificación inválida) impide aprobar: no se levanta con una confirmación.
   reconocibles CONSTANT text[] := ARRAY[
@@ -21,6 +23,15 @@ DECLARE
     'Política sintética: el cálculo no acredita autorización operativa ni calidad del agua.',
     'ENSAYO SINTÉTICO: sin aprobación operativa ni publicación comunitaria.'];
 BEGIN
+  -- Primera operación: serializa con quien cambie entradas. Con 0012 es su bloqueo común (todo escritor lo toma
+  -- antes de modificar filas). Sin 0012 se bloquean las tablas de entradas. No se mezclan: tomar el bloqueo común
+  -- y luego las tablas podría esperar en círculo con un escritor que ya tiene la tabla y espera el bloqueo común.
+  IF to_regprocedure('public.ra_bloqueo_v4()') IS NOT NULL THEN
+    EXECUTE 'SELECT public.ra_bloqueo_v4()';
+  ELSE
+    LOCK TABLE public.depositos,public.vehiculos,public.incidentes,public.puntos_atencion,public.politicas_prioridad IN SHARE MODE;
+  END IF;
+
   IF p_usuario_id IS NULL OR p_plan_id IS NULL OR p_version IS NULL OR p_version<1
      OR p_datos_version IS NULL OR p_politica_version IS NULL OR p_bloqueos_reconocidos IS NULL
      OR p_motivo IS NULL OR length(btrim(p_motivo)) NOT BETWEEN 1 AND 4000 THEN
@@ -38,7 +49,23 @@ BEGIN
   END IF;
 
   -- Repetir la misma aprobación devuelve el acuse anterior; otra distinta se rechaza.
+  IF pl.estado='invalidado' THEN
+    RAISE EXCEPTION 'version_obsoleta: el plan fue invalidado porque cambiaron sus entradas; hay que calcular una versión nueva' USING ERRCODE='40001';
+  END IF;
   IF pl.estado='aprobado' THEN
+    -- Un acuse repetido solo vale si el plan sigue vigente: entradas iguales y, con 0012, su validación completa.
+    SELECT * INTO esc FROM public.escenarios_planificacion_v3
+     WHERE ejecucion_id=pl.ejecucion_id AND plan_id=pl.plan_id AND version=pl.version;
+    IF NOT FOUND OR esc.cierre_snapshot IS NULL
+       OR public.ra_snapshot_planificacion_v3(pl.ejecucion_id) IS DISTINCT FROM esc.cierre_snapshot THEN
+      RAISE EXCEPTION 'version_obsoleta: las entradas cambiaron desde el cálculo del plan' USING ERRCODE='40001';
+    END IF;
+    IF to_regprocedure('public.ra_plan_valido_v4(uuid,integer)') IS NOT NULL THEN
+      EXECUTE 'SELECT public.ra_plan_valido_v4($1,$2)' INTO vigente USING pl.plan_id, pl.version;
+      IF vigente IS NOT TRUE THEN
+        RAISE EXCEPTION 'version_obsoleta: el plan aprobado ya no está vigente' USING ERRCODE='40001';
+      END IF;
+    END IF;
     SELECT * INTO ap FROM public.aprobaciones WHERE aprobacion_id=pl.aprobacion_id;
     IF ap.usuario_id=p_usuario_id AND ap.motivo=p_motivo AND ap.datos_version=p_datos_version
        AND ap.politica_version=p_politica_version THEN
@@ -116,6 +143,9 @@ CREATE FUNCTION public.ra_rechazar_plan(p_usuario_id uuid, p_plan_id uuid, p_ver
 RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path='' AS $$
 DECLARE pl public.planes%ROWTYPE; ej public.ejecuciones%ROWTYPE;
 BEGIN
+  IF to_regprocedure('public.ra_bloqueo_v4()') IS NOT NULL THEN
+    EXECUTE 'SELECT public.ra_bloqueo_v4()';
+  END IF;
   IF p_usuario_id IS NULL OR p_plan_id IS NULL OR p_version IS NULL OR p_version<1
      OR p_motivo IS NULL OR length(btrim(p_motivo)) NOT BETWEEN 1 AND 4000 THEN
     RAISE EXCEPTION 'contrato_invalido: faltan datos del rechazo o el motivo no es válido' USING ERRCODE='22023';

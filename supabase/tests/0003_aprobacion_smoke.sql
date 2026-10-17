@@ -183,13 +183,16 @@ BEGIN
     RAISE EXCEPTION 'No se rechaza un plan ya aprobado'; END IF;
 
   -- 10. Un plan aprobado así es válido para la bandeja de avisos (0011): se reserva y trae sus datos.
-  INSERT INTO public.destinos(destino_id,canal,identificador_externo,autorizado,autorizado_por,autorizado_en,motivo)
-    VALUES (dest,'telegram','smoke-chat-'||dest::text,true,u,now(),'smoke');
-  INSERT INTO public.suscripciones_sector(destino_id,sector_id,activa,creado_por,motivo) VALUES (dest,s,true,u,'smoke');
-  INSERT INTO public.avisos(aviso_id,ejecucion_id,aprobacion_id,plan_id,version,sector_id,punto_atencion_id,destino_id,tipo,ventana_inicio,ventana_fin,litros_asignados,texto,origen)
-    VALUES (av,e,ap,pl,1,s,p,dest,'distribucion',t0,t0+interval '10 minutes',2500,'texto','sintetico');
-  res:=public.ra_reservar_aviso('smoke-trabajador');
-  IF res IS NULL OR (res->>'aviso_id')::uuid<>av THEN RAISE EXCEPTION 'El aviso de un plan aprobado debía poder reservarse: %',res; END IF;
+  -- Con 0012 instalada la reserva exige además plan seleccionado por sector y destino de ensayo: eso lo prueba su smoke.
+  IF to_regclass('public.planes_sector_v4') IS NULL THEN
+    INSERT INTO public.destinos(destino_id,canal,identificador_externo,autorizado,autorizado_por,autorizado_en,motivo)
+      VALUES (dest,'telegram','smoke-chat-'||dest::text,true,u,now(),'smoke');
+    INSERT INTO public.suscripciones_sector(destino_id,sector_id,activa,creado_por,motivo) VALUES (dest,s,true,u,'smoke');
+    INSERT INTO public.avisos(aviso_id,ejecucion_id,aprobacion_id,plan_id,version,sector_id,punto_atencion_id,destino_id,tipo,ventana_inicio,ventana_fin,litros_asignados,texto,origen)
+      VALUES (av,e,ap,pl,1,s,p,dest,'distribucion',t0,t0+interval '10 minutes',2500,'texto','sintetico');
+    res:=public.ra_reservar_aviso('smoke-trabajador');
+    IF res IS NULL OR (res->>'aviso_id')::uuid<>av THEN RAISE EXCEPTION 'El aviso de un plan aprobado debía poder reservarse: %',res; END IF;
+  END IF;
 
   -- 11. Rechazo: segundo plan.
   f2:=pg_temp.fx(u,pol,s,p,d,v,'b'); pl2:=f2[1]; e2:=f2[2];
@@ -207,6 +210,27 @@ BEGIN
   IF NOT (public.ra_rechazar_plan(u,pl2,1,'datos no confiables')->>'repetido')::boolean THEN RAISE EXCEPTION 'Repetir el rechazo debía ser idempotente'; END IF;
   IF pg_temp.intenta(format('SELECT public.ra_aprobar_plan(%L,%L,1,%L,%L,%L,%L::text[])',u,pl2,'smoke-b',pol,'m',bl::text)) NOT LIKE '55000|plan_ya_resuelto%' THEN
     RAISE EXCEPTION 'No se aprueba un plan rechazado'; END IF;
+
+  -- 12. Vigencia posterior: un cambio ajeno al plan no lo toca; un cambio en sus entradas lo invalida.
+  INSERT INTO public.vehiculos(vehiculo_id,nombre,capacidad_litros,turno_inicio,turno_fin,deposito_id,origen)
+    VALUES (gen_random_uuid(),'PRUEBA vehiculo ajeno',5000,now(),now()+interval '6 hours',d,'sintetico');
+  IF NOT EXISTS (SELECT 1 FROM public.planes WHERE plan_id=pl AND estado='aprobado') THEN
+    RAISE EXCEPTION 'Un vehículo ajeno al plan no debía invalidarlo'; END IF;
+  -- La invalidación posterior es de 0012 (Emilia). Si está instalada, se comprueba junto con la aprobación.
+  IF to_regprocedure('public.ra_invalidar_planes_v4()') IS NOT NULL THEN
+    UPDATE public.vehiculos SET capacidad_litros=9000 WHERE vehiculo_id=v;
+    IF NOT EXISTS (SELECT 1 FROM public.planes WHERE plan_id=pl AND version=1 AND estado='invalidado' AND aprobacion_id IS NOT NULL) THEN
+      RAISE EXCEPTION 'Cambiar la flota de un plan aprobado debía invalidarlo'; END IF;
+    IF NOT EXISTS (SELECT 1 FROM public.eventos WHERE ejecucion_id=e AND decision LIKE 'Invalidar%' AND actor_tipo='sistema'
+                     AND detalles->>'plan_id'=pl::text) THEN
+      RAISE EXCEPTION 'La invalidación debía dejar un evento'; END IF;
+    IF NOT EXISTS (SELECT 1 FROM public.planes WHERE plan_id=pl2 AND estado='rechazado') THEN
+      RAISE EXCEPTION 'Un plan rechazado no debía cambiar'; END IF;
+    IF pg_temp.intenta(format('SELECT public.ra_aprobar_plan(%L,%L,1,%L,%L,%L,%L::text[])',u,pl,'smoke-a',pol,'motivo smoke',bl::text)) NOT LIKE '40001|version_obsoleta%' THEN
+      RAISE EXCEPTION 'Un plan invalidado no se aprueba de nuevo'; END IF;
+  ELSE
+    RAISE NOTICE 'Sin 0012: no se probó la invalidación posterior';
+  END IF;
 
   RAISE NOTICE 'OK: 0003 aprobación atómica (permisos, versiones, vigencia, verificación, bloqueos, idempotencia, rechazo, integración con 0011)';
 END $$;
