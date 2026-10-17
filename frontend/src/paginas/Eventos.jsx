@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { LIMITE_EVENTOS, obtenerEventos } from '../api/eventos.js'
 import { iniciarSondeo } from '../api/sondeo.js'
 import './Eventos.css'
+import { useBorrador } from '../useBorrador.js'
 
 // Cada agente tiene una sola tarea. Se dice con palabras de quien opera, no con el nombre técnico.
 const AGENTES = {
@@ -103,7 +104,7 @@ export default function Eventos({ alExpirar }) {
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
   const [enVivo, setEnVivo] = useState(true)
-  const [filtro, setFiltro] = useState('todos')
+  const [filtro, setFiltro] = useBorrador('eventos.filtro', 'todos')
   const [ejecucion, setEjecucion] = useState('')
   const [intento, setIntento] = useState(0)
   const [actualizado, setActualizado] = useState(null)

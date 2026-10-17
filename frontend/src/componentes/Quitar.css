@@ -1,0 +1,17 @@
+.quitar-fila { display: flex; justify-content: flex-end; margin-top: 10px; }
+.quitar-boton { background: transparent; border: 1px solid var(--borde, #cbd5e1); color: var(--tinta-suave, #475569); border-radius: var(--radio, 8px); padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+.quitar-boton:hover { border-color: var(--ladrillo, #9b2c2c); color: var(--ladrillo, #9b2c2c); }
+.quitar-boton:focus-visible, .quitar-cancelar:focus-visible, .quitar-confirmar:focus-visible, .quitados-barra button:focus-visible { outline: 3px solid var(--agua, #075985); outline-offset: 2px; }
+
+.quitar-dialogo { max-width: min(460px, calc(100vw - 32px)); border: 0; border-radius: 14px; padding: 24px; background: var(--papel, #fff); color: var(--tinta, #102a43); box-shadow: 0 20px 50px rgb(16 42 67 / 30%); }
+.quitar-dialogo::backdrop { background: rgb(16 42 67 / 55%); }
+.quitar-dialogo h2 { margin: 0 0 8px; font-size: 18px; line-height: 1.3; }
+.quitar-dialogo p { margin: 0 0 10px; font-size: 14.5px; line-height: 1.5; }
+.quitar-nombre { padding: 8px 12px; background: var(--fondo, #f1f5f9); border-radius: 8px; font-weight: 600; overflow-wrap: anywhere; }
+.quitar-acciones { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+.quitar-cancelar, .quitar-confirmar { font: inherit; font-size: 14px; padding: 9px 16px; border-radius: var(--radio, 8px); cursor: pointer; }
+.quitar-cancelar { background: transparent; border: 1px solid var(--borde, #cbd5e1); color: var(--tinta, #102a43); }
+.quitar-confirmar { background: var(--ladrillo, #9b2c2c); border: 1px solid var(--ladrillo, #9b2c2c); color: #fff; font-weight: 600; }
+
+.quitados-barra { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin: 12px 0; padding: 10px 14px; background: var(--fondo, #f1f5f9); border: 1px dashed var(--borde, #cbd5e1); border-radius: var(--radio, 8px); font-size: 14px; }
+.quitados-barra button { background: transparent; border: 0; color: var(--agua, #075985); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 4px 6px; }
