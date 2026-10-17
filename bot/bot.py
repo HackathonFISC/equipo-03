@@ -27,6 +27,7 @@ import logging
 import os
 import re
 import sys
+import unicodedata
 from uuid import uuid4
 
 import httpx
@@ -55,6 +56,29 @@ MAX_TEXTO = 4000  # Máximo del contrato; Telegram admite hasta 4096.
 # Acuse neutral: el bot no sabe si es un reporte hasta que lo analiza la Ingesta.
 MENSAJE_RECIBIDO = "Recibimos tu mensaje. Código: {codigo}."
 MENSAJE_REPETIDO = "Ya habíamos recibido este mensaje. Código: {codigo}."
+# Mensaje sin relación con el agua (saludo, prueba, charla): la Ingesta lo cierra como fuera de alcance y no
+# puede preguntar. El bot lo orienta con preguntas concretas y abre la respuesta enlazada: lo que la persona
+# conteste llega como reporte nuevo.
+MENSAJE_ORIENTA = (
+    "Recibimos tu mensaje. Código: {codigo}.\n\n"
+    "Soy el bot de H2Oeste y atiendo reportes de falta de agua. Si es tu caso, cuéntame en un mensaje:\n"
+    "• ¿Dónde falta el agua? (barrio, escuela, centro de salud o punto de referencia)\n"
+    "• ¿Desde cuándo no llega?\n"
+    "• ¿Cuántas personas están afectadas?\n"
+    "• ¿Hay adultos mayores, niños pequeños, una escuela o un centro de salud?"
+)
+PISTA_ORIENTA = "Ej.: Sin agua desde el martes en…"
+_PALABRAS_DE_AGUA = re.compile(
+    r"\b(agua|aguas|acueducto|tuberia|tuberias|cisterna|cisternas|camion cisterna|idaan|grifo|llave|llaves|"
+    r"potable|suministro|racionamiento|fuga|fugas|sed|turbia|sucia|presion|medidor|pozo|tanque|sin servicio)\b"
+)
+
+
+def parece_reporte_de_agua(texto: str) -> bool:
+    """True si el texto menciona algo del servicio de agua. Solo decide cómo se acusa recibo, nunca si se guarda."""
+    plano = unicodedata.normalize("NFD", texto.lower())
+    plano = "".join(c for c in plano if not unicodedata.combining(c))
+    return _PALABRAS_DE_AGUA.search(plano) is not None
 MENSAJE_LARGO = f"Tu mensaje es demasiado largo (máximo {MAX_TEXTO} caracteres). Envíalo más corto."
 MENSAJE_FALLO = "No pudimos guardar tu reporte ahora. Inténtalo de nuevo en unos minutos."
 MENSAJE_FALLO_RESPUESTA = "No pudimos guardar tu respuesta ahora. Inténtalo de nuevo en unos minutos."
@@ -202,15 +226,27 @@ def _sin_mencion(texto: str, usuario_bot: str | None) -> tuple[str, bool]:
     return " ".join(limpio.split()), cambios > 0
 
 
-async def _responder_aclaracion(mensaje, chat, usuario, cliente, contenido: dict) -> str | None:
-    """Entrega un reply a la API. Devuelve el resultado; None si falló (ya avisado)."""
+def _pregunta_a_responder(mensaje, chat, usuario, dirigido: bool) -> int | None:
+    """Mensaje de la pregunta que esta persona está contestando: el del reply o, si no pulsó «Responder»,
+    la última pregunta abierta que el bot le envió en este chat (grupo o privado)."""
+    if not adaptador.ACLARACIONES_ACTIVAS:
+        return None
+    if dirigido:
+        return mensaje.reply_to_message.message_id
+    return adaptador.pregunta_abierta(chat.id, usuario.id)
+
+
+async def _responder_aclaracion(mensaje, chat, usuario, cliente, contenido: dict, pregunta_id: int) -> str | None:
+    """Entrega una respuesta a la API. Devuelve el resultado; None si falló (ya avisado)."""
     resultado = await entregar_respuesta(cliente, {
         "usuario_telegram_id": usuario.id,
         "chat_id": chat.id,
-        "pregunta_mensaje_id": mensaje.reply_to_message.message_id,
+        "pregunta_mensaje_id": pregunta_id,
         "message_id": mensaje.message_id,
         **contenido,
     })
+    if resultado is not None:
+        adaptador.olvidar_pregunta(chat.id, usuario.id)  # Una pregunta se contesta una vez; lo siguiente es un reporte nuevo.
     if resultado is None:
         await mensaje.reply_text(MENSAJE_FALLO_RESPUESTA)
     elif resultado in MENSAJES_RESULTADO:
@@ -267,8 +303,10 @@ async def recibir_texto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     texto = mensaje.text or ""
     dirigido = es_reply_al_bot(mensaje, _id_del_bot(context))
     texto, mencionado = _sin_mencion(texto, _usuario_del_bot(context))
-    if _es_grupo(chat) and not (dirigido or mencionado):
-        # En grupos solo se atiende lo dirigido al bot; la conversación del grupo no se registra.
+    pregunta_id = _pregunta_a_responder(mensaje, chat, usuario, dirigido)
+    if _es_grupo(chat) and not (dirigido or mencionado or pregunta_id is not None):
+        # En grupos solo se atiende lo dirigido al bot o la respuesta de quien tiene una pregunta abierta;
+        # la conversación del grupo no se registra.
         logger.debug("Mensaje de grupo no dirigido al bot: chat=%s", chat.id)
         return
     if mencionado and not texto:
@@ -281,11 +319,11 @@ async def recibir_texto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     if not await _dentro_del_limite(mensaje, usuario, context):
         return
 
-    if adaptador.ACLARACIONES_ACTIVAS and dirigido:
-        resultado = await _responder_aclaracion(mensaje, chat, usuario, cliente, {"texto": texto})
+    if pregunta_id is not None:
+        resultado = await _responder_aclaracion(mensaje, chat, usuario, cliente, {"texto": texto}, pregunta_id)
         if resultado != "no_encontrada":
             return
-        # El reply no era a una pregunta (por ejemplo, a "Recibimos tu reporte"): es un reporte nuevo.
+        # No era respuesta a una pregunta (por ejemplo, un reply a "Recibimos tu reporte"): es un reporte nuevo.
 
     # Solo se registran identificadores y el largo: el texto es de una persona y no va al registro.
     logger.info(
@@ -307,8 +345,17 @@ async def recibir_texto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         return
 
     codigo = _codigo(respuesta)
+    if respuesta.status_code in (200, 201) and codigo:
+        # La pregunta de aclaración llegará después y solo traerá el id de este mensaje: se guarda quién lo envió.
+        adaptador.recordar_autor(chat.id, mensaje.message_id, usuario.id)
     if respuesta.status_code == 201 and codigo:
-        await mensaje.reply_text(MENSAJE_RECIBIDO.format(codigo=codigo))
+        if parece_reporte_de_agua(texto):
+            await mensaje.reply_text(MENSAJE_RECIBIDO.format(codigo=codigo))
+        else:
+            await mensaje.reply_text(
+                MENSAJE_ORIENTA.format(codigo=codigo),
+                reply_markup=ForceReply(selective=True, input_field_placeholder=PISTA_ORIENTA),
+            )
     elif respuesta.status_code == 200 and codigo:
         await mensaje.reply_text(MENSAJE_REPETIDO.format(codigo=codigo))
     else:
@@ -328,9 +375,10 @@ async def recibir_ubicacion(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         await mensaje.reply_text(MENSAJE_EN_VIVO)
         return
     dirigido = es_reply_al_bot(mensaje, _id_del_bot(context))
-    if _es_grupo(chat) and not dirigido:
+    pregunta_id = _pregunta_a_responder(mensaje, chat, usuario, dirigido)
+    if _es_grupo(chat) and not dirigido and pregunta_id is None:
         return  # En grupos, una ubicación compartida en la conversación no es para el bot.
-    if not adaptador.ACLARACIONES_ACTIVAS or not dirigido:
+    if pregunta_id is None:
         await mensaje.reply_text(MENSAJE_SOLO_TEXTO)
         return
     if not await _dentro_del_limite(mensaje, usuario, context):
@@ -342,7 +390,7 @@ async def recibir_ubicacion(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             "longitud": ubicacion.longitude,
             "precision_metros": getattr(ubicacion, "horizontal_accuracy", None),
         },
-    })
+    }, pregunta_id)
     if resultado == "no_encontrada":
         await mensaje.reply_text(MENSAJE_SOLO_TEXTO)
 

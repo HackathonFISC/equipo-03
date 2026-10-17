@@ -89,6 +89,7 @@ El menú "/" de Telegram muestra `/ayuda`; se publica al arrancar.
 | Situación | Mensaje |
 | --- | --- |
 | Reporte nuevo | Recibimos tu mensaje. Código: (8 caracteres del reporte). |
+| Mensaje nuevo sin relación con el agua (saludo, prueba) | El mismo acuse, más cuatro preguntas (dónde, desde cuándo, cuántas personas, si hay población vulnerable) y una respuesta enlazada: lo que la persona conteste entra como reporte nuevo. |
 | Mensaje ya registrado | Ya habíamos recibido este mensaje. Código: … |
 | API caída o con error | No pudimos guardar tu reporte ahora. Inténtalo de nuevo en unos minutos. |
 | Respuesta `aceptada` o `repetida` | Gracias, recibimos tu respuesta. |
@@ -97,9 +98,28 @@ El menú "/" de Telegram muestra `/ayuda`; se publica al arrancar.
 | `vencida` | El plazo para responder esta pregunta venció. Tu reporte sigue pendiente de revisión. |
 
 El acuse es neutral ("mensaje", no "reporte"): si un texto es un reporte de agua lo decide
-el agente de Ingesta, no el bot.
+el agente de Ingesta, no el bot. La Ingesta cierra como fuera de alcance lo que no es de agua y no puede
+preguntar (su contrato lo prohíbe), así que el bot orienta por su cuenta: `parece_reporte_de_agua` busca
+palabras del servicio (agua, tubería, cisterna, fuga…) solo para elegir el texto del acuse. No decide si el
+mensaje se guarda: todo se envía a la API igual. Se equivoca a veces (un reporte sin esas palabras recibe las
+preguntas; una charla que nombra el agua no). Orientar después de que la Ingesta clasifique requiere coordinarlo
+con Emilia.
 
 ## Circuito de aclaración (V2, decisiones D006 y D008)
+
+**Responder sin pulsar «Responder».** La API enlaza la respuesta con la pregunta por el id del mensaje del bot, así que un
+mensaje suelto se tomaba como reporte nuevo y la aclaración quedaba sin contestar. Ahora el bot recuerda la última
+pregunta que envió a cada persona en cada chat (`adaptador.recordar_pregunta`, en memoria, 30 minutos) y toma su siguiente
+texto o pin como respuesta, en chat privado y en grupos. Para saber a quién va la pregunta, guarda quién envió cada
+mensaje de reporte (`recordar_autor`). Una pregunta se contesta una vez; lo siguiente es un reporte nuevo. Un reply
+explícito manda sobre lo recordado. En un grupo, los mensajes de otras personas o sin pregunta abierta siguen
+ignorándose y sin registrarse. Si el bot se reinicia, se pierde lo recordado y vuelve a valer solo el reply. La API y la
+base no cambian: el autor y el estado los sigue validando la RPC.
+
+**Grupos y modo privacidad:** con el modo privacidad de BotFather activo (`/setprivacy` → Enable), Telegram solo entrega
+al bot los comandos, las menciones y los replies a sus mensajes. Por eso en un grupo la respuesta sin «Responder» solo
+llega si el modo privacidad está desactivado (Disable). Desactivarlo hace que el bot reciba todo el grupo, aunque descarte
+lo que no sea una respuesta a su pregunta; es una decisión de seguridad, no solo de comodidad.
 
 `adaptador.py`, si `ACLARACIONES_ACTIVAS` es `True`:
 
