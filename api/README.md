@@ -3,7 +3,8 @@
 **Dueño:** Noel
 
 API de RutaAgua Oeste con FastAPI. Recibe los reportes del bot, los guarda en
-Supabase, los muestra al panel y conecta el bot con las RPC de aclaración de Emilia.
+Supabase, los muestra al panel, conecta el bot con las RPC de aclaración de Emilia y
+entrega al panel los incidentes con su necesidad.
 Es el único componente con la clave de servicio de Supabase: ni el bot ni el panel la tienen.
 
 ## Arranque
@@ -37,6 +38,7 @@ CORS admite solo `http://localhost:5173` (servidor de desarrollo del panel).
 | `rutas/reportes.py`, `servicios/reportes.py` | Crear y listar reportes. |
 | `rutas/ejecuciones.py`, `servicios/ejecuciones.py` | Estado de una ejecución y traza de sus agentes. |
 | `rutas/aclaraciones.py`, `servicios/aclaraciones.py` | Circuito de aclaración: reservar, registrar envío y entregar respuesta. |
+| `rutas/incidentes.py`, `servicios/incidentes.py` | Incidentes consolidados con su necesidad o sus pendientes. |
 
 ## Rutas
 
@@ -49,9 +51,11 @@ CORS admite solo `http://localhost:5173` (servidor de desarrollo del panel).
 | `POST /aclaraciones/reservar` | Bot | Sí | Reserva la siguiente pregunta pendiente. 204 si no hay. |
 | `POST /aclaraciones/{aclaracion_id}/envio` | Bot | Sí | Registra `enviado`, `fallido` o `incierto`. 204. |
 | `POST /aclaraciones/respuestas` | Bot | Sí | Entrega un reply a una pregunta. Siempre 200 con un resultado. |
+| `GET /incidentes` | Panel | No (V2) | Incidentes con vínculos activos, su necesidad calculada o sus pendientes. |
 
-`GET /reportes` y `GET /ejecuciones/{id}` no tienen autenticación en V1 por decisión
-del equipo; la autenticación del coordinador llega en V4 (`auth.py`).
+Las rutas de lectura del panel no tienen autenticación por decisión del equipo. Separar un
+reporte de un incidente sí la necesitará: `ra_separar_reporte` exige un coordinador activo y
+su `usuario_id` debe salir del token de sesión, nunca del navegador (acuerdo con Emilia).
 
 ### `POST /reportes`
 
@@ -112,6 +116,32 @@ no existe, devuelve `autor_distinto` sin llamar a la RPC. Una ubicación se env�
 contrato `Ubicacion` con `fuente = "compartida"` y `representa_punto_atencion = null`.
 Los nombres de las RPC están solo en `servicios/aclaraciones.py`.
 
+### `GET /incidentes` (V2)
+
+Se arma con las RPC de la migración `0007_territorial_orquestador_v2.sql`:
+
+1. `ra_incidentes_snapshot_v2()`: incidentes con al menos un vínculo activo.
+2. `ra_catalogo_v2()`: nombre, distrito y corregimiento de los puntos activos.
+3. `vinculos_reportes` con `desvinculado_en IS NULL`: cuántos reportes tiene cada incidente.
+
+Cada elemento trae identidad y versión (`incidente_id`, `ejecucion_id`, `version`, `origen`),
+lugar (`sector_id`, `punto_atencion_id`, `punto`), consolidación (`estado_validacion`,
+`tipo_problema`, `episodio_establecido`, período, `primera_deteccion_en`, `confianza`,
+`conflictos`, `faltantes`, `requiere_revision_urgente`), conteos y cálculo
+(`evaluacion_necesidad`, `pendientes_calculo`).
+
+- `reportes_vinculados` cuenta vínculos activos; `reportes_independientes` cuenta remitentes
+  distintos. No son lo mismo: tres mensajes de una persona son 3 y 1.
+- `evaluacion_necesidad` se valida con `EvaluacionNecesidades`. Si no cumple el contrato se
+  devuelve `null` y se agrega un pendiente: nunca se muestra como calculada.
+- Sin lote de cálculo, la evaluación es `null` y `pendientes_calculo` dice por qué. Después
+  de separar un reporte, la RPC de Emilia invalida las evaluaciones de todos los incidentes
+  y deja "recalcular" en los pendientes.
+- `punto` es `null` si el incidente no tiene punto o este no está activo en el catálogo.
+- **No incluye** remitentes, chats, mensajes, textos de reportes, `creado_por`, `motivo` ni
+  `ubicacion`.
+- Orden: del detectado más recientemente al más antiguo; la página ordena por prioridad.
+
 ## Errores
 
 El cuerpo de un error es el `ErrorDominio` completo de `contratos/errores.py`. Códigos HTTP (D003):
@@ -135,9 +165,10 @@ El cuerpo de un error es el `ErrorDominio` completo de `contratos/errores.py`. C
 ## Interruptor
 
 `GUARDAR_DESTINO_ORIGEN` en `servicios/reportes.py` guarda `reportes.destino_origen_id`.
-Requiere la migración `0006` aplicada en Supabase. Mientras sea `False`, el destino se
+Está en `True`: la migración `0006` está aplicada en Supabase. Con `False`, el destino se
 registra pero no se enlaza al reporte, y las aclaraciones de ese reporte pasan a revisión
-(`destino_origen_pendiente`). Va junto con `ACLARACIONES_ACTIVAS` del bot.
+(`destino_origen_pendiente`). Va junto con `ACLARACIONES_ACTIVAS` del bot. Los reportes
+anteriores a la activación no tienen destino de origen: la migración no lo infiere.
 
 ## Pruebas
 
@@ -151,9 +182,12 @@ Usan una base de datos y RPC simuladas: no necesitan red, claves ni Supabase.
   destino de origen, validación, errores, lista y seguimiento de ejecuciones.
 - `tests/test_api_aclaraciones.py`: reservas, registro de envío, los seis resultados,
   ubicación, remitente desconocido, secreto y errores de la base.
+- `tests/test_api_incidentes.py`: lista vacía, conteos, evaluación calculada e inválida,
+  recálculo, punto ausente, orden, campos ocultos y errores de la base.
 
 ## Pendiente
 
-- V2: `rutas/incidentes.py` (consultar y corregir incidentes) y `GET /necesidades` para el panel.
+- V2: separar un reporte de un incidente (`ra_separar_reporte`), con la sesión mínima del
+  coordinador acordada con Emilia.
 - V4: `auth.py` (rol de coordinador), `servicios/aprobacion.py`, `servicios/bandeja_salida.py`
   y migraciones `0002`/`0003`.
