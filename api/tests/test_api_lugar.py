@@ -1,6 +1,6 @@
 """Pruebas de validar el lugar de un incidente, con RPC y sesión simuladas (sin red ni claves).
 
-La RPC real es ra_validar_lugar_v1 (migración 0018, probada en supabase/tests/0018_validar_lugar_smoke.sql);
+La RPC real es ra_validar_lugar_v1 (migración 0020, probada en supabase/tests/0020_validar_lugar_smoke.sql);
 aquí se comprueba quién llama, qué se envía y cómo se traducen sus errores.
 """
 from uuid import uuid4

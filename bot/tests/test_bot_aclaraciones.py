@@ -200,7 +200,9 @@ def test_reply_a_un_mensaje_que_no_es_pregunta_es_un_reporte_nuevo():
     update, contexto, llamadas, respuestas = armar(api_resultado("no_encontrada"))
     asyncio.run(recibir_texto(update, contexto))
     assert rutas(llamadas) == ["/aclaraciones/respuestas", "/reportes"]
-    respuestas.assert_awaited_once_with("Recibimos tu mensaje. Código: 2be33e79.")
+    # Su texto no habla de agua: el acuse trae las preguntas de orientación (ver test_bot_orientacion.py).
+    respuestas.assert_awaited_once()
+    assert respuestas.await_args.args[0].startswith("Recibimos tu mensaje. Código: 2be33e79.")
 
 
 def test_reply_a_otra_persona_es_un_reporte_normal():

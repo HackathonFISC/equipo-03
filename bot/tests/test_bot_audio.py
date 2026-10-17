@@ -102,3 +102,39 @@ def test_remitente_no_autorizado_no_descarga_audio():
     asyncio.run(recibir_audio(u,c))
     assert not llamadas
     media.get_file.assert_not_awaited()
+
+
+@pytest.mark.parametrize('grupo', [False, True])
+def test_audio_sin_reply_contesta_pregunta_abierta(monkeypatch, grupo):
+    monkeypatch.setattr(adaptador, 'ACLARACIONES_ACTIVAS', True)
+    monkeypatch.setattr(adaptador, '_preguntas_abiertas', {})
+    u, c, llamadas, _ = armar(grupo=grupo)
+    adaptador.recordar_pregunta(u.effective_chat.id, 55, u.effective_user.id)
+    asyncio.run(recibir_audio(u, c))
+    assert [p.url.path for p in llamadas] == ['/audio/transcribir', '/aclaraciones/respuestas']
+    cuerpo = json.loads(llamadas[-1].content)
+    assert cuerpo['pregunta_mensaje_id'] == 55
+    assert cuerpo['fuente_texto'] == 'transcripcion_audio'
+    assert adaptador.pregunta_abierta(u.effective_chat.id, u.effective_user.id) is None
+
+
+def test_audio_en_grupo_no_contesta_pregunta_de_otra_persona(monkeypatch):
+    monkeypatch.setattr(adaptador, 'ACLARACIONES_ACTIVAS', True)
+    monkeypatch.setattr(adaptador, '_preguntas_abiertas', {})
+    u, c, llamadas, media = armar(grupo=True)
+    adaptador.recordar_pregunta(u.effective_chat.id, 55, 222)
+    asyncio.run(recibir_audio(u, c))
+    assert llamadas == []
+    media.get_file.assert_not_awaited()
+
+
+def test_audio_fuera_de_alcance_orienta_y_confirma_transcripcion(monkeypatch):
+    monkeypatch.setitem(globals(), 'TEXTO', 'Hola, buenos días')
+    monkeypatch.setattr(adaptador, '_preguntas_abiertas', {})
+    u, c, llamadas, _ = armar()
+    asyncio.run(recibir_audio(u, c))
+    respuesta = u.effective_message.reply_text.await_args
+    assert 'Transcribimos tu audio' in respuesta.args[0]
+    assert '¿Dónde falta el agua?' in respuesta.args[0]
+    assert respuesta.kwargs['reply_markup'].force_reply
+    assert llamadas[-1].url.path == '/reportes'

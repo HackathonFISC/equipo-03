@@ -9,6 +9,7 @@
 import asyncio
 import logging
 import re
+import time
 import unicodedata
 
 import httpx
@@ -33,6 +34,45 @@ MENSAJES_RESULTADO = {
     "vencida": "El plazo para responder esta pregunta venció. Tu reporte sigue pendiente de revisión.",
 }
 # "no_encontrada" no tiene mensaje: el reply no era a una pregunta y sigue el flujo de reporte.
+
+
+# Pregunta abierta de cada persona en cada chat, en memoria. Muchas personas escriben su respuesta sin pulsar
+# «Responder»: durante VIGENCIA_PREGUNTA_SEGUNDOS el bot toma el siguiente texto o pin de quien reportó como respuesta
+# a la última pregunta que le envió, también en grupos. Si el bot se reinicia se pierde y vuelve a valer solo el reply.
+VIGENCIA_PREGUNTA_SEGUNDOS = 30 * 60
+MAX_AUTORES = 2000
+_preguntas_abiertas: dict[tuple[int, int], tuple[int, float]] = {}
+_autores: dict[tuple[int, int], int] = {}  # (chat, mensaje del reporte) -> quien lo envió
+
+
+def recordar_autor(chat_id: int, mensaje_id: int, usuario_id: int) -> None:
+    """Quién envió el mensaje de un reporte: la pregunta llega después y solo trae el id de ese mensaje."""
+    _autores[(chat_id, mensaje_id)] = usuario_id
+    while len(_autores) > MAX_AUTORES:
+        _autores.pop(next(iter(_autores)))
+
+
+def recordar_pregunta(chat_id: int, mensaje_id: int, usuario_id: int | None = None) -> None:
+    """Deja abierta la pregunta enviada. Sin autor conocido solo se puede en un chat privado (su id es el del usuario)."""
+    if usuario_id is None and chat_id > 0:
+        usuario_id = chat_id
+    if usuario_id is not None:
+        _preguntas_abiertas[(chat_id, usuario_id)] = (mensaje_id, time.monotonic())
+
+
+def pregunta_abierta(chat_id: int, usuario_id: int) -> int | None:
+    """Id del mensaje con la última pregunta enviada a esta persona en este chat, mientras siga vigente."""
+    dato = _preguntas_abiertas.get((chat_id, usuario_id))
+    if dato is None:
+        return None
+    if time.monotonic() - dato[1] > VIGENCIA_PREGUNTA_SEGUNDOS:
+        _preguntas_abiertas.pop((chat_id, usuario_id), None)
+        return None
+    return dato[0]
+
+
+def olvidar_pregunta(chat_id: int, usuario_id: int) -> None:
+    _preguntas_abiertas.pop((chat_id, usuario_id), None)
 
 
 def es_reply_al_bot(mensaje, bot_id) -> bool:
@@ -121,6 +161,8 @@ async def enviar_una(bot, cliente, trabajador_id: str, aclaracion: dict) -> None
         await _registrar_envio(cliente, aclaracion["aclaracion_id"], trabajador_id,
                                "incierto", error=f"Telegram: {type(error).__name__}")
         return
+    recordar_pregunta(aclaracion["chat_id"], enviado.message_id,
+                      _autores.get((aclaracion["chat_id"], original)) if original else None)
     await _registrar_envio(cliente, aclaracion["aclaracion_id"], trabajador_id,
                            "enviado", mensaje_id=str(enviado.message_id))
 
