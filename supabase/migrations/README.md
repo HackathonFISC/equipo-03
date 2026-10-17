@@ -86,7 +86,7 @@ aprobado. Esa prueba no usa Supabase ni concurrencia real de varios procesos. Si
 
 ## Aprobación de planes (0003, Noel)
 
-Aplicar una vez `0003_aprobacion.sql`, completo, **después de 0009** (usa `escenarios_planificacion_v3` y su
+Aplicar una vez `0003_aprobacion.sql`, completo, **después de 0009 y 0011 y antes de 0012** (usa `escenarios_planificacion_v3` y su
 snapshot); el número 0003 estaba reservado a Noel desde 0001, no indica el orden. Después ejecutar
 `../tests/0003_aprobacion_smoke.sql`, completo: usa datos sintéticos, inserta usuarios temporales en
 `auth.users` y termina en ROLLBACK.
@@ -112,19 +112,27 @@ falta alguno se rechaza. Cualquier otro (cobertura crítica, solver sin solució
 levanta con una confirmación. Los bloqueos reconocidos quedan en el evento y en `planes.propuesta`. La
 publicación sigue limitada por destinos autorizados (`destinos.autorizado`), que la bandeja (0011) comprueba.
 
-Al aprobar, bloquea (SHARE) las tablas de entradas (depósitos, vehículos, incidentes, puntos y políticas), igual
-que `ra_finalizar_planificacion_v3`: nadie las cambia entre la comparación del snapshot y el commit. Un
-disparador `ra_invalidar_planes` en esas cinco tablas (función `ra_invalidar_planes_obsoletos`, SECURITY
-DEFINER, solo mira planes aprobados) pasa el plan a `invalidado` si después cambia una entrada que usó el
-cálculo, y deja un evento `Invalidar plan aprobado`. Los avisos pendientes del plan los cancela `ra_reservar_aviso`
-al ver que ya no está aprobado. Un plan invalidado no se aprueba de nuevo: hay que calcular una versión nueva.
+**Concurrencia (caso 21).** La primera operación de `ra_aprobar_plan` es serializar con quien cambie entradas:
+si 0012 está instalada usa su bloqueo común `ra_bloqueo_v4()` (todo escritor de entradas lo toma antes de
+modificar filas); si no, bloquea (SHARE) las tablas de entradas, igual que `ra_finalizar_planificacion_v3`. No se
+combinan los dos: tomar el bloqueo común y luego las tablas podría esperar en círculo con un escritor que ya
+tiene la tabla. `ra_rechazar_plan` toma el bloqueo común si existe. Repetir una aprobación solo devuelve el
+acuse si el plan sigue vigente (entradas iguales y, con 0012, `ra_plan_valido_v4`); un plan `invalidado` o con
+entradas distintas responde `version_obsoleta`, no `plan_ya_resuelto`.
+
+La **invalidación posterior** (pasar a `invalidado` un plan aprobado cuando luego cambia una entrada o su
+asignación y cancelar sus avisos pendientes) es de 0012; 0003 no la duplica. Sin 0012 la aprobación sigue
+comprobando las entradas en el momento de aprobar, pero un plan ya aprobado no se invalida solo.
 
 `ra_rechazar_plan` deja el plan `rechazado` y la ejecución en `espera_revision`, con el motivo en el evento.
 
-Verificación local: PostgreSQL 16 con 0001 a 0011 aplicadas; smoke aprobado, incluida la invalidación posterior
-(también se comprobó que falla si se quita el control de vigencia de entradas) y smoke de 0011 aprobado con 0003 instalada. No usa Supabase ni
-concurrencia real de varios procesos. Sin aplicar a Supabase. La etapa `comunicacion` no la procesa aún ningún
-trabajador: el trabajador de Emilia solo toma ingesta, territorial, priorización y planificación.
+Verificación local: PostgreSQL 16, dos pilas: 0001 a 0011 y 0003 (sin 0012) y esa misma más 0012. El smoke de
+0003 pasa en las dos (la invalidación posterior solo se comprueba con 0012); el de 0011 aplica sin 0012 (con 0012
+la reserva es más estricta y lo cubre el smoke de 0012, que también pasa). `../tests/0003_concurrencia.sh
+<base_desechable>` lanza sesiones reales de psql y comprueba: un cambio de entradas sin confirmar hace esperar a
+la aprobación y la deja `version_obsoleta`; un cambio durante la aprobación espera (y con 0012 deja el plan
+`invalidado`); dos aprobaciones iguales guardan una sola; aprobar y rechazar a la vez deja una sola decisión. Pasó
+tres veces seguidas en cada pila. No usa Supabase; sin aplicar a Supabase.
 
 ## Comunicación y vigencia V4 (0012, Emilia)
 
