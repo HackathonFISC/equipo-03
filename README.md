@@ -67,6 +67,16 @@ Consultar [solver y verificador V3](calculo/PLAN_V3.md). Se prueban seis puntos 
 
 ## Evals
 
+Para comparar prioridad frente a orden de llegada y simular el retiro de una cisterna:
+
+```powershell
+.\.venv\Scripts\python.exe -m evals.comparar_v5
+```
+
+La [preparación local V5](evals/V5.md) usa los mismos datos y restricciones para
+ambos métodos. Muestra cobertura, litros, déficit y tiempos, sin acreditar
+replanificación persistida, aprobación ni avisos reales.
+
 Para reunir la regresión del equipo y las comprobaciones preparatorias de V4:
 
 ```powershell

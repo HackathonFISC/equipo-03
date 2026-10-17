@@ -52,7 +52,7 @@ def pendientes_integracion():
         esperado=v, obtenido='No ejecutado contra el servicio integrado',
         motivo=('Requiere coordinación determinista entre dos transacciones y evidencia del orden; '
                 'dos llamadas consecutivas o simultáneas desde el cliente no bastan.' if k == '21'
-                else 'Faltan interfaces de aprobación/publicación y escenario de integración revisado.'),
+                else 'Falta ejecutar y revisar el recorrido integrado con escenario, autorización y evidencia reales.'),
         traza=None) for k, v in CASOS.items()]
 
 

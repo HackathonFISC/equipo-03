@@ -4,6 +4,20 @@
 
 demanda, prioridad, matriz, solver, verificador, orden_llegada
 
+## Preparación V5: comparación y retiro
+
+`orden_llegada.py` contiene un comparador experimental que reutiliza las
+restricciones de V3 y cambia únicamente el objetivo por antigüedad del incidente.
+No se registra como tool adicional. `replanificacion.simular_retiro` crea un
+snapshot sintético nuevo antes de salida, sin modificar el anterior ni la BD.
+
+```powershell
+.\.venv\Scripts\python.exe -m evals.comparar_v5
+```
+
+Ver [comparación, denominadores y alcance V5](../evals/V5.md). Todas las propuestas
+mantienen bloqueos; la integración de V4/V5 y nueva aprobación/envío son pendientes.
+
 ## Plan V3: bloques 4 y 5
 
 Disponibles `calculo.solver.solve_routes` (implementado en `solver_v3.py`) y `calculo.verificador.verify_plan`. Selección parcial por criticidad/ranking, restricciones del MVP, motivos por punto e informe independiente. Consultar [método, estados y límites](PLAN_V3.md).
