@@ -10,7 +10,7 @@ Cierra el pendiente del relevo A1 (`HANDOFF_NOEL_A1.md`, «Pendiente de tu parte
 3. El diálogo muestra el punto del catálogo en Google Maps (nombre, coordenadas, fuente, precisión).
    La persona escribe cómo lo confirmó (10–2000 caracteres) y marca la confirmación.
 4. `POST /incidentes/{id}/validar-lugar` con `version_incidente` y `evidencia` llama a
-   `ra_validar_lugar_v1` (migración 0018): exige coordinador activo, bloqueo `ra_bloqueo_v4()`,
+   `ra_validar_lugar_v1` (migración 0020): exige coordinador activo, bloqueo `ra_bloqueo_v4()`,
    versión vigente, punto con ubicación y reportes vinculados.
 5. La RPC pasa el incidente a `validada`, quita **solo** ese faltante, sube la versión y escribe un evento
    de auditoría (coordinador, evidencia, versión anterior y nueva).
@@ -33,7 +33,7 @@ Reiniciar `npm run dev` al cambiarla.
 
 ## Despliegue
 
-Aplicar `0018_validar_lugar.sql` y su smoke en Supabase (después de 0017), reiniciar la API.
+Aplicar `0020_validar_lugar.sql` y su smoke en Supabase (después de 0019), reiniciar la API.
 
 ## Pruebas
 

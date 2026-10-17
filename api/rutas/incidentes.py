@@ -1,7 +1,7 @@
 """Ruta de consulta de incidentes para la página Necesidades (V2).
 
 Requiere sesión válida. Validar el lugar de un incidente es una acción humana del coordinador activo, con evidencia
-y auditoría (migración 0018); nunca la dispara un texto de Telegram.
+y auditoría (migración 0020); nunca la dispara un texto de Telegram.
 """
 import logging
 
