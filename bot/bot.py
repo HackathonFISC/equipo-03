@@ -6,10 +6,10 @@
 - De prueba (por defecto): atiende solo los chats de TELEGRAM_CHAT_IDS_PRUEBA.
 Qué hace con cada mensaje:
 - En chats privados, un texto nuevo se envía a la API como reporte (POST /reportes).
-- En grupos, solo se atiende lo dirigido al bot: reply a un mensaje suyo o mención.
+- En grupos se atienden replies, menciones y respuestas del autor con una pregunta abierta.
 - /start, /ayuda y /help muestran botones: «Reportar falta de agua» y «Qué debo escribir».
 - Un reply a una pregunta del bot se entrega como respuesta de aclaración.
-- Una ubicación solo se acepta como reply a una pregunta (acuerdo D004).
+- Una ubicación solo se acepta como respuesta a una pregunta (acuerdo D004).
 En segundo plano envía las aclaraciones pendientes (bot/adaptador.py).
 No habla con Supabase directamente.
 
@@ -46,6 +46,7 @@ from telegram.ext import (
     filters,
 )
 
+from comun.imagen import MAX_IMAGEN_BYTES, decodificar_imagen
 from comun.audio import MAX_AUDIO_BYTES, MAX_AUDIO_SEGUNDOS, MIMES_AUDIO, decodificar_audio
 from bot import adaptador, bandeja, limites
 from bot.adaptador import MENSAJES_RESULTADO, ciclo_envio, entregar_respuesta, es_reply_al_bot
@@ -59,6 +60,9 @@ MAX_TEXTO = 4000  # Máximo del contrato; Telegram admite hasta 4096.
 # Acuse neutral: el bot no sabe si es un reporte hasta que lo analiza la Ingesta.
 MENSAJE_RECIBIDO = "Recibimos tu mensaje. Código: {codigo}."
 MENSAJE_REPETIDO = "Ya habíamos recibido este mensaje. Código: {codigo}."
+MENSAJE_IMAGEN_FALLO = "No pudimos analizar tu foto ahora. Inténtalo más tarde o escribe el reporte."
+MENSAJE_IMAGEN_LIMITE = "Envía una sola foto de hasta 5 MB, como foto de Telegram, con una descripción opcional."
+MENSAJE_IMAGEN_INCIERTA = "No pudimos interpretar la foto con claridad. Envía una foto más clara o escribe el reporte."
 MENSAJE_AUDIO_LIMITE = "Envía un audio de hasta 2 minutos y 2 MB, o escribe el reporte."
 MENSAJE_AUDIO_FORMATO = "Envía una nota de voz o un archivo OGG, MP3, WAV o FLAC. También puedes escribir el reporte."
 MENSAJE_AUDIO_FALLO = "No pudimos transcribir tu audio ahora. Inténtalo más tarde o escribe el mensaje."
@@ -98,13 +102,13 @@ MENSAJE_LIMITE_GLOBAL = (
     "Inténtalo de nuevo en unos minutos."
 )
 MENSAJE_SOLO_TEXTO = (
-    "Para reportar, escribe el problema con texto. "
+    "Para reportar, escribe el problema, envía un audio o una foto con descripción. "
     "Si ya reportaste, espera la pregunta de ubicación y pulsa Responder sobre ella; "
     "luego usa Adjuntar → Ubicación para enviar un pin fijo del lugar donde falta agua."
 )
 MENSAJE_AYUDA = (
     "Hola. Soy el bot de H2Oeste y sirvo para reportar falta de agua.\n\n"
-    "Escribe o envía un audio de hasta 2 minutos y 2 MB con estos datos:\n"
+    "Escribe, envía un audio de hasta 2 minutos y 2 MB o una foto de hasta 5 MB con estos datos:\n"
     "• Dónde: el lugar o punto de atención.\n"
     "• Desde cuándo no llega el agua.\n"
     "• Cuántas personas están afectadas.\n"
@@ -262,6 +266,8 @@ async def _responder_aclaracion(mensaje, chat, usuario, cliente, contenido: dict
                 "Recibimos la ubicación del problema y quedó asociada a tu reporte para localizarlo automáticamente. "
                 "No confirma un punto de distribución."
             )
+        elif contenido.get("fuente_texto") == "descripcion_imagen" and resultado in {"aceptada", "repetida"}:
+            await mensaje.reply_text("Recibimos tu respuesta a partir de la foto y su descripción.")
         elif contenido.get("fuente_texto") == "transcripcion_audio" and resultado in {"aceptada", "repetida"}:
             await mensaje.reply_text("Recibimos tu respuesta transcrita del audio.")
         else:
@@ -306,8 +312,8 @@ async def recibir_texto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 
 async def _recibir_contenido(update: Update, context: ContextTypes.DEFAULT_TYPE, texto: str,
-                            *, fuente_texto="escrito", limite_verificado=False, audio_dirigido=False) -> None:
-    """Texto de un chat autorizado: respuesta de aclaración si es reply al bot; si no, reporte."""
+                            *, fuente_texto="escrito", limite_verificado=False, medio_dirigido=False) -> None:
+    """Texto escrito o extraído de un medio: respuesta de aclaración si corresponde; si no, reporte."""
     origen = _origen_valido(update, context)
     if origen is None:
         return
@@ -316,7 +322,7 @@ async def _recibir_contenido(update: Update, context: ContextTypes.DEFAULT_TYPE,
 
     dirigido = es_reply_al_bot(mensaje, _id_del_bot(context))
     texto, mencionado = _sin_mencion(texto, _usuario_del_bot(context))
-    mencionado = mencionado or audio_dirigido
+    mencionado = mencionado or medio_dirigido
     pregunta_id = _pregunta_a_responder(mensaje, chat, usuario, dirigido)
     if _es_grupo(chat) and not (dirigido or mencionado or pregunta_id is not None):
         # En grupos solo se atiende lo dirigido al bot o la respuesta de quien tiene una pregunta abierta;
@@ -367,7 +373,8 @@ async def _recibir_contenido(update: Update, context: ContextTypes.DEFAULT_TYPE,
         # La pregunta de aclaración llegará después y solo traerá el id de este mensaje: se guarda quién lo envió.
         adaptador.recordar_autor(chat.id, mensaje.message_id, usuario.id)
     if respuesta.status_code == 201 and codigo:
-        prefijo = "Transcribimos tu audio. " if fuente_texto == "transcripcion_audio" else ""
+        prefijo = {"transcripcion_audio": "Transcribimos tu audio. ",
+                   "descripcion_imagen": "Analizamos tu foto y su descripción. "}.get(fuente_texto, "")
         if parece_reporte_de_agua(texto):
             await mensaje.reply_text(prefijo + MENSAJE_RECIBIDO.format(codigo=codigo))
         else:
@@ -438,7 +445,62 @@ async def recibir_audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         await mensaje.reply_text(MENSAJE_AUDIO_FALLO)
         return
     await _recibir_contenido(update, context, texto, fuente_texto='transcripcion_audio',
-                            limite_verificado=True, audio_dirigido=dirigido or mencionado)
+                            limite_verificado=True, medio_dirigido=dirigido or mencionado)
+
+
+async def recibir_imagen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    origen = _origen_valido(update, context)
+    if origen is None:
+        return
+    chat, mensaje, usuario = origen
+    dirigido = es_reply_al_bot(mensaje, _id_del_bot(context))
+    caption, mencionado = _sin_mencion(getattr(mensaje, 'caption', None) or '', _usuario_del_bot(context))
+    pregunta_id = _pregunta_a_responder(mensaje, chat, usuario, dirigido)
+    if _es_grupo(chat) and not (dirigido or mencionado or pregunta_id is not None):
+        return
+    fotos = getattr(mensaje, 'photo', None) or []
+    if not fotos:
+        return
+    if not await _dentro_del_limite(mensaje, usuario, context):
+        return
+    if getattr(mensaje, 'media_group_id', None) or len(caption) > 1024:
+        await mensaje.reply_text(MENSAJE_IMAGEN_LIMITE)
+        return
+    candidatas = [f for f in fotos if getattr(f, 'file_size', None) is None or f.file_size <= MAX_IMAGEN_BYTES]
+    if not candidatas:
+        await mensaje.reply_text(MENSAJE_IMAGEN_LIMITE)
+        return
+    media = max(candidatas, key=lambda f: f.width * f.height)
+    try:
+        archivo = await media.get_file()
+        if getattr(archivo, 'file_size', None) is not None and archivo.file_size > MAX_IMAGEN_BYTES:
+            await mensaje.reply_text(MENSAJE_IMAGEN_LIMITE)
+            return
+        imagen = await archivo.download_as_bytearray()
+        if len(imagen) > MAX_IMAGEN_BYTES:
+            await mensaje.reply_text(MENSAJE_IMAGEN_LIMITE)
+            return
+        codificado = base64.b64encode(imagen).decode('ascii')
+        decodificar_imagen(codificado, 'image/jpeg')
+    except (TelegramError, httpx.HTTPError, ValueError):
+        await mensaje.reply_text(MENSAJE_IMAGEN_FALLO)
+        return
+    cliente = context.application.bot_data['cliente_api']
+    try:
+        respuesta = await cliente.post('/imagenes/analizar', timeout=75, json={
+            'usuario_telegram_id': usuario.id, 'chat_id': chat.id, 'message_id': mensaje.message_id,
+            'mime_type': 'image/jpeg', 'imagen_base64': codificado, 'caption': caption})
+        if respuesta.status_code != 200:
+            await mensaje.reply_text(MENSAJE_IMAGEN_INCIERTA if respuesta.status_code == 422 else MENSAJE_IMAGEN_FALLO)
+            return
+        texto = respuesta.json()['texto']
+        if not isinstance(texto, str) or not texto.strip() or len(texto) > MAX_TEXTO:
+            raise ValueError()
+    except (httpx.HTTPError, ValueError, KeyError, TypeError):
+        await mensaje.reply_text(MENSAJE_IMAGEN_FALLO)
+        return
+    await _recibir_contenido(update, context, texto, fuente_texto='descripcion_imagen',
+                            limite_verificado=True, medio_dirigido=dirigido or mencionado)
 
 
 async def recibir_ubicacion(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -568,6 +630,7 @@ def main() -> None:
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, recibir_texto))
     app.add_handler(MessageHandler(filters.LOCATION, recibir_ubicacion))
     app.add_handler(MessageHandler(filters.VOICE | filters.AUDIO, recibir_audio))
+    app.add_handler(MessageHandler(filters.PHOTO, recibir_imagen))
 
     if publico:
         logger.warning(

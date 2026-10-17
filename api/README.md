@@ -315,3 +315,7 @@ Con sesión: GET `/planes/destinos-localizados` lista reportes con coordenadas v
 ### Transcripción de audio (0020)
 
 POST `/audio/transcribir` es exclusivo del bot: recibe identidad Telegram, mime_type, duracion_segundos y audio_base64 (máximo 2 minutos/2 MiB). Devuelve texto y fuente_texto=transcripcion_audio. No almacena la grabación. POST /reportes y /aclaraciones/respuestas admiten esa procedencia con el secreto del bot. GET /reportes muestra fuente_texto en registrado.entrada. Requiere migración 0020 antes de iniciar la API. Ver [audio](../docs/AUDIO_TELEGRAM.md).
+
+## Fotos de Telegram
+
+Fotos individuales de hasta 5 MiB con texto adjunto opcional. Requiere migración 0022 y GEMINI_API_KEY. Ver [guía de imágenes](../docs/IMAGENES_TELEGRAM.md).

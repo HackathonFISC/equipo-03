@@ -77,8 +77,10 @@ def interpretar_reporte(reporte: ReporteRegistrado, extractor: Extractor, *, int
         raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Un reporte interpretado de agua requiere evidencia textual.')
     evidencia = Evidencia(
         evidencia_id=uuid5(reporte.reporte_id, 'texto_original'), reporte_id=reporte.reporte_id,
-        tipo='audio' if reporte.entrada.fuente_texto == 'transcripcion_audio' else 'texto', referencia=f'reportes/{reporte.reporte_id}/texto',
-        descripcion=('Transcripción automática persistida; citas cotejadas contra la transcripción, no contra el audio original.'
+        tipo={'transcripcion_audio': 'audio', 'descripcion_imagen': 'foto'}.get(reporte.entrada.fuente_texto, 'texto'), referencia=f'reportes/{reporte.reporte_id}/texto',
+        descripcion=('Descripción automática de foto y texto adjunto persistidos; no se conserva la foto original ni se verifican visualmente los hechos.'
+                     if reporte.entrada.fuente_texto == 'descripcion_imagen' else
+                     'Transcripción automática persistida; citas cotejadas contra la transcripción, no contra el audio original.'
                      if reporte.entrada.fuente_texto == 'transcripcion_audio' else
                      'Texto original persistido; las citas se cotejaron ignorando solo acentos, mayúsculas y espacios, conservando el fragmento original.'),
         campos_respaldados=['entrada.texto'],
@@ -87,10 +89,11 @@ def interpretar_reporte(reporte: ReporteRegistrado, extractor: Extractor, *, int
     ubicacion_compartida = reporte.entrada.ubicacion_compartida
     for aclaracion in aclaraciones:
         tipo = ('ubicacion' if aclaracion.get('respuesta_ubicacion') else
-                'audio' if aclaracion.get('respuesta_fuente_texto') == 'transcripcion_audio' else 'texto')
+                {'transcripcion_audio': 'audio', 'descripcion_imagen': 'foto'}.get(aclaracion.get('respuesta_fuente_texto'), 'texto'))
         evidencias.append(Evidencia(evidencia_id=uuid5(reporte.reporte_id, 'aclaracion:' + str(aclaracion['aclaracion_id'])),
             reporte_id=reporte.reporte_id, tipo=tipo, referencia='aclaraciones/' + str(aclaracion['aclaracion_id']),
-            descripcion=('Transcripción automática de respuesta de audio; identidad y pregunta verificadas; no se conserva el audio original.'
+            descripcion=('Descripción automática de foto y texto adjunto en respuesta; identidad y pregunta verificadas; no se conserva la foto original.'
+                         if tipo == 'foto' else 'Transcripción automática de respuesta de audio; identidad y pregunta verificadas; no se conserva el audio original.'
                          if tipo == 'audio' else 'Respuesta aceptada con identidad y pregunta verificadas; se conserva separada del texto original.'),
             campos_respaldados=['ubicacion_compartida' if tipo == 'ubicacion' else 'interpretacion']))
         if tipo == 'ubicacion':

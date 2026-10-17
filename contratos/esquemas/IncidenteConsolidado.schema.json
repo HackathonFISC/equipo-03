@@ -38,7 +38,8 @@
             "catalogo",
             "compartida",
             "coordinador",
-            "escenario"
+            "escenario",
+            "geocodificada"
           ],
           "title": "Fuente",
           "type": "string"
