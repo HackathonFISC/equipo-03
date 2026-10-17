@@ -1,4 +1,4 @@
-"""Bot de Telegram de RutaAgua Oeste (V2: reportes y aclaraciones).
+"""Bot de Telegram de H2Oeste (V2: reportes y aclaraciones).
 
 Único proceso que recibe mensajes del bot. Atiende solo los chats autorizados:
 - En chats privados, un texto nuevo se envía a la API como reporte (POST /reportes).
@@ -58,7 +58,7 @@ MENSAJE_SOLO_TEXTO = (
     "La ubicación solo se usa para responder a una pregunta del bot."
 )
 MENSAJE_AYUDA = (
-    "Hola. Soy el bot de RutaAgua Oeste y sirvo para reportar falta de agua.\n\n"
+    "Hola. Soy el bot de H2Oeste y sirvo para reportar falta de agua.\n\n"
     "Escribe en un solo mensaje:\n"
     "• Dónde: el lugar o punto de atención.\n"
     "• Desde cuándo no llega el agua.\n"
@@ -72,7 +72,7 @@ MENSAJE_AYUDA = (
     "Tus mensajes se guardan para poder atender el reporte."
 )
 MENSAJE_BIENVENIDA = (
-    "Hola. Soy el bot de RutaAgua Oeste y sirvo para reportar falta de agua. ¿Qué quieres hacer?"
+    "Hola. Soy el bot de H2Oeste y sirvo para reportar falta de agua. ¿Qué quieres hacer?"
 )
 # {nombre} es una mención HTML a quien pulsó el botón: así el teclado de respuesta solo se le abre a esa persona.
 MENSAJE_PIDE_REPORTE = "{nombre}, escribe tu reporte respondiendo a este mensaje: dónde, desde cuándo y cuántas personas."

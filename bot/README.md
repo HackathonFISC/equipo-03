@@ -2,7 +2,7 @@
 
 **Dueño:** Noel
 
-Bot de Telegram de RutaAgua Oeste. `bot.py` es el único proceso que recibe mensajes
+Bot de Telegram de H2Oeste. `bot.py` es el único proceso que recibe mensajes
 del bot; `adaptador.py` envía las preguntas de aclaración. El bot solo habla con la API
 (con un secreto compartido); nunca tiene claves de Supabase ni llama a Gemini.
 

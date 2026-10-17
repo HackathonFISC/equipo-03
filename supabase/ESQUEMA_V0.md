@@ -1,4 +1,4 @@
-# Esquema inicial de RutaAgua Oeste
+# Esquema inicial de H2Oeste
 
 Dueña de `0001`: Emilia. Compatible con los contratos 1.0 del equipo. Proyecto declarado vacío por el usuario. Esta entrega prepara el esquema; no lo aplica a Supabase ni crea usuarios, puntos, flota o políticas activas.
 

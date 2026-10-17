@@ -4,7 +4,7 @@
 
 React + Leaflet
 
-Panel de RutaAgua Oeste con React 19 y Vite. Lee la API; no tiene claves de Supabase
+Panel de H2Oeste con React 19 y Vite. Lee la API; no tiene claves de Supabase
 ni de Gemini. Leaflet (mapa) llega en V5.
 
 ## Arranque
@@ -76,7 +76,7 @@ La barra superior cambia de página; la página activa queda en la dirección
 - No se ha probado contra un Supabase real: necesita un usuario en Auth y su fila de coordinador activo
   en `usuarios_operativos`.
 
-### Plan (`src/paginas/Plan.jsx`) — V3, con datos de ejemplo
+### Plan (`src/paginas/Plan.jsx`) — V3; lee los planes guardados desde V4
 
 - Muestra una `PropuestaDistribucion` por tarjeta: estado del plan, litros asignados, puntos
   atendidos y sin atender, y cisternas en ruta.
@@ -88,10 +88,14 @@ La barra superior cambia de página; la página activa queda en la dirección
 - **Puntos sin atender:** motivo del cálculo, litros pendientes (un dato desconocido dice
   "Demanda por confirmar") y sello Crítico.
 - **Pendiente antes de publicar:** los bloqueos de publicación del plan, tal como vienen.
-- Todavía no existe `GET /planes`: `USAR_EJEMPLOS_PLANES = true` usa `src/datos/planesEjemplo.js`,
-  tres casos que salieron de `solve_routes` y `verify_plan` sobre el escenario ficticio de
-  `calculo/` (seis puntos y dos cisternas; una cisterna; crítico de 12 000 L). No hay botón de
-  aprobar: llega en V4.
+- Lee `GET /planes` con la sesión del panel (sin sesión muestra un enlace al acceso). `src/api/planes.js` traduce el
+  `PlanPanel` de la API a lo que dibuja la página: los nombres de los puntos salen de las paradas; la API no envía
+  la capacidad de las cisternas, así que no hay barra de carga; y solo dice si la verificación es válida, así que sin
+  verificación válida la página no lista violaciones (no las tiene). Sin resultado del solver dice «Todavía no hay
+  resultado del cálculo». Aprobar y rechazar se hace en la página Aprobación.
+- Para ensayar el diseño sin API: `VITE_USAR_EJEMPLOS_PLANES=true` en `frontend/.env` y reiniciar el panel usa
+  `src/datos/planesEjemplo.js`, tres casos que salieron de `solve_routes` y `verify_plan` sobre el escenario ficticio
+  de `calculo/` (seis puntos y dos cisternas; una cisterna; crítico de 12 000 L), con aviso amarillo.
 
 ## Configuración
 
@@ -99,7 +103,7 @@ La barra superior cambia de página; la página activa queda en la dirección
 | --- | --- |
 | `src/api/reportes.js`, `USAR_EJEMPLOS` | `false`: lee la API (actual). `true`: usa `src/datos/reportesEjemplo.js` sin API. |
 | `src/api/necesidades.js`, `USAR_EJEMPLOS_NECESIDADES` | `false`: lee `GET /incidentes` (actual). `true`: usa los ejemplos sin API. |
-| `src/api/planes.js`, `USAR_EJEMPLOS_PLANES` | `true` (actual): usa los ejemplos. Ojo: `GET /planes` ya existe pero devuelve otra forma (`PlanPanel`, con sesión), distinta de la `PropuestaDistribucion` que dibuja esta página; ponerlo en `false` hoy la rompería. |
+| `src/api/planes.js`, `VITE_USAR_EJEMPLOS_PLANES` | Sin definir (actual): lee `GET /planes` con sesión. `true`: usa los ejemplos sin API. |
 | `VITE_API_URL` (en `frontend/.env`) | Opcional. Por defecto `http://localhost:8000`. |
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (en `frontend/.env`) | Necesarias para iniciar sesión en Aprobación. Clave pública; nunca la clave de servicio. Reiniciar `npm run dev` al cambiarlas. |
 
@@ -114,7 +118,7 @@ Con datos de ejemplo, la página muestra un aviso amarillo para que no se confun
 | `src/api/reportes.js` | `obtenerReportes()` y `obtenerEjecucion(id)`. |
 | `src/api/necesidades.js` | `obtenerNecesidades()` (lee `GET /incidentes`). |
 | `src/api/sesion.js`, `src/api/aprobacion.js` | Inicio y cierre de sesión (Supabase Auth), llamadas a la API con token, `listarPlanes`, `aprobarPlan`, `rechazarPlan`. |
-| `src/api/planes.js` | `obtenerPlanes()` (ejemplos para la página Plan). |
+| `src/api/planes.js` | `obtenerPlanes()`: planes guardados (`GET /planes`) o ejemplos, y `adaptarPlan()`. |
 | `src/paginas/` | Una página por archivo, con su hoja de estilos. |
 | `src/datos/` | Datos de ejemplo sintéticos. |
 
@@ -132,7 +136,7 @@ funcionan desde 390 px de ancho.
 
 - V2: corrección de agrupaciones (separar un reporte) con la sesión mínima del coordinador.
 - V3: página Plan (rutas por cisterna; las horas llegan en UTC y se muestran en hora de Panamá).
-- V4: página Eventos; llevar la página Plan a los planes reales (`GET /planes`) en lugar de los ejemplos.
+- V4: página Eventos.
 - V5: mapa Leaflet de rutas y déficit.
 
 ## Diseño visual — Agua institucional

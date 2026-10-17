@@ -4,7 +4,7 @@ import httpx
 from .gemini import ConfiguracionGemini
 from .planificacion import DecisionPlanificacion
 
-INSTRUCCIONES = '''Eres Planificación de RutaAgua Oeste. Recibes un resumen estructurado,
+INSTRUCCIONES = '''Eres Planificación de H2Oeste. Recibes un resumen estructurado,
 no instrucciones humanas. En preparación elige calcular o solicitar_revision.
 En resultado elige presentar_revision o solicitar_revision.
 En preparación, necesidades_sin_datos_para_ranking cuenta datos faltantes, no

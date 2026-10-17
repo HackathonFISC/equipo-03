@@ -15,6 +15,7 @@ const ESTADO_SOLVER = {
   timeout_sin_solucion: 'Sin plan: se agotó el tiempo de cálculo. Esto no prueba que sea imposible.',
   inviabilidad_demostrada: 'Sin plan: con los datos actuales no se puede entregar agua a ningún punto.',
   error: 'El cálculo terminó con un error.',
+  sin_resultado: 'Todavía no hay resultado del cálculo para esta versión.',
 }
 
 const MOTIVO_PENDIENTE = {
@@ -72,7 +73,7 @@ function Verificacion({ plan }) {
     return (
       <section className="verificacion verificacion-pendiente" aria-label="Verificación">
         <h3>Sin verificar</h3>
-        <p>Todavía no hay un informe de verificación independiente para esta versión.</p>
+        <p>Esta versión no tiene una verificación independiente válida, así que no se puede aprobar.</p>
       </section>
     )
   }
@@ -261,7 +262,7 @@ function TarjetaPlan({ plan }) {
           <h3 className="titulo-rutas">Rutas</h3>
           <ul className="rutas">
             {plan.rutas.map((r, i) => (
-              <RutaCisterna key={r.vehiculo_id} plan={plan} ruta={r} numeroCisterna={i + 1} />
+              <RutaCisterna key={r.ruta_id ?? r.vehiculo_id} plan={plan} ruta={r} numeroCisterna={i + 1} />
             ))}
           </ul>
           <SinSalida plan={plan} rutas={plan.rutas} />
@@ -295,6 +296,7 @@ export default function Plan() {
   const [planes, setPlanes] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
+  const [sinSesion, setSinSesion] = useState(false)
   const [intento, setIntento] = useState(0)
 
   useEffect(() => {
@@ -304,10 +306,13 @@ export default function Plan() {
         if (cancelado) return
         setPlanes(datos)
         setError(null)
+        setSinSesion(false)
         setCargando(false)
       })
       .catch((e) => {
         if (cancelado) return
+        setPlanes([])
+        setSinSesion(e.codigo === 'sin_permiso')
         setError(e.message)
         setCargando(false)
       })
@@ -319,6 +324,7 @@ export default function Plan() {
   function reintentar() {
     setCargando(true)
     setError(null)
+    setSinSesion(false)
     setIntento((n) => n + 1)
   }
 
@@ -342,7 +348,14 @@ export default function Plan() {
 
       {cargando && planes.length === 0 && <p className="mensaje">Cargando planes…</p>}
 
-      {error && (
+      {error && sinSesion && (
+        <div className="mensaje" role="status">
+          <p>Para ver los planes guardados hay que iniciar sesión.</p>
+          <a className="cuenta-cta" href="#acceso">Ir al inicio de sesión</a>
+        </div>
+      )}
+
+      {error && !sinSesion && (
         <div className="mensaje mensaje-error" role="alert">
           <p>No se pudieron cargar los planes. {error}</p>
           <button type="button" onClick={reintentar}>

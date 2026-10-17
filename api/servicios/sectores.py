@@ -12,8 +12,10 @@ from pydantic import ValidationError
 from api.errores_http import ErrorApi
 from api.esquemas import (
     DestinoEnsayo,
+    DestinoPanel,
     ResultadoDestinoEnsayo,
     ResultadoSeleccion,
+    SectorPanel,
     SeleccionarPlanSector,
 )
 from api.servicios.aclaraciones import _una_fila
@@ -119,3 +121,78 @@ def estado_sector(db, sector_id: UUID) -> EstadoSector:
         return EstadoSector.model_validate(fila)
     except (ValueError, TypeError, ValidationError):
         raise _formato_inesperado(RPC_ESTADO) from None
+
+
+# --- Listas para elegir en el panel (lectura de tablas) ---
+
+LIMITE_SECTORES = 200
+LIMITE_DESTINOS = 100
+# PostgREST: tabla inexistente en el esquema (migración sin aplicar) o relación inexistente.
+TABLA_AUSENTE = {"PGRST205", "42P01"}
+
+
+def _lista(datos) -> list[dict]:
+    return datos if isinstance(datos, list) else []
+
+
+def listar_sectores(db) -> list[SectorPanel]:
+    filas = _lista(
+        db.table("sectores")
+        .select("sector_id,nombre,distrito,corregimiento,origen")
+        .order("nombre")
+        .limit(LIMITE_SECTORES)
+        .execute()
+        .data
+    )
+    try:
+        return [SectorPanel.model_validate(f) for f in filas]
+    except ValidationError:
+        logger.error("Un sector del catálogo no cumple el formato esperado")
+        raise ErrorApi(
+            CodigoError.PROVEEDOR_NO_DISPONIBLE, "Un sector guardado no tiene el formato esperado.", recuperable=False
+        ) from None
+
+
+def _referencia(identificador: str) -> str:
+    texto = str(identificador).strip()
+    return f"terminado en {texto[-4:]}" if len(texto) > 4 else "identificador corto"
+
+
+def _habilitados_ensayo(db) -> dict[str, bool] | None:
+    """destino_id -> habilitado, o None si la tabla de 0012 no existe todavía. Otros fallos se propagan."""
+    try:
+        filas = _lista(db.table("destinos_ensayo_v4").select("destino_id,habilitado").execute().data)
+    except APIError as error:
+        if str(getattr(error, "code", "")) in TABLA_AUSENTE:
+            logger.warning("destinos_ensayo_v4 no existe: la migración 0012 no está aplicada")
+            return None
+        raise
+    return {str(f["destino_id"]): f.get("habilitado") is True for f in filas if "destino_id" in f}
+
+
+def listar_destinos(db) -> list[DestinoPanel]:
+    filas = _lista(
+        db.table("destinos")
+        .select("destino_id,identificador_externo,autorizado")
+        .eq("canal", "telegram")
+        .order("creado_en")
+        .limit(LIMITE_DESTINOS)
+        .execute()
+        .data
+    )
+    habilitados = _habilitados_ensayo(db) if filas else {}
+    try:
+        return [
+            DestinoPanel(
+                destino_id=f["destino_id"],
+                referencia=_referencia(f["identificador_externo"]),
+                autorizado=f.get("autorizado") is True,
+                habilitado_ensayo=None if habilitados is None else habilitados.get(str(f["destino_id"]), False),
+            )
+            for f in filas
+        ]
+    except (KeyError, ValidationError):
+        logger.error("Un destino no cumple el formato esperado")
+        raise ErrorApi(
+            CodigoError.PROVEEDOR_NO_DISPONIBLE, "Un destino guardado no tiene el formato esperado.", recuperable=False
+        ) from None

@@ -1,4 +1,4 @@
--- RutaAgua Oeste / Emilia / esquema inicial V0 / contratos 1.0.
+-- H2Oeste / Emilia / esquema inicial V0 / contratos 1.0.
 -- Ejecutar UNA VEZ en un proyecto Supabase vacio, con el rol postgres.
 -- No contiene claves, puntos reales, politica activa ni datos operativos.
 -- 0002 (Noel): roles y politicas de acceso. 0003 (Noel): aprobacion atomica.

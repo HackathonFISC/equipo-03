@@ -126,6 +126,32 @@ comprobando las entradas en el momento de aprobar, pero un plan ya aprobado no s
 
 `ra_rechazar_plan` deja el plan `rechazado` y la ejecución en `espera_revision`, con el motivo en el evento.
 
+**Actualizar una 0003 ya aplicada (Supabase del equipo).** El orden de arriba es para una base sin 0003. Si ya hay una
+0003 anterior (con su propio disparador de invalidación) y 0012 instalada, **no** se aplica 0009, 0010 ni 0011 de nuevo:
+solo este archivo, que usa `CREATE OR REPLACE` y reemplaza las dos RPC sin duplicarlas. Antes, ejecutar esta consulta de
+solo lectura:
+
+```sql
+-- Firmas instaladas de las dos RPC (deben ser una cada una, con los mismos argumentos que el archivo)
+select p.oid::regprocedure from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+ where n.nspname = 'public' and p.proname in ('ra_aprobar_plan', 'ra_rechazar_plan');
+-- Disparadores no internos relacionados con invalidar o aprobar
+select c.relname as tabla, t.tgname as disparador, t.tgfoid::regproc as funcion
+  from pg_trigger t join pg_class c on c.oid = t.tgrelid join pg_namespace n on n.oid = c.relnamespace
+ where n.nspname = 'public' and not t.tgisinternal
+   and (t.tgname ilike '%invalid%' or t.tgfoid::regproc::text ilike '%invalid%' or t.tgname ilike '%aprob%')
+ order by 1, 2;
+-- Funciones con «invalid» en el nombre
+select p.oid::regprocedure from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+ where n.nspname = 'public' and p.proname ilike '%invalid%' order by 1;
+```
+
+Los de 0012 son `ra_invalidar_v4`, `ra_serializar_v4` y `ra_invalidar_asignacion_v4` (y sus funciones
+`ra_invalidar_planes_v4`, `ra_serializar_cambios_v4`, `ra_invalidar_asignacion_v4`). **Cualquier otro** disparador o
+función de invalidación que aparezca es el de la 0003 anterior: quitarlo con `DROP TRIGGER … ON …` y luego
+`DROP FUNCTION …`, con los nombres exactos que devuelva la consulta, antes de aplicar este archivo. Dejarlo duplicaría
+la invalidación de 0012. Después de aplicar, ejecutar `../tests/0003_aprobacion_smoke.sql` completo.
+
 Verificación local: PostgreSQL 16, dos pilas: 0001 a 0011 y 0003 (sin 0012) y esa misma más 0012. El smoke de
 0003 pasa en las dos (la invalidación posterior solo se comprueba con 0012); el de 0011 aplica sin 0012 (con 0012
 la reserva es más estricta y lo cubre el smoke de 0012, que también pasa). `../tests/0003_concurrencia.sh

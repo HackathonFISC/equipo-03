@@ -14,7 +14,7 @@ import tempfile
 from dotenv import dotenv_values
 
 RAIZ = Path(__file__).resolve().parents[1]
-logger = logging.getLogger('rutaagua.agentes')
+logger = logging.getLogger('h2oeste.agentes')
 
 
 def automatico():
@@ -71,7 +71,7 @@ class ServicioAgentes:
             logger.info('Otra instancia de esta API administra el trabajador de agentes.')
             return
         try:
-            self.temporal = tempfile.TemporaryDirectory(prefix='rutaagua-agentes-')
+            self.temporal = tempfile.TemporaryDirectory(prefix='h2oeste-agentes-')
             self.parada = Path(self.temporal.name)/'detener'
             self.archivo_salud = Path(self.temporal.name)/'salud.json'
             opciones = dict(cwd=str(self.raiz), stdin=subprocess.DEVNULL)

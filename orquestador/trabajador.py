@@ -83,7 +83,7 @@ def ejecutar_bucle(vuelta, *, detener, intervalo=5, una_sola=False, max_fallos=5
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Trabajador RutaAgua V2/V3/V4')
+    parser = argparse.ArgumentParser(description='Trabajador H2Oeste V2/V3/V4')
     parser.add_argument('--una-vuelta', action='store_true')
     parser.add_argument('--planificacion-id', type=UUID, help='Procesar solo este ensayo V3, sin mantenimiento global de V2')
     parser.add_argument('--intervalo', type=float, default=5)
