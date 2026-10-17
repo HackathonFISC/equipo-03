@@ -72,3 +72,15 @@
   .app-main .com-estado li { flex-wrap: wrap; gap: 4px; }
   .app-main .sello-estado { white-space: normal; }
 }
+
+/* Cuenta separada de las secciones operativas. */
+.cuenta-enlace { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: var(--agua); text-decoration: none; font-weight: 600; white-space: nowrap; border-radius: 8px; padding: 4px 8px; }
+.cuenta-enlace:hover, .cuenta-enlace[aria-current='page'] { background: var(--espuma); }
+.cuenta-avatar { display: grid; place-items: center; width: 36px; height: 36px; background: var(--espuma); border: 1px solid var(--borde); border-radius: 50%; }
+.app-main .cuenta-pagina { position: static; min-height: 65vh; margin: 32px; border: 1px solid var(--borde); border-radius: 16px; overflow: hidden; }
+.cuenta-cta { display: inline-flex; min-height: 44px; align-items: center; padding: 8px 16px; border-radius: 8px; background: var(--agua); color: white; text-decoration: none; font-weight: 600; }
+@media (max-width: 600px) {
+  .workspace-header { flex-wrap: wrap; gap: 8px; }
+  .cuenta-enlace { margin-left: auto; }
+  .app-main .cuenta-pagina { margin: 16px; min-height: auto; }
+}

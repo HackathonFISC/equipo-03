@@ -158,3 +158,10 @@ y cuatro pruebas de sondeo con `node --test --test-isolation=none tests/sondeo.t
 Los cargadores alternativos evitan subprocesos que este entorno restringe (EPERM).
 La comprobación visual de escritorio y móvil queda pendiente: el navegador automatizado
 no pudo abrir la sesión. No se verificó una aprobación real con estos cambios.
+
+### Cuenta independiente
+
+El acceso vive en `#acceso` y `src/paginas/Acceso.jsx`, desde el avatar del encabezado.
+Aprobación ya no contiene el formulario ni el cierre de sesión. Los permisos para
+aprobar siguen dependiendo de la API. Lint y compilación comprobados; recorrido
+visual y login real no verificados en esta sesión.

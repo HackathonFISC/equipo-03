@@ -283,3 +283,16 @@ No se validaron con estos cambios una aprobación real, publicación ni entrega 
 ## 12. Instrucción de relevo para otra IA
 
 Continúa RutaAgua Oeste sobre este repositorio. Conserva la identidad Agua institucional ya aprobada y el alcance del plan maestro. Antes de editar, inspecciona el estado actual y los contratos de las pantallas afectadas. No inventes datos ni conviertas el diseño objetivo en una afirmación de implementación. Preserva prioridades calculadas, evidencia, déficit, versiones, autorización y separación entre aprobación, comunicación y entrega. Trabaja por componentes sobre React + Vite y CSS existente. Informa qué cambiaste, qué verificaste y qué sigue pendiente. No cambies la paleta ni agregues funciones fuera del MVP sin una razón acordada con el usuario.
+
+## Actualización: acceso separado de Aprobación
+
+Por indicación del usuario, la cuenta se ubica en el encabezado, junto a un avatar,
+fuera de la navegación operativa. `#acceso` usa `src/paginas/Acceso.jsx` para iniciar
+sesión o cerrar la sesión actual. Aprobación conserva la revisión de planes y, sin
+sesión, muestra un enlace al acceso; ya no contiene el formulario de credenciales.
+El estado local de sesión se comparte desde App; los permisos siguen comprobándose
+en backend. Lint y build con configLoader native aprobaron tras el cambio.
+
+El usuario proporcionó un nuevo logo en dos imágenes. Su descarga falló en esta
+sesión y NO se incorporó; la gota provisional sigue presente. No reconstruir el
+logo ni afirmar que se revisó visualmente hasta disponer de sus bytes.
