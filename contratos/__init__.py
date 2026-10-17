@@ -1,4 +1,4 @@
-"""Contratos compartidos de RutaAgua Oeste. Importar modelos desde contratos.modelos."""
+"""Contratos compartidos de H2Oeste. Importar modelos desde contratos.modelos."""
 from .modelos import (
     AvisoComunidad, EvaluacionNecesidades, ExtraccionReporteLLM,
     IncidenteConsolidado, PropuestaDistribucion, ReporteInterpretado,

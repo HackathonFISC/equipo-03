@@ -19,7 +19,7 @@ from bot.bot import (
     recibir_ubicacion,
 )
 
-BOT_ID, BOT_USUARIO, CHAT = 900, "RutaAguaOesteBot", -1001
+BOT_ID, BOT_USUARIO, CHAT = 900, "H2OesteBot", -1001
 
 
 def contexto(cliente=None):

@@ -1,4 +1,4 @@
-# Contratos de RutaAgua Oeste
+# Contratos de H2Oeste
 
 **Dueño:** Emilia. Contratos compartidos: avisar a Noel y José antes de cambiar su interfaz.
 

@@ -1,4 +1,4 @@
-# Política de prioridad de RutaAgua Oeste: apoyo panameño, versión 1
+# Política de prioridad de H2Oeste: apoyo panameño, versión 1
 
 Fecha: 17 de octubre de 2026. Archivo de política: `datos/escenario/politica_apoyo_panama_v1.json`; identificador `oeste-prioridad-apoyo-pa-1`.
 

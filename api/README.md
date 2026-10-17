@@ -2,7 +2,7 @@
 
 **Dueño:** Noel
 
-API de RutaAgua Oeste con FastAPI. Recibe los reportes del bot, los guarda en
+API de H2Oeste con FastAPI. Recibe los reportes del bot, los guarda en
 Supabase, los muestra al panel, conecta el bot con las RPC de aclaración de Emilia y
 entrega al panel los incidentes con su necesidad.
 Es el único componente con la clave de servicio de Supabase: ni el bot ni el panel la tienen.

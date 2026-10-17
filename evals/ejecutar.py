@@ -73,7 +73,7 @@ def main():
     # Reservar destino antes de probar; un informe anterior nunca se sobrescribe.
     args.salida.mkdir(parents=True, exist_ok=False)
     try:
-        with tempfile.TemporaryDirectory(prefix='rutaagua-evals-') as temporales:
+        with tempfile.TemporaryDirectory(prefix='h2oeste-evals-') as temporales:
             import os
             anterior = {k: os.environ.get(k) for k in ('TEMP', 'TMP')}
             try:

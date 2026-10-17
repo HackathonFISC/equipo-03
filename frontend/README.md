@@ -4,7 +4,7 @@
 
 React + Leaflet
 
-Panel de RutaAgua Oeste con React 19 y Vite. Lee la API; no tiene claves de Supabase
+Panel de H2Oeste con React 19 y Vite. Lee la API; no tiene claves de Supabase
 ni de Gemini. Leaflet (mapa) llega en V5.
 
 ## Arranque
