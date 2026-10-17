@@ -1,0 +1,13 @@
+ENSAYO SINTÉTICO V3 - sin autorización operativa ni publicación
+completo: 6 atendidos; 0 pendientes; 15000 L; verificación True
+  Cisterna 1: 7000 L; 08:00-10:07 UTC-05:00
+  Cisterna 2: 8000 L; 08:00-09:42 UTC-05:00
+una_cisterna: 4 atendidos; 2 pendientes; 9000 L; verificación True
+  Cisterna 1: 9000 L; 08:00-10:54 UTC-05:00
+  Pendiente 1e35ede2-8fc7-51b0-8830-6eec337f6a24: sin_capacidad; 3000.0 L
+  Pendiente 920f8af3-1bfe-5ab6-a4f2-7fbcb323825e: sin_capacidad; 3000.0 L
+critico_supera_cisterna: 5 atendidos; 1 pendientes; 12000 L; verificación False
+  Cisterna 1: 4000 L; 08:00-09:41 UTC-05:00
+  Cisterna 2: 8000 L; 08:00-09:42 UTC-05:00
+  Pendiente 4b89af3e-444a-5103-880c-fe1c886530ed: demanda_supera_vehiculo; 12000.0 L
+Verificar restricciones no acredita calidad del agua, aprobación humana ni entrega física.
