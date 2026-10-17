@@ -134,3 +134,34 @@ funcionan desde 390 px de ancho.
 - V3: página Plan (rutas por cisterna; las horas llegan en UTC y se muestran en hora de Panamá).
 - V4: página Eventos; llevar la página Plan a los planes reales (`GET /planes`) en lugar de los ejemplos.
 - V5: mapa Leaflet de rutas y déficit.
+
+## Diseño visual — Agua institucional
+
+La navegación usa una barra lateral de escritorio y un menú desplegable hasta 900 px.
+Conserva los enlaces por hash, permite cerrar el menú con Escape y ofrece un enlace
+para saltar al contenido. Los títulos del navegador reflejan la página seleccionada.
+
+- `src/index.css`: tokens de la paleta A, tipografía y accesibilidad global.
+- `src/App.css`: estructura, navegación y comportamiento responsivo.
+- `src/design-system.css`: apariencia compartida de las páginas existentes, cargada
+  después de sus estilos particulares.
+- Inter se carga mediante Google Fonts con `display=swap`; sin conexión se utiliza
+  la fuente del sistema.
+
+Esta primera fase aplica la identidad a Reportes, Necesidades, Plan, Aprobación,
+el acceso y la comunicación por sector. Conserva los contratos y controles actuales.
+La actividad de agentes sigue dentro del detalle del reporte. La página independiente
+Eventos, el mapa y la unificación de Plan con los datos reales quedan pendientes.
+
+Validación de esta fase: ESLint, compilación con `npm run build -- --configLoader native`
+y cuatro pruebas de sondeo con `node --test --test-isolation=none tests/sondeo.test.mjs`.
+Los cargadores alternativos evitan subprocesos que este entorno restringe (EPERM).
+La comprobación visual de escritorio y móvil queda pendiente: el navegador automatizado
+no pudo abrir la sesión. No se verificó una aprobación real con estos cambios.
+
+### Cuenta independiente
+
+El acceso vive en `#acceso` y `src/paginas/Acceso.jsx`, desde el avatar del encabezado.
+Aprobación ya no contiene el formulario ni el cierre de sesión. Los permisos para
+aprobar siguen dependiendo de la API. Lint y compilación comprobados; recorrido
+visual y login real no verificados en esta sesión.

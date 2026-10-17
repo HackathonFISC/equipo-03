@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react'
 import { aprobarPlan, listarPlanes, rechazarPlan } from '../api/aprobacion.js'
 import { iniciarSondeo } from '../api/sondeo.js'
-import {
-  autenticacionConfigurada,
-  cerrarSesion,
-  iniciarSesion,
-  limpiarSesion,
-  obtenerSesion,
-  obtenerToken,
-} from '../api/sesion.js'
+import { limpiarSesion, obtenerSesion } from '../api/sesion.js'
 import ComunicacionSector from './ComunicacionSector.jsx'
 import './Aprobacion.css'
 
@@ -24,72 +17,6 @@ const formato = new Intl.DateTimeFormat('es-PA', { dateStyle: 'short', timeStyle
 const horaSola = new Intl.DateTimeFormat('es-PA', { timeStyle: 'short', timeZone: 'America/Panama' })
 const hora = (texto) => formato.format(new Date(texto))
 const soloHora = (texto) => horaSola.format(new Date(texto))
-
-function Acceso({ aviso, alEntrar }) {
-  const [correo, setCorreo] = useState('')
-  const [contrasena, setContrasena] = useState('')
-  const [error, setError] = useState(null)
-  const [enviando, setEnviando] = useState(false)
-
-  async function enviar(evento) {
-    evento.preventDefault()
-    setEnviando(true)
-    setError(null)
-    try {
-      await iniciarSesion(correo.trim(), contrasena)
-      setContrasena('')
-      alEntrar()
-    } catch (e) {
-      setError(e.message)
-    } finally {
-      setEnviando(false)
-    }
-  }
-
-  return (
-    <div className="acceso" role="dialog" aria-modal="true" aria-labelledby="acceso-titulo">
-      <aside className="acceso-lema" aria-hidden="true">
-        <p className="acceso-marca">RutaAgua Oeste</p>
-        <p className="acceso-frase">Ningún aviso sale a la comunidad sin la firma de un coordinador.</p>
-      </aside>
-      <div className="acceso-lado">
-        {!autenticacionConfigurada ? (
-          <div className="acceso-form">
-            <h2 id="acceso-titulo">Acceso sin configurar</h2>
-            <p className="aprob-aviso" role="status">
-              Falta configurar <code>VITE_SUPABASE_URL</code> y <code>VITE_SUPABASE_ANON_KEY</code> en{' '}
-              <code>frontend/.env</code> y reiniciar el panel.
-            </p>
-            <a className="acceso-volver" href="#reportes">Volver al panel</a>
-          </div>
-        ) : (
-          <form className="acceso-form" onSubmit={enviar}>
-            <h2 id="acceso-titulo">Acceso de coordinación</h2>
-            <p className="aprob-suave">Aprobar o rechazar un plan es una decisión firmada. Solo entra un coordinador activo.</p>
-            {aviso && <p className="aprob-aviso" role="status">{aviso}</p>}
-            <label>
-              Correo
-              <input type="email" autoComplete="username" required value={correo} onChange={(e) => setCorreo(e.target.value)} />
-            </label>
-            <label>
-              Contraseña
-              <input
-                type="password"
-                autoComplete="current-password"
-                required
-                value={contrasena}
-                onChange={(e) => setContrasena(e.target.value)}
-              />
-            </label>
-            {error && <p className="aprob-error" role="alert">{error}</p>}
-            <button type="submit" disabled={enviando}>{enviando ? 'Entrando…' : 'Entrar'}</button>
-            <a className="acceso-volver" href="#reportes">Volver al panel</a>
-          </form>
-        )}
-      </div>
-    </div>
-  )
-}
 
 function Rutas({ rutas }) {
   if (rutas.length === 0) return <p className="aprob-suave">Este plan no tiene rutas.</p>
@@ -231,8 +158,7 @@ function TarjetaPlan({ plan, puedeDecidir, alDecidir }) {
   )
 }
 
-function Aprobacion() {
-  const [conSesion, setConSesion] = useState(() => Boolean(obtenerToken()))
+function Aprobacion({ conSesion, alExpirar }) {
   const [aviso, setAviso] = useState(null)
   const [sesion, setSesion] = useState(null)
   const [planes, setPlanes] = useState(null)
@@ -252,28 +178,21 @@ function Aprobacion() {
         if (e.codigo === 'sin_permiso') {
           limpiarSesion()
           setAviso('Tu sesión venció o no es válida. Inicia sesión de nuevo.')
-          setConSesion(false)
+          alExpirar()
         } else {
           setError(e.message)
         }
       },
     })
-  }, [conSesion, recarga])
+  }, [conSesion, recarga, alExpirar])
 
-  async function salir() {
-    await cerrarSesion()
-    setSesion(null)
-    setPlanes(null)
-    setAviso(null)
-    setConSesion(false)
-  }
 
   const ordenados = planes === null ? null : [...planes].sort((a, b) => Number(b.estado === 'pendiente_revision') - Number(a.estado === 'pendiente_revision'))
   const pendientes = planes === null ? 0 : planes.filter((p) => p.estado === 'pendiente_revision').length
 
   if (!conSesion) {
     return (
-      <Acceso aviso={aviso} alEntrar={() => { setAviso(null); setConSesion(true) }} />
+      <section className="aprob"><h1>Aprobación de planes</h1><div className="mensaje"><h2>Inicia sesión para revisar los planes</h2><p>{aviso ?? 'La revisión y aprobación requieren una cuenta. Accede desde el área de cuenta del encabezado.'}</p><a className="cuenta-cta" href="#acceso">Ir al inicio de sesión</a></div></section>
     )
   }
   return (
@@ -289,7 +208,6 @@ function Aprobacion() {
           <span className={sesion?.es_coordinador ? 'aprob-rol' : 'aprob-rol aprob-rol-lectura'}>
             {sesion === null ? '…' : sesion.es_coordinador ? 'Coordinador activo' : 'Solo lectura'}
           </span>
-          <button type="button" className="aprob-secundario" onClick={salir}>Cerrar sesión</button>
         </div>
       </div>
       {error && <p className="aprob-error" role="alert">{error}</p>}

@@ -181,6 +181,7 @@ Referencia de la versión recibida de main: D005. Se registra como D008 para con
 - Visibilidad: GET /salud/agentes informa estado del proceso local; no acredita éxito de servicios externos. Reportes y trazas abiertas se consultan sin solapar peticiones y cancelan su sondeo al cerrar; ya no necesitan F5.
 - Pruebas: conftest desactiva el trabajador real en pytest y los tests del arranque usan procesos ficticios. No se procesó la cola ni se llamó a Gemini, Supabase o Telegram para verificar este cambio. Configuración/migraciones y revisión del equipo siguen siendo necesarias.
 - Evidencia: evals/resultados/arranque_automatico/informe.json y regresion.xml. 527 pruebas Python y 66 subpruebas, cuatro pruebas de sondeo, lint y build aprobados. El arranque automático no concede permisos, confirma demanda/política, aprueba planes ni cierra V4 integrada.
+- Aceptación de Noel (dueño de api/): acepta que el ciclo de vida de FastAPI arranque el trabajador de agentes, activo por defecto. Queda registrado que ese trabajador consume cuota de Gemini mientras la API está encendida; para ensayar sin gastarla se usa TRABAJADOR_AUTOMATICO=false. La API no cambia por esto sus rutas ni sus permisos. Fecha: 17 de octubre de 2026 (UTC−05:00).
 
 ## D016 Comparación controlada y preparación de robustez V5
 

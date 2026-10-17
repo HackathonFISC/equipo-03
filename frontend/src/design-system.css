@@ -1,0 +1,86 @@
+/* Capa visual compartida; conserva contratos y reglas de aprobación. */
+.app-main > :is(.reportes, .necesidades, .plan-pagina, .aprob) {
+  max-width: 1440px; width: 100%; margin: 0 auto; padding: 32px 32px 48px;
+  --agua-profunda: #102a43; --espuma: #eff6ff;
+  --serifa: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+.app-main :is(h1, .aprob-cabecera h2) { font-size: clamp(24px, 2.5vw, 32px); font-weight: 600; letter-spacing: -.8px; line-height: 1.2; }
+.app-main :is(.reportes-cabecera, .necesidades-cabecera, .plan-pagina-cabecera) { margin-bottom: 24px; }
+.app-main :is(.reportes-cabecera, .necesidades-cabecera, .plan-pagina-cabecera) p { margin-top: 10px; max-width: 75ch; }
+.app-main :is(.reporte, .necesidad, .plan, .aprob-plan) { border-radius: var(--radio); box-shadow: var(--shadow-card); }
+.app-main :is(.necesidad, .plan, .aprob-plan) { padding: 24px; }
+.app-main :is(.lista, .lista-necesidades) { gap: 16px; }
+.app-main .reporte { border-left-width: 4px; overflow: hidden; }
+.app-main .reporte summary { padding: 20px; }
+.app-main .reporte summary:hover { background: #f8fbfd; }
+.app-main .reporte .ficha { padding: 16px 20px 24px; }
+.app-main .filtro { min-height: 44px; border-radius: 8px; padding: 8px 14px; }
+.app-main .filtros { gap: 8px; margin-bottom: 24px; }
+.app-main :is(.sello, .sello-clase, .sello-recalculo, .sello-urgente, .sello-estado, .sello-critico, .aprob-estado, .aprob-rol) { border-radius: 6px; padding: 4px 8px; font-size: 12px; }
+.app-main :is(.bloque, .ruta, .verificacion, .pendientes-plan li) { border-radius: 8px; padding: 16px; }
+.app-main .bloque { background: #f8fafc; }
+.app-main .necesidad { border-left-width: 4px; }
+.app-main .necesidad-titulo h2 { font-size: 18px; }
+.app-main .bloques { gap: 16px; margin-top: 20px; }
+.app-main :is(.puntaje-valor, .resumen dd) { font-size: 30px; font-weight: 600; letter-spacing: -.7px; }
+.app-main .resumen { gap: 12px; margin-block: 24px; }
+.app-main .resumen > div { background: var(--fondo); border: 1px solid var(--borde); border-radius: 8px; padding: 16px; min-width: 0; }
+.app-main .resumen dt { font-size: 13px; }
+.app-main :is(.aviso-ejemplos, .pendientes, .bloqueos, .aprob-aviso, .aprob-error, .mensaje, .aprob-decision, .com-estado, .com-ok) { border-radius: 8px; padding: 16px; }
+.app-main .aviso-ejemplos { color: var(--ambar); }
+.app-main .mensaje { background: white; padding: 24px; }
+.app-main :is(.mensaje-error, .aprob-error) { background: var(--error-fondo); }
+.app-main :is(.actualizar, .mensaje-error button, .aprob button, .com-bloque input, .com-bloque select, .aprob textarea, .aprob input) { border-radius: 8px; }
+.app-main .actualizar { padding: 8px 16px; font-weight: 500; }
+.app-main .aprob-cabecera { border-bottom: 1px solid var(--borde); padding-bottom: 24px; }
+.app-main :is(.aprob h3, .aprob h4, .com h2, .com h3) { font-family: inherit; font-weight: 600; }
+.app-main .aprob-plan-aprobado { border-top-color: var(--exito); }
+.app-main .aprob-estado-aprobado { color: var(--exito); background: var(--exito-fondo); }
+.app-main .sello-estado[data-estado='aprobado'] { color: var(--exito); background: var(--exito-fondo); border-color: var(--exito); }
+.app-main .verificacion-ok { border-left-color: var(--exito); background: var(--exito-fondo); }
+.app-main .verificacion-ok h3::before { content: '✓ '; }
+.app-main .verificacion-falla h3::before { content: '! '; }
+.app-main .aprob-decision { margin-top: 24px; }
+.app-main .aprob-ruta { padding: 16px; border: 1px solid var(--borde); border-radius: 8px; }
+.app-main .aprob-rutas { gap: 16px; }
+.app-main .com-columnas { grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 24px; }
+.app-main .com-bloque { padding: 20px; border: 1px solid var(--borde); background: white; border-radius: 12px; }
+.app-main .traza { padding-left: 24px; margin: 20px 0 0 8px; border-left-color: var(--borde); gap: 16px; }
+.app-main .traza li { position: relative; background: var(--fondo); border: 1px solid var(--borde); border-radius: 8px; padding: 16px; }
+.app-main .traza li::before { content: ''; position: absolute; left: -31px; top: 22px; width: 12px; height: 12px; border: 3px solid white; border-radius: 50%; background: var(--agua); box-shadow: 0 0 0 1px var(--borde); }
+.app-main .traza-resultado { margin-top: 6px; }
+.app-main .traza-meta { margin-top: 10px; }
+.app-main :is(.campo dd, .dato dd, .pie, .ficha-pie, .aprob-suave, .traza li, .plan-fecha, .com-estado) { overflow-wrap: anywhere; }
+.acceso { --agua-profunda: #102a43; --serifa: 'Inter', system-ui, sans-serif; }
+.acceso .acceso-lema { background-color: var(--agua-profunda); animation: none; }
+.acceso .acceso-frase { font-family: inherit; font-weight: 500; letter-spacing: -1px; }
+.acceso :is(button, input) { border-radius: 8px; }
+.acceso input { border-color: #8293a5; }
+@media (min-width: 1200px) { .app-main :is(.rutas, .aprob-rutas) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1100px) { .app-main .bloques { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+  .app-main > :is(.reportes, .necesidades, .plan-pagina, .aprob) { padding: 24px 16px 32px; }
+  .app-main :is(.necesidad, .plan, .aprob-plan, .com-bloque) { padding: 16px; }
+  .app-main :is(.necesidades-titulo, .plan-pagina-titulo, .plan-cabecera, .necesidad-cabecera) { flex-wrap: wrap; }
+  .app-main .sellos { justify-content: flex-start; }
+  .app-main .resumen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app-main .resumen > div { padding: 12px; }
+  .app-main .resumen dd { font-size: 24px; overflow-wrap: anywhere; }
+  .app-main .campos { grid-template-columns: minmax(0, 1fr); }
+  .app-main .aprob-decision { padding: 12px; }
+  .app-main .aprob-decision fieldset { min-width: 0; }
+  .app-main .com-estado li { flex-wrap: wrap; gap: 4px; }
+  .app-main .sello-estado { white-space: normal; }
+}
+
+/* Cuenta separada de las secciones operativas. */
+.cuenta-enlace { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: var(--agua); text-decoration: none; font-weight: 600; white-space: nowrap; border-radius: 8px; padding: 4px 8px; }
+.cuenta-enlace:hover, .cuenta-enlace[aria-current='page'] { background: var(--espuma); }
+.cuenta-avatar { display: grid; place-items: center; width: 36px; height: 36px; background: var(--espuma); border: 1px solid var(--borde); border-radius: 50%; }
+.app-main .cuenta-pagina { position: static; min-height: 65vh; margin: 32px; border: 1px solid var(--borde); border-radius: 16px; overflow: hidden; }
+.cuenta-cta { display: inline-flex; min-height: 44px; align-items: center; padding: 8px 16px; border-radius: 8px; background: var(--agua); color: white; text-decoration: none; font-weight: 600; }
+@media (max-width: 600px) {
+  .workspace-header { flex-wrap: wrap; gap: 8px; }
+  .cuenta-enlace { margin-left: auto; }
+  .app-main .cuenta-pagina { margin: 16px; min-height: auto; }
+}

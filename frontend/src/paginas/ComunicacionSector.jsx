@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { configurarDestinoEnsayo, estadoSector, seleccionarPlanSector } from '../api/sectores.js'
 import './ComunicacionSector.css'
 
@@ -9,6 +9,17 @@ const ESTADOS_SECTOR = {
   con_plan_vigente: 'Con plan vigente',
 }
 
+// El origen decide a quién puede llegar un aviso: lo sintético solo va a destinos de ensayo.
+const ORIGENES = {
+  real: 'Real',
+  estimado: 'Estimado',
+  sintetico: 'Sintético (ensayo)',
+}
+
+function Origen({ valor }) {
+  return <span className={`com-origen com-origen-${valor}`}>{ORIGENES[valor] ?? valor}</span>
+}
+
 const ESTADOS_PUNTO = {
   sin_asignacion: 'Sin asignación',
   asignado: 'Asignado',
@@ -17,24 +28,41 @@ const ESTADOS_PUNTO = {
 function Sector({ planes }) {
   const aprobados = planes.filter((p) => p.estado === 'aprobado')
   const [sectorId, setSectorId] = useState('')
-  const [estado, setEstado] = useState(null)
+  // Cada respuesta guarda el sector que se pidió: solo se muestra si sigue siendo el que está escrito.
+  const [consulta, setConsulta] = useState(null)
+  const [mensaje, setMensaje] = useState(null)
   const [eleccion, setEleccion] = useState('')
   const [motivo, setMotivo] = useState('')
   const [trabajando, setTrabajando] = useState(false)
-  const [error, setError] = useState(null)
-  const [resultado, setResultado] = useState(null)
+  const sectorActual = useRef('')
 
-  const sectorValido = UUID.test(sectorId.trim())
+  const idSector = sectorId.trim()
+  const sectorValido = UUID.test(idSector)
+  const estado = consulta?.sectorId === idSector ? consulta.datos : null
+  const aviso = mensaje?.sectorId === idSector ? mensaje : null
   const plan = aprobados.find((p) => `${p.plan_id}:${p.version}` === eleccion)
 
+  function cambiarSector(valor) {
+    setSectorId(valor)
+    sectorActual.current = valor.trim()
+  }
+
+  async function cargarEstado(id) {
+    const datos = await estadoSector(id)
+    if (datos.sector.sector_id !== id) throw new Error('La API respondió por otro sector. Vuelve a consultar.')
+    // Si cambiaron el sector mientras esperaba, esta respuesta ya no corresponde a lo que se ve.
+    if (sectorActual.current === id) setConsulta({ sectorId: id, datos })
+  }
+
   async function consultar() {
+    const id = idSector
     setTrabajando(true)
-    setError(null)
+    setMensaje(null)
     try {
-      setEstado(await estadoSector(sectorId.trim()))
+      await cargarEstado(id)
     } catch (e) {
-      setEstado(null)
-      setError(e.message)
+      setConsulta(null)
+      setMensaje({ sectorId: id, tipo: 'error', texto: e.message })
     } finally {
       setTrabajando(false)
     }
@@ -42,16 +70,16 @@ function Sector({ planes }) {
 
   async function elegir(evento) {
     evento.preventDefault()
+    const id = idSector
     setTrabajando(true)
-    setError(null)
-    setResultado(null)
+    setMensaje(null)
     try {
-      const r = await seleccionarPlanSector(sectorId.trim(), plan, motivo.trim())
-      setResultado(r.repetido ? 'Ese plan ya estaba elegido para el sector.' : 'Plan elegido para el sector.')
+      const r = await seleccionarPlanSector(id, plan, motivo.trim())
+      setMensaje({ sectorId: id, tipo: 'ok', texto: r.repetido ? 'Ese plan ya estaba elegido para el sector.' : 'Plan elegido para el sector.' })
       setMotivo('')
-      setEstado(await estadoSector(sectorId.trim()))
+      await cargarEstado(id)
     } catch (e) {
-      setError(e.message)
+      setMensaje({ sectorId: id, tipo: 'error', texto: e.message })
     } finally {
       setTrabajando(false)
     }
@@ -66,23 +94,28 @@ function Sector({ planes }) {
       <div className="com-fila">
         <label>
           Sector
-          <input value={sectorId} onChange={(e) => { setSectorId(e.target.value); setEstado(null); setResultado(null) }} placeholder="Identificador del sector" spellCheck={false} />
+          <input value={sectorId} onChange={(e) => cambiarSector(e.target.value)} placeholder="Identificador del sector" spellCheck={false} />
         </label>
         <button type="button" className="aprob-secundario" disabled={!sectorValido || trabajando} onClick={consultar}>
           Ver estado
         </button>
       </div>
-      {sectorId.trim() !== '' && !sectorValido && <p className="aprob-suave">El identificador tiene formato de UUID.</p>}
+      {idSector !== '' && !sectorValido && <p className="aprob-suave">El identificador tiene formato de UUID.</p>}
       {estado && (
         <div className="com-estado" role="status">
           <p>
-            <strong>{estado.sector.nombre}</strong> · {ESTADOS_SECTOR[estado.estado] ?? estado.estado}
-            {estado.plan_vigente && <> · plan {estado.plan_vigente.plan_id.slice(0, 8)} v{estado.plan_vigente.version}</>}
+            <strong>{estado.sector.nombre}</strong> <Origen valor={estado.origen} /> · {ESTADOS_SECTOR[estado.estado] ?? estado.estado}
+            {estado.plan_vigente && (
+              <>
+                {' '}· plan {estado.plan_vigente.plan_id.slice(0, 8)} v{estado.plan_vigente.version}{' '}
+                <Origen valor={estado.plan_vigente.origen} />
+              </>
+            )}
           </p>
           <ul>
             {estado.puntos.map((p) => (
               <li key={p.punto_atencion_id}>
-                <span>{p.nombre}</span>
+                <span>{p.nombre} <Origen valor={p.origen} /></span>
                 <span>{ESTADOS_PUNTO[p.estado] ?? p.estado}{p.litros_asignados ? ` · ${p.litros_asignados.toLocaleString('es-PA')} L` : ''}</span>
               </li>
             ))}
@@ -95,17 +128,22 @@ function Sector({ planes }) {
           <option value="">{aprobados.length === 0 ? 'No hay planes aprobados' : 'Elige un plan'}</option>
           {aprobados.map((p) => (
             <option key={`${p.plan_id}:${p.version}`} value={`${p.plan_id}:${p.version}`}>
-              Plan {p.plan_id.slice(0, 8)} versión {p.version}
+              Plan {p.plan_id.slice(0, 8)} versión {p.version} · {ORIGENES[p.origen] ?? p.origen}
             </option>
           ))}
         </select>
       </label>
+      {plan && plan.origen !== 'real' && (
+        <p className="aprob-aviso" role="status">
+          Este plan es {ORIGENES[plan.origen]?.toLowerCase() ?? plan.origen}: solo debe llegar a destinos de ensayo, no a la comunidad.
+        </p>
+      )}
       <label>
         Motivo
         <textarea rows={2} maxLength={4000} value={motivo} onChange={(e) => setMotivo(e.target.value)} />
       </label>
-      {error && <p className="aprob-error" role="alert">{error}</p>}
-      {resultado && <p className="com-ok" role="status">{resultado}</p>}
+      {aviso?.tipo === 'error' && <p className="aprob-error" role="alert">{aviso.texto}</p>}
+      {aviso?.tipo === 'ok' && <p className="com-ok" role="status">{aviso.texto}</p>}
       <div className="aprob-botones">
         <button type="submit" disabled={!sectorValido || !plan || motivo.trim() === '' || trabajando}>
           {trabajando ? 'Guardando…' : 'Elegir para este sector'}
