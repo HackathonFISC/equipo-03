@@ -367,6 +367,7 @@ class RevisionIncidente(Peticion):
     clase_prioridad: Literal["critico", "general"] | None = None
     ventana_atencion: VentanaRevisada | None = None
     vulnerabilidad: Literal["sin_condicion_identificada", "moderada", "alta"] | None = None
+    capacidad_recepcion_litros: Annotated[float, Field(ge=0, allow_inf_nan=False, strict=True)] | None = None
     horas_sin_agua: Annotated[float, Field(ge=0, allow_inf_nan=False, strict=True)] | None = None
     personas_atendidas: Annotated[int, Field(ge=0, strict=True)] | None = None
     ultima_atencion_confirmada_en: AwareDatetime | None = None

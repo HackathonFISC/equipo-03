@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { obtenerNecesidades, USAR_EJEMPLOS_NECESIDADES } from '../api/necesidades.js'
+import FormularioRevision from './FormularioRevision.jsx'
 import './Necesidades.css'
 
 // Urgencia y confianza se muestran por separado (documento de versiones, V2):
@@ -254,7 +255,7 @@ function TarjetaNecesidad({ item }) {
   )
 }
 
-export default function Necesidades() {
+export default function Necesidades({ conSesion }) {
   const [items, setItems] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
@@ -373,6 +374,9 @@ export default function Necesidades() {
             ))}
           </ul>
         </>
+      )}
+      {conSesion && !cargando && !error && items.length > 0 && (
+        <FormularioRevision items={items} alActualizar={reintentar} />
       )}
     </section>
   )

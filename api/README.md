@@ -209,7 +209,8 @@ etapa `priorizacion` y ya existir: esta ruta no crea otra. La decisión de acept
 - **Ámbito completo:** el lote cubre todos los incidentes de `ra_incidentes_contexto_v2(ejecucion_id)`, que no se limita al
   sector que se ve en pantalla. Se bloquea con 422 (`datos_insuficientes`) si hay incidentes sin punto, dos en el mismo
   punto o datos de distinto origen: no se omite, no se suman demandas y no se recorta en silencio.
-- **Sin inventar:** `revisiones` lleva lo que el coordinador confirma por incidente (demanda directa o por fórmula, clase,
+- **Sin inventar:** `revisiones` lleva lo que el coordinador confirma por incidente (demanda directa o por fórmula, capacidad de recepción
+  del punto, clase,
   ventana si es crítico, vulnerabilidad, horas sin agua, personas, última atención). Cada confirmación lleva el usuario de la
   sesión, la hora y el motivo. Lo que no se envía queda pendiente con su motivo, sin confirmaciones.
 - **Origen:** el del lote es el de la ejecución. Esta ruta no convierte datos reales en sintéticos.

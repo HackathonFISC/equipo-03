@@ -53,6 +53,8 @@
 .app-main :is(.campo dd, .dato dd, .pie, .ficha-pie, .aprob-suave, .traza li, .plan-fecha, .com-estado) { overflow-wrap: anywhere; }
 .acceso { --agua-profunda: #102a43; --serifa: 'Inter', system-ui, sans-serif; }
 .acceso .acceso-lema { background-color: var(--agua-profunda); animation: none; }
+.acceso .acceso-banner { width: 100%; height: auto; max-height: 38vh; object-fit: cover; object-position: center; border-radius: 12px; border: 1px solid #45677d; }
+@media (max-width: 720px) { .acceso .acceso-banner { max-height: 22vh; } }
 .acceso .acceso-frase { font-family: inherit; font-weight: 500; letter-spacing: -1px; }
 .acceso :is(button, input) { border-radius: 8px; }
 .acceso input { border-color: #8293a5; }

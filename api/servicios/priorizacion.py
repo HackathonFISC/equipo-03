@@ -200,6 +200,8 @@ def _faltantes(revision: RevisionIncidente | None) -> list[str]:
     faltan = []
     if revision.demanda is None:
         faltan.append("Falta confirmar la demanda de agua.")
+    if revision.capacidad_recepcion_litros is None:
+        faltan.append("Falta la capacidad de recepción del punto.")
     if revision.clase_prioridad is None:
         faltan.append("Falta confirmar la clase de prioridad.")
     if revision.vulnerabilidad is None:
@@ -221,6 +223,7 @@ def _entrada(*, ejecucion_id, origen, datos_version, politica_version, incidente
         punto_atencion_id=incidente["punto_atencion_id"],
         datos_version=datos_version,
         demanda=demanda,
+        capacidad_recepcion_litros=revision.capacidad_recepcion_litros if revision else None,
         supuestos=[],
     )
     r = revision

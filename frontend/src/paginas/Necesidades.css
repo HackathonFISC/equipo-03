@@ -297,3 +297,26 @@
   font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
   font-size: 0.95em;
 }
+
+/* Formulario de revisión (priorización) */
+.revision { margin-top: 2.5rem; }
+.rev-form { display: grid; gap: 1rem; }
+.rev-cabecera { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 1rem; }
+.rev-campo { display: grid; gap: 0.3rem; font-size: 0.9rem; color: var(--tinta); min-width: 0; }
+.rev-campo span { font-weight: 500; }
+.rev-campo :is(input, select, textarea) { font: inherit; padding: 0.55rem 0.7rem; min-height: 44px; border: 1px solid #8293a5; border-radius: 8px; background: white; color: var(--tinta); width: 100%; box-sizing: border-box; }
+.rev-campo textarea { resize: vertical; }
+.revision :is(input, select, textarea, button):focus-visible { outline: 3px solid var(--agua); outline-offset: 2px; }
+.rev-ejecucion, .rev-resumen, .rev-detalle { margin: 0; font-size: 0.88rem; color: var(--tinta-suave); }
+.rev-incidente { margin: 0; padding: 1rem; border: 1px solid var(--borde); border-radius: 12px; background: white; min-width: 0; }
+.rev-incidente[data-incluido='true'] { border-color: var(--agua); }
+.rev-incidente legend { padding: 0 0.4rem; display: grid; gap: 0.15rem; }
+.rev-incidente legend small { color: var(--tinta-suave); font-weight: 400; }
+.rev-incluir { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 44px; font-weight: 600; cursor: pointer; }
+.rev-incluir input { width: 1.2rem; height: 1.2rem; }
+.rev-campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 0.9rem; margin-top: 0.5rem; }
+.rev-problemas { margin: 0.8rem 0 0; padding-left: 1.2rem; color: var(--error, #9b1c1c); font-size: 0.9rem; }
+.rev-enviar { justify-self: start; min-height: 44px; padding: 0.6rem 1.4rem; border: 0; border-radius: 8px; background: var(--agua); color: white; font: inherit; font-weight: 600; cursor: pointer; }
+.rev-enviar:disabled { background: #8293a5; cursor: not-allowed; }
+.rev-ok { border-left: 4px solid var(--exito, #1b7a4b); display: grid; gap: 0.5rem; justify-items: start; }
+@media (max-width: 720px) { .rev-cabecera { grid-template-columns: 1fr; } }
