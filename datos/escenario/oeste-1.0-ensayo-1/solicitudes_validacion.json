@@ -1,0 +1,122 @@
+[
+  {
+    "esquema_version": "1.0",
+    "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+    "creado_en": "2026-10-17T07:00:00-05:00",
+    "origen": "sintetico",
+    "incidente_id": "8567e5a8-3a1c-51f6-9f6f-6feeca2e43d1",
+    "punto_atencion_id": "920f8af3-1bfe-5ab6-a4f2-7fbcb323825e",
+    "datos_version": "oeste-1.0-ensayo-1",
+    "demanda": {
+      "metodo": "directa",
+      "litros_declarados": 2500.0,
+      "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+      "confirmacion": null
+    },
+    "capacidad_recepcion_litros": null,
+    "supuestos": [
+      "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+      "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+    ]
+  },
+  {
+    "esquema_version": "1.0",
+    "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+    "creado_en": "2026-10-17T07:00:00-05:00",
+    "origen": "sintetico",
+    "incidente_id": "8804b10c-7e7c-532e-8c63-44d91f421926",
+    "punto_atencion_id": "1e35ede2-8fc7-51b0-8830-6eec337f6a24",
+    "datos_version": "oeste-1.0-ensayo-1",
+    "demanda": {
+      "metodo": "directa",
+      "litros_declarados": 3000.0,
+      "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+      "confirmacion": null
+    },
+    "capacidad_recepcion_litros": null,
+    "supuestos": [
+      "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+      "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+    ]
+  },
+  {
+    "esquema_version": "1.0",
+    "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+    "creado_en": "2026-10-17T07:00:00-05:00",
+    "origen": "sintetico",
+    "incidente_id": "582785a7-2184-5a91-a55d-2dead460af08",
+    "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+    "datos_version": "oeste-1.0-ensayo-1",
+    "demanda": {
+      "metodo": "directa",
+      "litros_declarados": 3500.0,
+      "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+      "confirmacion": null
+    },
+    "capacidad_recepcion_litros": null,
+    "supuestos": [
+      "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+      "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+    ]
+  },
+  {
+    "esquema_version": "1.0",
+    "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+    "creado_en": "2026-10-17T07:00:00-05:00",
+    "origen": "sintetico",
+    "incidente_id": "413b7809-030a-5ae2-b93b-fb0bc08c49b4",
+    "punto_atencion_id": "9459ff87-0377-5622-8255-caaf79dc9898",
+    "datos_version": "oeste-1.0-ensayo-1",
+    "demanda": {
+      "metodo": "directa",
+      "litros_declarados": 2500.0,
+      "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+      "confirmacion": null
+    },
+    "capacidad_recepcion_litros": null,
+    "supuestos": [
+      "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+      "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+    ]
+  },
+  {
+    "esquema_version": "1.0",
+    "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+    "creado_en": "2026-10-17T07:00:00-05:00",
+    "origen": "sintetico",
+    "incidente_id": "c98983eb-ad99-5167-af73-ece92f9a9f6b",
+    "punto_atencion_id": "4b89af3e-444a-5103-880c-fe1c886530ed",
+    "datos_version": "oeste-1.0-ensayo-1",
+    "demanda": {
+      "metodo": "directa",
+      "litros_declarados": 3000.0,
+      "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+      "confirmacion": null
+    },
+    "capacidad_recepcion_litros": null,
+    "supuestos": [
+      "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+      "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+    ]
+  },
+  {
+    "esquema_version": "1.0",
+    "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+    "creado_en": "2026-10-17T07:00:00-05:00",
+    "origen": "sintetico",
+    "incidente_id": "0e675ead-c994-5b1e-b31b-1e1c41d5009f",
+    "punto_atencion_id": "b2478919-28e8-592d-ae1f-c450057cb229",
+    "datos_version": "oeste-1.0-ensayo-1",
+    "demanda": {
+      "metodo": "directa",
+      "litros_declarados": 3500.0,
+      "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+      "confirmacion": null
+    },
+    "capacidad_recepcion_litros": null,
+    "supuestos": [
+      "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+      "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+    ]
+  }
+]

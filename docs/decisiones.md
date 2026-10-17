@@ -117,3 +117,46 @@ Referencia de la versión recibida de main: D005. Se registra como D008 para con
 - Origen: conservar `EvaluacionNecesidades.origen` por necesidad, también en lotes mixtos y pendientes. El contexto del resultado conserva `entrada.origen`, tal como exige la RPC `ra_finalizar_priorizacion_v2` en la migración 0007. Una alerta identifica la política sintética y su versión y aclara que el ensayo no constituye autorización operativa. El campo origen expresa procedencia de datos, no aprobación de la política. Sustituye la interpretación inicial de D004 sin ampliar el contrato.
 - Integración: probar el adaptador existente con `HerramientasJose` y nuestras funciones reales, para los tres orígenes y con confirmación u observación pendientes. Los fixtures con campo origen real son casos de prueba, no evidencia de datos reales. No se modifican archivos de Emilia o Noel, política, parámetros, permisos o servicios remotos.
 - Evidencia: `evals/resultados/integracion_prioridad_v2.json` y `v2_integracion_prioridad_pruebas.xml`. La integración persistida, activación de aclaraciones, panel y cierre conjunto V2 siguen pendientes.
+
+## D010 Preparación del escenario territorial para V3
+
+- Fecha: 17 de octubre de 2026 (UTC−05:00).
+- Solicitud: José autorizó trabajar el bloque 3 y comprobar catálogo/UUID de Emilia. Se prepara `datos/escenario/oeste-1.0-ensayo-1/` sin importar cambios del ZIP de Noel.
+- Alcance: seis puntos de oeste-1.0 (tres por distrito), dos cisternas ficticias, depósito ficticio, demanda directa de ensayo, ventanas/descargas propuestas y matriz manual sintética de siete nodos. Se conservan íntegros catálogo, contratos y fixtures históricos.
+- Procedencia: puntos reales solo como referencia documental AIG 2022, sin validar recepción o descarga. Necesidades y demás parámetros de prueba sintéticos, con nuevas identidades de ensayo salvo los UUID de punto/sector del catálogo. No se atribuyen demandas actuales a esas instalaciones.
+- Cantidades propuestas: 18 000 L totales, dos capacidades de 10 000 L, turno/ventanas 08:00–12:00 UTC−05:00, descargas de diez minutos. Depósito y tiempos de viaje arbitrarios, sin geometría vial ni estimación física. Estos valores no quedan aprobados por crear los archivos.
+- Pendientes conservados: seis demandas sin confirmación, recepción desconocida, clase/vulnerabilidad sin confirmar y política propuesta sin activación. No se añaden confirmaciones de coordinador ni se modifica Supabase.
+- Comprobación: script local valida estructura y coherencia contra catálogo, y ejecuta validate_need; no es verify_plan ni acredita factibilidad. Evidencias separadas en `escenario_territorial_v3.json` y `bloque3_v3_pruebas.xml`.
+- Límite: preparación técnica del bloque 3; confirmación de parámetros, solver completo, verificador e integración del equipo siguen pendientes. El solver mínimo V1 no admite este escenario mixto y pendiente; no se eluden sus guardas para fabricar rutas.
+
+## D011 Ponderaciones del proyecto con apoyo en referencias panameñas
+
+- Fecha: 17 de octubre de 2026 (UTC−05:00).
+- Solicitud: José pidió construir políticas/ponderaciones apoyadas en las fuentes oficiales investigadas. Se define una propuesta técnica del proyecto; no se atribuye aprobación a IDAAN, ASEP, MINSA ni a un coordinador.
+- Selección técnica: clase crítica confirmada antes de general; dentro de cada clase, 40 % vulnerabilidad, 40 % duración y 20 % personas atendidas. Se aumenta vulnerabilidad frente al ensayo 50/30/20. Se conservan las escalas técnicas de 168 horas y 500 personas, valor moderado 0.5 y desempate existente. Estos números no vienen impuestos por las normas consultadas ni son resultado de calibración empírica.
+- Apoyo: antecedente operativo IDAAN/SERTV de 2026 para atención sanitaria prioritaria; ASEP AN 1480-Agua y DGNTI-COPANIT 21-2019 con reforma 122/2021 para requisitos sanitarios separados del puntaje. El cálculo no certifica su cumplimiento ni clasifica instalaciones automáticamente por nombre.
+- Entrega: `politica_apoyo_panama_v1.json`, fundamento en `docs/politica_prioridad_oeste.md`, escenario nuevo `oeste-1.0-ensayo-2`. Se conservan ensayo 1 y fixtures anteriores. Cambian versiones de política, datos, solicitud y referencia de matriz; no se reutiliza una propuesta calculada anterior.
+- Estado: propuesta sintética sin activación ni confirmaciones inventadas. Demandas, recepción y lugares siguen pendientes. Para uso operativo se requiere validación del operador y coordinación del contrato de política con Emilia. No se modifica código ajeno ni Supabase.
+- Evidencia: seis pruebas específicas, incluida criticidad antes de puntaje, ejemplos 30/50/70 y rechazo de política no activa; regresión de 344 pruebas y 66 subpruebas aprobadas. Resultados en `politica_apoyo_panama_v1.json` y `politica_apoyo_panama_v1_pruebas.xml` dentro de `evals/resultados/`.
+
+## D012 Ensayo sintético con demanda, recepción y política calculables
+
+- Fecha: 17 de octubre de 2026 (UTC−05:00).
+- Solicitud: José pidió generar datos sintéticos plausibles para Panamá Oeste, construir demanda/recepción y continuar con la nueva política. Se construye `oeste-1.0-ensayo-3`, conservando catálogos, contratos, ensayos anteriores y política compartida sin activar.
+- Modelo: seis grupos vecinales ficticios, 860 personas; hipótesis de cinco personas por familia, cobertura de un día a 20 L/persona/día y reservas explícitas. Demanda bruta 17 200 L, reserva 2200 L y demanda neta 15 000 L. No son consumos institucionales de las instalaciones del catálogo ni mediciones locales.
+- Recepción: tanque nominal de 5000 L o banco equivalente de dos, menos agua almacenada y margen arbitrario del 5 %. Caudal de descarga de ensayo 300 L/min más cinco minutos de preparación. Referencias OMS y ejemplo MINSA de tanque panameño aportan contexto; no prescriben capacidades de los seis lugares.
+- Política: copia del 40/40/20 y dos grupos críticos ficticios para probar precedencia; no se infiere criticidad por el nombre de las instalaciones. Identidad y confirmaciones de coordinador ficticias marcadas como fixture; activación solo en esa copia. No se crean usuarios/roles ni se escribe en Supabase.
+- Estado: preparación del bloque 3 utilizable para pruebas sintéticas con seis demandas validadas y prioridades calculadas; no equivale a validación de campo ni cierre integrado V3. La propuesta incluye bloqueos de publicación fuera de los contratos de solicitud; no hay plan calculado ni verificación.
+- Pruebas: casos de recepción desconocida/insuficiente, reserva desconocida, separación de reserva utilizable y volumen almacenado, población incoherente, exceso de tanque, clasificación/ranking y reproducibilidad. Evidencia separada en `escenario_oeste_sintetico_v3.json` y `escenario_oeste_sintetico_v3_pruebas.xml` dentro de `evals/resultados/`.
+
+## D013 Solver completo y verificador independiente de V3
+
+- Fecha: 17 de octubre de 2026 (UTC−05:00).
+- Solicitud: José autorizó continuar bloques 4 y 5. Se implementan solve_routes y verify_plan con contratos actuales, preservando solver mínimo V1, fixtures y módulos de los otros integrantes.
+- Objetivo del MVP: máximo número de críticos cubiertos, después cobertura lexicográfica según ranking y finalmente duración total mínima. Un crítico no cubierto bloquea validación/publicación aunque la selección parcial sea la mejor disponible. No se amplía a recargas ni entregas divididas.
+- Método: enumeración exacta de rutas admisibles para hasta seis puntos y dos cisternas; OR-Tools CP-SAT combina rutas disjuntas. Se conserva mejor ruta por vehículo/subconjunto; no se promete escalabilidad fuera del límite. Se usa la biblioteca OR-Tools ya instalada, sin nuevas dependencias.
+- Entrada: vuelve a comprobar puntajes, componentes y orden frente a la política/factores; conserva pendientes, ceros validados y cantidades desconocidas. Capacidad en mililitros exactos, tiempos en microsegundos; límites técnicos y errores documentados en calculo/PLAN_V3.md.
+- Diagnóstico: motivo por punto, separando datos, capacidad, demanda indivisible excesiva, accesibilidad, ventana, timeout y selección conjunta. Inviabilidad demostrada solo cuando no existe servicio positivo validado posible; timeout nunca demuestra inviabilidad. Factible sin óptimo se identifica explícitamente.
+- Verificación: implementación sin importar OR-Tools/solver y sin confiar en informes adjuntos. Recalcula cargas, viajes, descargas, retorno, ventanas, identidades, demanda completa, versiones y cobertura crítica. SHA-256 del snapshot en supuestos permite detectar cambios de entradas bajo versiones reutilizadas; no sustituye permisos ni vigencia de BD.
+- Evidencia: calculo/tests/test_plan_v3.py y demo_plan_v3; casos completos, una cisterna y crítico de 12 000 L. Resultados de V3 en plan_v3_bloques_4_5.json y plan_v3_pruebas.xml dentro de evals/resultados. Estados de timeout/óptimo parcial comprobados con simulaciones identificadas.
+- Límite: bloques 4/5 locales; registro por Emilia, persistencia, API/panel por Noel y recorrido integrado siguen pendientes en bloque 6. Propuestas pendientes de revisión, publicación bloqueada, sin activaciones ni aprobaciones reales. Verificación válida solo acredita restricciones del modelo.

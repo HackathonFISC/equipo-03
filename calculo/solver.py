@@ -1,7 +1,7 @@
-"""Prueba de rutas V1: cobertura completa de entradas sintéticas validadas.
+"""solve_routes expone V3; solve_routes_minimo conserva el ensayo histórico V1.
 
-No es todavía solve_routes de V3: no selecciona cobertura parcial por prioridad,
-no verifica independientemente ni autoriza publicación.
+V1 sigue exigiendo cobertura completa sintética. La selección parcial está en
+solver_v3 y la comprobación independiente en verificador. Ninguno autoriza envío.
 """
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
@@ -13,6 +13,9 @@ from ortools.constraint_solver import pywrapcp, routing_enums_pb2
 from contratos.errores import CodigoError, ErrorDominio, ExcepcionContrato
 from contratos.modelos import PropuestaDistribucion
 from contratos.solicitudes import SolicitudResolverRutas
+
+# Entrada V3 independiente del ensayo histórico solve_routes_minimo.
+from .solver_v3 import solve_routes
 
 
 def _error(entrada, codigo, mensaje, campos):

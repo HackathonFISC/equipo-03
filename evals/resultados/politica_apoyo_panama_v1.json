@@ -1,0 +1,1406 @@
+{
+  "registrado_en": "2026-10-17T05:33:42.151831+00:00",
+  "origen": "sintetico",
+  "entrada": {
+    "solicitud_rutas.json": {
+      "esquema_version": "1.0",
+      "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+      "creado_en": "2026-10-17T07:00:00-05:00",
+      "origen": "sintetico",
+      "plan_id": "5b2ebe8d-30c7-5efb-a85b-f647d3498a90",
+      "version": 2,
+      "datos_version": "oeste-1.0-ensayo-2",
+      "politica": {
+        "politica_version": "oeste-prioridad-apoyo-pa-1",
+        "estado": "propuesta_demo",
+        "origen": "sintetico",
+        "peso_duracion": 0.4,
+        "peso_vulnerabilidad": 0.4,
+        "peso_poblacion": 0.2,
+        "tope_horas": 168.0,
+        "tope_personas": 500,
+        "vulnerabilidad_moderada": 0.5,
+        "fundamento": "Política técnica del proyecto apoyada en normativa panameña, no fórmula oficial del Estado. Críticos confirmados antes de generales. Puntaje intraclase: 40% vulnerabilidad confirmada, 40% tiempo sin suministro y 20% población efectivamente atendida. El antecedente operativo IDAAN/SERTV de 02-04-2026 respalda considerar dependencia sanitaria, sin imponer porcentajes. ASEP AN 1480-Agua y DGNTI-COPANIT 21-2019 con reforma 122/2021 orientan requisitos sanitarios fuera del puntaje; su control no está implementado por score_needs. Topes 168 horas y 500 personas y nivel moderado 0.5 son decisiones de escala del proyecto, sin carácter legal. Estado de propuesta para ensayo sintético; uso real requiere validación del operador y adaptación del contrato. Ver docs/politica_prioridad_oeste.md.",
+        "confirmacion_activacion": null,
+        "criticos_obligatorios": true,
+        "faltantes_fuera_ranking": true,
+        "orden_desempate": "ultima_atencion_luego_incidente_luego_id"
+      },
+      "deposito": {
+        "deposito_id": "b510bbba-5a8e-5778-9feb-209ac69fc88a",
+        "nombre": "Depósito ficticio del ensayo oeste-1.0; sin instalación acordada",
+        "ubicacion": {
+          "latitud": 8.9,
+          "longitud": -79.74,
+          "fuente": "escenario",
+          "precision_metros": null,
+          "representa_punto_atencion": null
+        },
+        "origen": "sintetico"
+      },
+      "vehiculos": [
+        {
+          "vehiculo_id": "cafb1a61-101b-5fda-98b3-c9b5c0d0468f",
+          "capacidad_litros": 10000.0,
+          "disponible": true,
+          "turno": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "origen": "sintetico"
+        },
+        {
+          "vehiculo_id": "f2c6a5ef-f9f3-5515-84c3-00fb0ba65210",
+          "capacidad_litros": 10000.0,
+          "disponible": true,
+          "turno": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "origen": "sintetico"
+        }
+      ],
+      "puntos": [
+        {
+          "punto_atencion_id": "920f8af3-1bfe-5ab6-a4f2-7fbcb323825e",
+          "sector_id": "e4cefc0a-7132-5fbe-809b-4a4964b10388",
+          "nombre": "Junta Comunal Nuevo Arraiján",
+          "ubicacion": {
+            "latitud": 8.92561,
+            "longitud": -79.71959,
+            "fuente": "catalogo",
+            "precision_metros": null,
+            "representa_punto_atencion": null
+          },
+          "origen": "real"
+        },
+        {
+          "punto_atencion_id": "1e35ede2-8fc7-51b0-8830-6eec337f6a24",
+          "sector_id": "9bdee025-4b8b-56fc-8464-4ef9a162d003",
+          "nombre": "Junta Comunal de Vista Alegre",
+          "ubicacion": {
+            "latitud": 8.92695,
+            "longitud": -79.70745,
+            "fuente": "catalogo",
+            "precision_metros": null,
+            "representa_punto_atencion": null
+          },
+          "origen": "real"
+        },
+        {
+          "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+          "sector_id": "8fa71373-37be-5929-9b54-f05fc04fb5d6",
+          "nombre": "C.E.B.G. Burunga",
+          "ubicacion": {
+            "latitud": 8.96713,
+            "longitud": -79.67437,
+            "fuente": "catalogo",
+            "precision_metros": null,
+            "representa_punto_atencion": null
+          },
+          "origen": "real"
+        },
+        {
+          "punto_atencion_id": "9459ff87-0377-5622-8255-caaf79dc9898",
+          "sector_id": "f237d7cb-97d3-5972-8b8b-47ac38703b2e",
+          "nombre": "Escuela El Coco",
+          "ubicacion": {
+            "latitud": 8.86672,
+            "longitud": -79.81024,
+            "fuente": "catalogo",
+            "precision_metros": null,
+            "representa_punto_atencion": null
+          },
+          "origen": "real"
+        },
+        {
+          "punto_atencion_id": "4b89af3e-444a-5103-880c-fe1c886530ed",
+          "sector_id": "076c136c-b638-5a90-a717-e331206be19a",
+          "nombre": "C.E. Virgen de Guadalupe",
+          "ubicacion": {
+            "latitud": 8.85693,
+            "longitud": -79.82341,
+            "fuente": "catalogo",
+            "precision_metros": null,
+            "representa_punto_atencion": null
+          },
+          "origen": "real"
+        },
+        {
+          "punto_atencion_id": "b2478919-28e8-592d-ae1f-c450057cb229",
+          "sector_id": "b97abad5-0e4a-5748-90d0-030aaf55ca37",
+          "nombre": "Centro Educativo Guillermo Endara",
+          "ubicacion": {
+            "latitud": 8.8613,
+            "longitud": -79.7845,
+            "fuente": "catalogo",
+            "precision_metros": null,
+            "representa_punto_atencion": null
+          },
+          "origen": "real"
+        }
+      ],
+      "necesidades": [
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+          "creado_en": "2026-10-17T07:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "8567e5a8-3a1c-51f6-9f6f-6feeca2e43d1",
+          "punto_atencion_id": "920f8af3-1bfe-5ab6-a4f2-7fbcb323825e",
+          "datos_version": "oeste-1.0-ensayo-2",
+          "politica_version": "oeste-prioridad-apoyo-pa-1",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 2500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 72.0,
+          "personas_atendidas": 130,
+          "vulnerabilidad": null,
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-17T07:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Demanda sintética sin confirmación.",
+            "Capacidad de recepción desconocida.",
+            "Clase de prioridad y vulnerabilidad sin confirmar.",
+            "Lugar de recepción y descarga sin validación operativa.",
+            "Parámetros del escenario y política pendientes de aprobación."
+          ],
+          "supuestos": [
+            "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+            "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+          "creado_en": "2026-10-17T07:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "8804b10c-7e7c-532e-8c63-44d91f421926",
+          "punto_atencion_id": "1e35ede2-8fc7-51b0-8830-6eec337f6a24",
+          "datos_version": "oeste-1.0-ensayo-2",
+          "politica_version": "oeste-prioridad-apoyo-pa-1",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 3000.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 96.0,
+          "personas_atendidas": 190,
+          "vulnerabilidad": null,
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-17T07:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Demanda sintética sin confirmación.",
+            "Capacidad de recepción desconocida.",
+            "Clase de prioridad y vulnerabilidad sin confirmar.",
+            "Lugar de recepción y descarga sin validación operativa.",
+            "Parámetros del escenario y política pendientes de aprobación."
+          ],
+          "supuestos": [
+            "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+            "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+          "creado_en": "2026-10-17T07:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "582785a7-2184-5a91-a55d-2dead460af08",
+          "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+          "datos_version": "oeste-1.0-ensayo-2",
+          "politica_version": "oeste-prioridad-apoyo-pa-1",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 3500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 84.0,
+          "personas_atendidas": 210,
+          "vulnerabilidad": null,
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-17T07:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Demanda sintética sin confirmación.",
+            "Capacidad de recepción desconocida.",
+            "Clase de prioridad y vulnerabilidad sin confirmar.",
+            "Lugar de recepción y descarga sin validación operativa.",
+            "Parámetros del escenario y política pendientes de aprobación."
+          ],
+          "supuestos": [
+            "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+            "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+          "creado_en": "2026-10-17T07:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "413b7809-030a-5ae2-b93b-fb0bc08c49b4",
+          "punto_atencion_id": "9459ff87-0377-5622-8255-caaf79dc9898",
+          "datos_version": "oeste-1.0-ensayo-2",
+          "politica_version": "oeste-prioridad-apoyo-pa-1",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 2500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 60.0,
+          "personas_atendidas": 140,
+          "vulnerabilidad": null,
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-17T07:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Demanda sintética sin confirmación.",
+            "Capacidad de recepción desconocida.",
+            "Clase de prioridad y vulnerabilidad sin confirmar.",
+            "Lugar de recepción y descarga sin validación operativa.",
+            "Parámetros del escenario y política pendientes de aprobación."
+          ],
+          "supuestos": [
+            "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+            "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+          "creado_en": "2026-10-17T07:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "c98983eb-ad99-5167-af73-ece92f9a9f6b",
+          "punto_atencion_id": "4b89af3e-444a-5103-880c-fe1c886530ed",
+          "datos_version": "oeste-1.0-ensayo-2",
+          "politica_version": "oeste-prioridad-apoyo-pa-1",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 3000.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 48.0,
+          "personas_atendidas": 170,
+          "vulnerabilidad": null,
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-17T07:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Demanda sintética sin confirmación.",
+            "Capacidad de recepción desconocida.",
+            "Clase de prioridad y vulnerabilidad sin confirmar.",
+            "Lugar de recepción y descarga sin validación operativa.",
+            "Parámetros del escenario y política pendientes de aprobación."
+          ],
+          "supuestos": [
+            "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+            "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+          "creado_en": "2026-10-17T07:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "0e675ead-c994-5b1e-b31b-1e1c41d5009f",
+          "punto_atencion_id": "b2478919-28e8-592d-ae1f-c450057cb229",
+          "datos_version": "oeste-1.0-ensayo-2",
+          "politica_version": "oeste-prioridad-apoyo-pa-1",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 3500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 36.0,
+          "personas_atendidas": 200,
+          "vulnerabilidad": null,
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-17T07:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Demanda sintética sin confirmación.",
+            "Capacidad de recepción desconocida.",
+            "Clase de prioridad y vulnerabilidad sin confirmar.",
+            "Lugar de recepción y descarga sin validación operativa.",
+            "Parámetros del escenario y política pendientes de aprobación."
+          ],
+          "supuestos": [
+            "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+            "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+          ],
+          "requiere_revision_urgente": false
+        }
+      ],
+      "matriz": {
+        "matriz_version": "oeste-1.0-ensayo-2-matriz-1",
+        "origen": "sintetico",
+        "nodos_ids": [
+          "b510bbba-5a8e-5778-9feb-209ac69fc88a",
+          "920f8af3-1bfe-5ab6-a4f2-7fbcb323825e",
+          "1e35ede2-8fc7-51b0-8830-6eec337f6a24",
+          "66597297-f57e-54ac-b7f1-7a66cc35253f",
+          "9459ff87-0377-5622-8255-caaf79dc9898",
+          "4b89af3e-444a-5103-880c-fe1c886530ed",
+          "b2478919-28e8-592d-ae1f-c450057cb229"
+        ],
+        "minutos": [
+          [
+            0,
+            15,
+            18,
+            25,
+            35,
+            40,
+            30
+          ],
+          [
+            15,
+            0,
+            8,
+            15,
+            35,
+            40,
+            30
+          ],
+          [
+            18,
+            8,
+            0,
+            12,
+            38,
+            43,
+            33
+          ],
+          [
+            25,
+            15,
+            12,
+            0,
+            45,
+            50,
+            40
+          ],
+          [
+            35,
+            35,
+            38,
+            45,
+            0,
+            8,
+            12
+          ],
+          [
+            40,
+            40,
+            43,
+            50,
+            8,
+            0,
+            15
+          ],
+          [
+            30,
+            30,
+            33,
+            40,
+            12,
+            15,
+            0
+          ]
+        ],
+        "descripcion": "Tabla manual inventada de 7×7 en minutos. No usa coordenadas para calcular tiempos, red vial, tráfico, velocidad ni proveedor externo; no valida acceso ni factibilidad física. El orden lo fijan nodos_ids; no incluye descarga."
+      },
+      "servicios": [
+        {
+          "punto_atencion_id": "920f8af3-1bfe-5ab6-a4f2-7fbcb323825e",
+          "descarga_minutos": 10
+        },
+        {
+          "punto_atencion_id": "1e35ede2-8fc7-51b0-8830-6eec337f6a24",
+          "descarga_minutos": 10
+        },
+        {
+          "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+          "descarga_minutos": 10
+        },
+        {
+          "punto_atencion_id": "9459ff87-0377-5622-8255-caaf79dc9898",
+          "descarga_minutos": 10
+        },
+        {
+          "punto_atencion_id": "4b89af3e-444a-5103-880c-fe1c886530ed",
+          "descarga_minutos": 10
+        },
+        {
+          "punto_atencion_id": "b2478919-28e8-592d-ae1f-c450057cb229",
+          "descarga_minutos": 10
+        }
+      ],
+      "limite_solver_segundos": 5,
+      "recargas_permitidas": false,
+      "entregas_parciales_permitidas": false
+    },
+    "solicitudes_validacion.json": [
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "8567e5a8-3a1c-51f6-9f6f-6feeca2e43d1",
+        "punto_atencion_id": "920f8af3-1bfe-5ab6-a4f2-7fbcb323825e",
+        "datos_version": "oeste-1.0-ensayo-2",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 2500.0,
+          "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+          "confirmacion": null
+        },
+        "capacidad_recepcion_litros": null,
+        "supuestos": [
+          "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+          "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+        ]
+      },
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "8804b10c-7e7c-532e-8c63-44d91f421926",
+        "punto_atencion_id": "1e35ede2-8fc7-51b0-8830-6eec337f6a24",
+        "datos_version": "oeste-1.0-ensayo-2",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 3000.0,
+          "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+          "confirmacion": null
+        },
+        "capacidad_recepcion_litros": null,
+        "supuestos": [
+          "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+          "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+        ]
+      },
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "582785a7-2184-5a91-a55d-2dead460af08",
+        "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+        "datos_version": "oeste-1.0-ensayo-2",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 3500.0,
+          "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+          "confirmacion": null
+        },
+        "capacidad_recepcion_litros": null,
+        "supuestos": [
+          "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+          "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+        ]
+      },
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "413b7809-030a-5ae2-b93b-fb0bc08c49b4",
+        "punto_atencion_id": "9459ff87-0377-5622-8255-caaf79dc9898",
+        "datos_version": "oeste-1.0-ensayo-2",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 2500.0,
+          "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+          "confirmacion": null
+        },
+        "capacidad_recepcion_litros": null,
+        "supuestos": [
+          "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+          "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+        ]
+      },
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "c98983eb-ad99-5167-af73-ece92f9a9f6b",
+        "punto_atencion_id": "4b89af3e-444a-5103-880c-fe1c886530ed",
+        "datos_version": "oeste-1.0-ensayo-2",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 3000.0,
+          "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+          "confirmacion": null
+        },
+        "capacidad_recepcion_litros": null,
+        "supuestos": [
+          "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+          "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+        ]
+      },
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "0e675ead-c994-5b1e-b31b-1e1c41d5009f",
+        "punto_atencion_id": "b2478919-28e8-592d-ae1f-c450057cb229",
+        "datos_version": "oeste-1.0-ensayo-2",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 3500.0,
+          "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+          "confirmacion": null
+        },
+        "capacidad_recepcion_litros": null,
+        "supuestos": [
+          "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+          "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+        ]
+      }
+    ],
+    "supuestos.json": {
+      "datos_version": "oeste-1.0-ensayo-2",
+      "catalogo_version": "oeste-1.0",
+      "estado": "preparacion_sintetica_pendiente_confirmacion",
+      "catalogo_fuente": "datos/geografia/puntos.csv",
+      "sha256_catalogo_lf": "b5ac404b92accaccd2ab5a1215a9a044a88ff36c2ced7a4672f13b7a892252e5",
+      "referencias": [
+        {
+          "punto_atencion_id": "920f8af3-1bfe-5ab6-a4f2-7fbcb323825e",
+          "sector_id": "e4cefc0a-7132-5fbe-809b-4a4964b10388",
+          "nombre": "Junta Comunal Nuevo Arraiján",
+          "distrito": "Arraiján",
+          "estado_validacion": "pendiente",
+          "fuente_url": "https://datosabiertos.gob.pa/dataset/2e947382-70dd-46a5-9fcb-6fe2f466ca9c/resource/5ba77e85-3b95-4737-bd05-9599da74a320/download/aig-puntos-de-acceso-de-la-rni2.0-vigentes-en-enero2022.pdf",
+          "fuente_periodo": "2022-01",
+          "fuente_pagina": "27",
+          "fuente_registro_id": "1257"
+        },
+        {
+          "punto_atencion_id": "1e35ede2-8fc7-51b0-8830-6eec337f6a24",
+          "sector_id": "9bdee025-4b8b-56fc-8464-4ef9a162d003",
+          "nombre": "Junta Comunal de Vista Alegre",
+          "distrito": "Arraiján",
+          "estado_validacion": "pendiente",
+          "fuente_url": "https://datosabiertos.gob.pa/dataset/2e947382-70dd-46a5-9fcb-6fe2f466ca9c/resource/5ba77e85-3b95-4737-bd05-9599da74a320/download/aig-puntos-de-acceso-de-la-rni2.0-vigentes-en-enero2022.pdf",
+          "fuente_periodo": "2022-01",
+          "fuente_pagina": "27",
+          "fuente_registro_id": "1265"
+        },
+        {
+          "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+          "sector_id": "8fa71373-37be-5929-9b54-f05fc04fb5d6",
+          "nombre": "C.E.B.G. Burunga",
+          "distrito": "Arraiján",
+          "estado_validacion": "pendiente",
+          "fuente_url": "https://datosabiertos.gob.pa/dataset/2e947382-70dd-46a5-9fcb-6fe2f466ca9c/resource/5ba77e85-3b95-4737-bd05-9599da74a320/download/aig-puntos-de-acceso-de-la-rni2.0-vigentes-en-enero2022.pdf",
+          "fuente_periodo": "2022-01",
+          "fuente_pagina": "27",
+          "fuente_registro_id": "1244"
+        },
+        {
+          "punto_atencion_id": "9459ff87-0377-5622-8255-caaf79dc9898",
+          "sector_id": "f237d7cb-97d3-5972-8b8b-47ac38703b2e",
+          "nombre": "Escuela El Coco",
+          "distrito": "La Chorrera",
+          "estado_validacion": "pendiente",
+          "fuente_url": "https://datosabiertos.gob.pa/dataset/2e947382-70dd-46a5-9fcb-6fe2f466ca9c/resource/5ba77e85-3b95-4737-bd05-9599da74a320/download/aig-puntos-de-acceso-de-la-rni2.0-vigentes-en-enero2022.pdf",
+          "fuente_periodo": "2022-01",
+          "fuente_pagina": "28",
+          "fuente_registro_id": "1331"
+        },
+        {
+          "punto_atencion_id": "4b89af3e-444a-5103-880c-fe1c886530ed",
+          "sector_id": "076c136c-b638-5a90-a717-e331206be19a",
+          "nombre": "C.E. Virgen de Guadalupe",
+          "distrito": "La Chorrera",
+          "estado_validacion": "pendiente",
+          "fuente_url": "https://datosabiertos.gob.pa/dataset/2e947382-70dd-46a5-9fcb-6fe2f466ca9c/resource/5ba77e85-3b95-4737-bd05-9599da74a320/download/aig-puntos-de-acceso-de-la-rni2.0-vigentes-en-enero2022.pdf",
+          "fuente_periodo": "2022-01",
+          "fuente_pagina": "28",
+          "fuente_registro_id": "1332"
+        },
+        {
+          "punto_atencion_id": "b2478919-28e8-592d-ae1f-c450057cb229",
+          "sector_id": "b97abad5-0e4a-5748-90d0-030aaf55ca37",
+          "nombre": "Centro Educativo Guillermo Endara",
+          "distrito": "La Chorrera",
+          "estado_validacion": "pendiente",
+          "fuente_url": "https://datosabiertos.gob.pa/dataset/2e947382-70dd-46a5-9fcb-6fe2f466ca9c/resource/5ba77e85-3b95-4737-bd05-9599da74a320/download/aig-puntos-de-acceso-de-la-rni2.0-vigentes-en-enero2022.pdf",
+          "fuente_periodo": "2022-01",
+          "fuente_pagina": "30",
+          "fuente_registro_id": "1398"
+        }
+      ],
+      "parametros_propuestos": {
+        "capacidad_por_cisterna_litros": 10000.0,
+        "turno": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "ventana_por_punto": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "descarga_por_punto_minutos": 10,
+        "capacidad_recepcion_litros": null,
+        "deposito": "Ficticio; ubicación por acordar",
+        "demandas_litros_por_punto": {
+          "920f8af3-1bfe-5ab6-a4f2-7fbcb323825e": 2500.0,
+          "1e35ede2-8fc7-51b0-8830-6eec337f6a24": 3000.0,
+          "66597297-f57e-54ac-b7f1-7a66cc35253f": 3500.0,
+          "9459ff87-0377-5622-8255-caaf79dc9898": 2500.0,
+          "4b89af3e-444a-5103-880c-fe1c886530ed": 3000.0,
+          "b2478919-28e8-592d-ae1f-c450057cb229": 3500.0
+        },
+        "metodo_matriz": "Tabla manual arbitraria sin inferencia geográfica"
+      },
+      "pendientes_confirmacion": [
+        "Depósito concreto y acceso.",
+        "Capacidades, disponibilidad y turnos de las dos cisternas.",
+        "Recepción, permiso del lugar y posición de descarga en los seis puntos.",
+        "Demandas, población, duración, vulnerabilidad y criticidad.",
+        "Ventanas y tiempos de descarga.",
+        "Política, pesos, topes y activación por coordinador.",
+        "Aceptación de tiempos sintéticos para el ensayo; tiempos operativos no verificados."
+      ],
+      "limite": "No representa incidentes reales ni tiene confirmaciones, política activa, propuesta calculada, verificación o autorización de publicación.",
+      "politica_fuente": "datos/escenario/politica_apoyo_panama_v1.json",
+      "politica_previa": "oeste-1.0-politica-propuesta-1",
+      "alcance_actualizacion": "Nueva ponderación 40/40/20 del proyecto apoyada en referencias panameñas. No se activan políticas ni se confirman demandas, recepción o lugares."
+    }
+  },
+  "esperado": {
+    "puntos": 6,
+    "vehiculos": 2,
+    "nodos_matriz": 7,
+    "necesidades_pendientes": 6,
+    "politica_estado": "propuesta_demo"
+  },
+  "obtenido": {
+    "datos_version": "oeste-1.0-ensayo-2",
+    "catalogo_version": "oeste-1.0",
+    "puntos": 6,
+    "vehiculos": 2,
+    "nodos_matriz": 7,
+    "demanda_ensayo_litros": 18000.0,
+    "necesidades_pendientes": 6,
+    "politica_estado": "propuesta_demo",
+    "autorizacion_operativa": false,
+    "validaciones_demanda": [
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "8567e5a8-3a1c-51f6-9f6f-6feeca2e43d1",
+        "punto_atencion_id": "920f8af3-1bfe-5ab6-a4f2-7fbcb323825e",
+        "datos_version": "oeste-1.0-ensayo-2",
+        "metodo": "directa",
+        "estado": "pendiente",
+        "demanda_litros": 2500.0,
+        "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+        "confirmacion": null,
+        "faltantes": [
+          "demanda.confirmacion",
+          "capacidad_recepcion_litros"
+        ],
+        "motivos": [
+          "Falta información o confirmación: demanda.confirmacion, capacidad_recepcion_litros."
+        ],
+        "supuestos": [
+          "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+          "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+        ]
+      },
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "8804b10c-7e7c-532e-8c63-44d91f421926",
+        "punto_atencion_id": "1e35ede2-8fc7-51b0-8830-6eec337f6a24",
+        "datos_version": "oeste-1.0-ensayo-2",
+        "metodo": "directa",
+        "estado": "pendiente",
+        "demanda_litros": 3000.0,
+        "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+        "confirmacion": null,
+        "faltantes": [
+          "demanda.confirmacion",
+          "capacidad_recepcion_litros"
+        ],
+        "motivos": [
+          "Falta información o confirmación: demanda.confirmacion, capacidad_recepcion_litros."
+        ],
+        "supuestos": [
+          "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+          "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+        ]
+      },
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "582785a7-2184-5a91-a55d-2dead460af08",
+        "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+        "datos_version": "oeste-1.0-ensayo-2",
+        "metodo": "directa",
+        "estado": "pendiente",
+        "demanda_litros": 3500.0,
+        "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+        "confirmacion": null,
+        "faltantes": [
+          "demanda.confirmacion",
+          "capacidad_recepcion_litros"
+        ],
+        "motivos": [
+          "Falta información o confirmación: demanda.confirmacion, capacidad_recepcion_litros."
+        ],
+        "supuestos": [
+          "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+          "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+        ]
+      },
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "413b7809-030a-5ae2-b93b-fb0bc08c49b4",
+        "punto_atencion_id": "9459ff87-0377-5622-8255-caaf79dc9898",
+        "datos_version": "oeste-1.0-ensayo-2",
+        "metodo": "directa",
+        "estado": "pendiente",
+        "demanda_litros": 2500.0,
+        "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+        "confirmacion": null,
+        "faltantes": [
+          "demanda.confirmacion",
+          "capacidad_recepcion_litros"
+        ],
+        "motivos": [
+          "Falta información o confirmación: demanda.confirmacion, capacidad_recepcion_litros."
+        ],
+        "supuestos": [
+          "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+          "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+        ]
+      },
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "c98983eb-ad99-5167-af73-ece92f9a9f6b",
+        "punto_atencion_id": "4b89af3e-444a-5103-880c-fe1c886530ed",
+        "datos_version": "oeste-1.0-ensayo-2",
+        "metodo": "directa",
+        "estado": "pendiente",
+        "demanda_litros": 3000.0,
+        "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+        "confirmacion": null,
+        "faltantes": [
+          "demanda.confirmacion",
+          "capacidad_recepcion_litros"
+        ],
+        "motivos": [
+          "Falta información o confirmación: demanda.confirmacion, capacidad_recepcion_litros."
+        ],
+        "supuestos": [
+          "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+          "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+        ]
+      },
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b4d31018-6400-54e0-a5a0-0f6f30eea239",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "0e675ead-c994-5b1e-b31b-1e1c41d5009f",
+        "punto_atencion_id": "b2478919-28e8-592d-ae1f-c450057cb229",
+        "datos_version": "oeste-1.0-ensayo-2",
+        "metodo": "directa",
+        "estado": "pendiente",
+        "demanda_litros": 3500.0,
+        "fuente": "Cantidad arbitraria de ensayo; no proviene de reportes ni del catálogo AIG.",
+        "confirmacion": null,
+        "faltantes": [
+          "demanda.confirmacion",
+          "capacidad_recepcion_litros"
+        ],
+        "motivos": [
+          "Falta información o confirmación: demanda.confirmacion, capacidad_recepcion_litros."
+        ],
+        "supuestos": [
+          "DEMANDA DE ENSAYO: cantidades, horas y población inventadas para pruebas; no describen una necesidad actual de esta instalación.",
+          "Ventana 08:00–12:00 y descarga de 10 minutos propuestas solo para este escenario; sin aceptación del lugar."
+        ]
+      }
+    ],
+    "pendientes_confirmacion": [
+      "Depósito concreto y acceso.",
+      "Capacidades, disponibilidad y turnos de las dos cisternas.",
+      "Recepción, permiso del lugar y posición de descarga en los seis puntos.",
+      "Demandas, población, duración, vulnerabilidad y criticidad.",
+      "Ventanas y tiempos de descarga.",
+      "Política, pesos, topes y activación por coordinador.",
+      "Aceptación de tiempos sintéticos para el ensayo; tiempos operativos no verificados."
+    ]
+  },
+  "traza": {
+    "herramientas": [
+      "validate_need"
+    ],
+    "verificacion": "Contratos, catálogo y coherencia de escenario; no verify_plan."
+  },
+  "ponderaciones_ensayo": {
+    "limite": "Solo fixtures en memoria con confirmación ficticia explícita del ejemplo de contratos. No activa la política archivada ni confirma datos reales.",
+    "sha256_archivo_politica": "7603475cb4a775ab571b51fa519b218abf9d1f221a36a5d819eba9ed55fd9169",
+    "casos": [
+      {
+        "caso": "sin_condicion_identificada",
+        "entrada": {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "datos_version": "escenario-1.0",
+          "politica": {
+            "politica_version": "oeste-prioridad-apoyo-pa-1",
+            "estado": "activa",
+            "origen": "sintetico",
+            "peso_duracion": 0.4,
+            "peso_vulnerabilidad": 0.4,
+            "peso_poblacion": 0.2,
+            "tope_horas": 168.0,
+            "tope_personas": 500,
+            "vulnerabilidad_moderada": 0.5,
+            "fundamento": "Política técnica del proyecto apoyada en normativa panameña, no fórmula oficial del Estado. Críticos confirmados antes de generales. Puntaje intraclase: 40% vulnerabilidad confirmada, 40% tiempo sin suministro y 20% población efectivamente atendida. El antecedente operativo IDAAN/SERTV de 02-04-2026 respalda considerar dependencia sanitaria, sin imponer porcentajes. ASEP AN 1480-Agua y DGNTI-COPANIT 21-2019 con reforma 122/2021 orientan requisitos sanitarios fuera del puntaje; su control no está implementado por score_needs. Topes 168 horas y 500 personas y nivel moderado 0.5 son decisiones de escala del proyecto, sin carácter legal. Estado de propuesta para ensayo sintético; uso real requiere validación del operador y adaptación del contrato. Ver docs/politica_prioridad_oeste.md.",
+            "confirmacion_activacion": {
+              "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+              "confirmado_en": "2026-10-16T18:00:00-05:00",
+              "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+            },
+            "criticos_obligatorios": true,
+            "faltantes_fuera_ranking": true,
+            "orden_desempate": "ultima_atencion_luego_incidente_luego_id"
+          },
+          "necesidades": [
+            {
+              "esquema_version": "1.0",
+              "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+              "creado_en": "2026-10-16T18:00:00-05:00",
+              "origen": "sintetico",
+              "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+              "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+              "datos_version": "escenario-1.0",
+              "politica_version": "oeste-prioridad-apoyo-pa-1",
+              "estado_demanda": "validada",
+              "demanda_litros": 3000.0,
+              "metodo_demanda": "directa",
+              "confirmacion_demanda": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "clase_prioridad": "general",
+              "confirmacion_clase": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "ventana_atencion": {
+                "inicio": "2026-10-17T08:00:00-05:00",
+                "fin": "2026-10-17T12:00:00-05:00"
+              },
+              "horas_sin_agua": 84.0,
+              "personas_atendidas": 250,
+              "vulnerabilidad": "sin_condicion_identificada",
+              "confirmacion_vulnerabilidad": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "ultima_atencion_confirmada_en": null,
+              "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+              "estado_prioridad": "calculada",
+              "puntaje": 40.24285714285714,
+              "componentes": {
+                "duracion_normalizada": 0.39285714285714285,
+                "vulnerabilidad_normalizada": 0.5,
+                "poblacion_normalizada": 0.28,
+                "aporte_duracion": 19.642857142857142,
+                "aporte_vulnerabilidad": 15.0,
+                "aporte_poblacion": 5.6
+              },
+              "posicion": 2,
+              "pendientes": [],
+              "supuestos": [
+                "Demanda y factores sintéticos; no se calculó una dotación oficial."
+              ],
+              "requiere_revision_urgente": false
+            }
+          ]
+        },
+        "esperado": {
+          "puntaje": 30
+        },
+        "obtenido": {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "datos_version": "escenario-1.0",
+          "politica_version": "oeste-prioridad-apoyo-pa-1",
+          "evaluaciones": [
+            {
+              "esquema_version": "1.0",
+              "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+              "creado_en": "2026-10-16T18:00:00-05:00",
+              "origen": "sintetico",
+              "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+              "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+              "datos_version": "escenario-1.0",
+              "politica_version": "oeste-prioridad-apoyo-pa-1",
+              "estado_demanda": "validada",
+              "demanda_litros": 3000.0,
+              "metodo_demanda": "directa",
+              "confirmacion_demanda": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "clase_prioridad": "general",
+              "confirmacion_clase": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "ventana_atencion": {
+                "inicio": "2026-10-17T08:00:00-05:00",
+                "fin": "2026-10-17T12:00:00-05:00"
+              },
+              "horas_sin_agua": 84.0,
+              "personas_atendidas": 250,
+              "vulnerabilidad": "sin_condicion_identificada",
+              "confirmacion_vulnerabilidad": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "ultima_atencion_confirmada_en": null,
+              "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+              "estado_prioridad": "calculada",
+              "puntaje": 30.0,
+              "componentes": {
+                "duracion_normalizada": 0.5,
+                "vulnerabilidad_normalizada": 0.0,
+                "poblacion_normalizada": 0.5,
+                "aporte_duracion": 20.0,
+                "aporte_vulnerabilidad": 0.0,
+                "aporte_poblacion": 10.0
+              },
+              "posicion": 1,
+              "pendientes": [],
+              "supuestos": [
+                "Demanda y factores sintéticos; no se calculó una dotación oficial."
+              ],
+              "requiere_revision_urgente": false
+            }
+          ],
+          "alertas_revision": [
+            "Ranking de ensayo con política sintética oeste-prioridad-apoyo-pa-1; se conserva el origen de cada necesidad. No constituye autorización operativa."
+          ]
+        },
+        "coincide": true
+      },
+      {
+        "caso": "moderada",
+        "entrada": {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "datos_version": "escenario-1.0",
+          "politica": {
+            "politica_version": "oeste-prioridad-apoyo-pa-1",
+            "estado": "activa",
+            "origen": "sintetico",
+            "peso_duracion": 0.4,
+            "peso_vulnerabilidad": 0.4,
+            "peso_poblacion": 0.2,
+            "tope_horas": 168.0,
+            "tope_personas": 500,
+            "vulnerabilidad_moderada": 0.5,
+            "fundamento": "Política técnica del proyecto apoyada en normativa panameña, no fórmula oficial del Estado. Críticos confirmados antes de generales. Puntaje intraclase: 40% vulnerabilidad confirmada, 40% tiempo sin suministro y 20% población efectivamente atendida. El antecedente operativo IDAAN/SERTV de 02-04-2026 respalda considerar dependencia sanitaria, sin imponer porcentajes. ASEP AN 1480-Agua y DGNTI-COPANIT 21-2019 con reforma 122/2021 orientan requisitos sanitarios fuera del puntaje; su control no está implementado por score_needs. Topes 168 horas y 500 personas y nivel moderado 0.5 son decisiones de escala del proyecto, sin carácter legal. Estado de propuesta para ensayo sintético; uso real requiere validación del operador y adaptación del contrato. Ver docs/politica_prioridad_oeste.md.",
+            "confirmacion_activacion": {
+              "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+              "confirmado_en": "2026-10-16T18:00:00-05:00",
+              "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+            },
+            "criticos_obligatorios": true,
+            "faltantes_fuera_ranking": true,
+            "orden_desempate": "ultima_atencion_luego_incidente_luego_id"
+          },
+          "necesidades": [
+            {
+              "esquema_version": "1.0",
+              "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+              "creado_en": "2026-10-16T18:00:00-05:00",
+              "origen": "sintetico",
+              "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+              "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+              "datos_version": "escenario-1.0",
+              "politica_version": "oeste-prioridad-apoyo-pa-1",
+              "estado_demanda": "validada",
+              "demanda_litros": 3000.0,
+              "metodo_demanda": "directa",
+              "confirmacion_demanda": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "clase_prioridad": "general",
+              "confirmacion_clase": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "ventana_atencion": {
+                "inicio": "2026-10-17T08:00:00-05:00",
+                "fin": "2026-10-17T12:00:00-05:00"
+              },
+              "horas_sin_agua": 84.0,
+              "personas_atendidas": 250,
+              "vulnerabilidad": "moderada",
+              "confirmacion_vulnerabilidad": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "ultima_atencion_confirmada_en": null,
+              "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+              "estado_prioridad": "calculada",
+              "puntaje": 40.24285714285714,
+              "componentes": {
+                "duracion_normalizada": 0.39285714285714285,
+                "vulnerabilidad_normalizada": 0.5,
+                "poblacion_normalizada": 0.28,
+                "aporte_duracion": 19.642857142857142,
+                "aporte_vulnerabilidad": 15.0,
+                "aporte_poblacion": 5.6
+              },
+              "posicion": 2,
+              "pendientes": [],
+              "supuestos": [
+                "Demanda y factores sintéticos; no se calculó una dotación oficial."
+              ],
+              "requiere_revision_urgente": false
+            }
+          ]
+        },
+        "esperado": {
+          "puntaje": 50
+        },
+        "obtenido": {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "datos_version": "escenario-1.0",
+          "politica_version": "oeste-prioridad-apoyo-pa-1",
+          "evaluaciones": [
+            {
+              "esquema_version": "1.0",
+              "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+              "creado_en": "2026-10-16T18:00:00-05:00",
+              "origen": "sintetico",
+              "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+              "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+              "datos_version": "escenario-1.0",
+              "politica_version": "oeste-prioridad-apoyo-pa-1",
+              "estado_demanda": "validada",
+              "demanda_litros": 3000.0,
+              "metodo_demanda": "directa",
+              "confirmacion_demanda": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "clase_prioridad": "general",
+              "confirmacion_clase": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "ventana_atencion": {
+                "inicio": "2026-10-17T08:00:00-05:00",
+                "fin": "2026-10-17T12:00:00-05:00"
+              },
+              "horas_sin_agua": 84.0,
+              "personas_atendidas": 250,
+              "vulnerabilidad": "moderada",
+              "confirmacion_vulnerabilidad": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "ultima_atencion_confirmada_en": null,
+              "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+              "estado_prioridad": "calculada",
+              "puntaje": 50.0,
+              "componentes": {
+                "duracion_normalizada": 0.5,
+                "vulnerabilidad_normalizada": 0.5,
+                "poblacion_normalizada": 0.5,
+                "aporte_duracion": 20.0,
+                "aporte_vulnerabilidad": 20.0,
+                "aporte_poblacion": 10.0
+              },
+              "posicion": 1,
+              "pendientes": [],
+              "supuestos": [
+                "Demanda y factores sintéticos; no se calculó una dotación oficial."
+              ],
+              "requiere_revision_urgente": false
+            }
+          ],
+          "alertas_revision": [
+            "Ranking de ensayo con política sintética oeste-prioridad-apoyo-pa-1; se conserva el origen de cada necesidad. No constituye autorización operativa."
+          ]
+        },
+        "coincide": true
+      },
+      {
+        "caso": "alta",
+        "entrada": {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "datos_version": "escenario-1.0",
+          "politica": {
+            "politica_version": "oeste-prioridad-apoyo-pa-1",
+            "estado": "activa",
+            "origen": "sintetico",
+            "peso_duracion": 0.4,
+            "peso_vulnerabilidad": 0.4,
+            "peso_poblacion": 0.2,
+            "tope_horas": 168.0,
+            "tope_personas": 500,
+            "vulnerabilidad_moderada": 0.5,
+            "fundamento": "Política técnica del proyecto apoyada en normativa panameña, no fórmula oficial del Estado. Críticos confirmados antes de generales. Puntaje intraclase: 40% vulnerabilidad confirmada, 40% tiempo sin suministro y 20% población efectivamente atendida. El antecedente operativo IDAAN/SERTV de 02-04-2026 respalda considerar dependencia sanitaria, sin imponer porcentajes. ASEP AN 1480-Agua y DGNTI-COPANIT 21-2019 con reforma 122/2021 orientan requisitos sanitarios fuera del puntaje; su control no está implementado por score_needs. Topes 168 horas y 500 personas y nivel moderado 0.5 son decisiones de escala del proyecto, sin carácter legal. Estado de propuesta para ensayo sintético; uso real requiere validación del operador y adaptación del contrato. Ver docs/politica_prioridad_oeste.md.",
+            "confirmacion_activacion": {
+              "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+              "confirmado_en": "2026-10-16T18:00:00-05:00",
+              "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+            },
+            "criticos_obligatorios": true,
+            "faltantes_fuera_ranking": true,
+            "orden_desempate": "ultima_atencion_luego_incidente_luego_id"
+          },
+          "necesidades": [
+            {
+              "esquema_version": "1.0",
+              "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+              "creado_en": "2026-10-16T18:00:00-05:00",
+              "origen": "sintetico",
+              "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+              "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+              "datos_version": "escenario-1.0",
+              "politica_version": "oeste-prioridad-apoyo-pa-1",
+              "estado_demanda": "validada",
+              "demanda_litros": 3000.0,
+              "metodo_demanda": "directa",
+              "confirmacion_demanda": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "clase_prioridad": "general",
+              "confirmacion_clase": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "ventana_atencion": {
+                "inicio": "2026-10-17T08:00:00-05:00",
+                "fin": "2026-10-17T12:00:00-05:00"
+              },
+              "horas_sin_agua": 84.0,
+              "personas_atendidas": 250,
+              "vulnerabilidad": "alta",
+              "confirmacion_vulnerabilidad": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "ultima_atencion_confirmada_en": null,
+              "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+              "estado_prioridad": "calculada",
+              "puntaje": 40.24285714285714,
+              "componentes": {
+                "duracion_normalizada": 0.39285714285714285,
+                "vulnerabilidad_normalizada": 0.5,
+                "poblacion_normalizada": 0.28,
+                "aporte_duracion": 19.642857142857142,
+                "aporte_vulnerabilidad": 15.0,
+                "aporte_poblacion": 5.6
+              },
+              "posicion": 2,
+              "pendientes": [],
+              "supuestos": [
+                "Demanda y factores sintéticos; no se calculó una dotación oficial."
+              ],
+              "requiere_revision_urgente": false
+            }
+          ]
+        },
+        "esperado": {
+          "puntaje": 70
+        },
+        "obtenido": {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "datos_version": "escenario-1.0",
+          "politica_version": "oeste-prioridad-apoyo-pa-1",
+          "evaluaciones": [
+            {
+              "esquema_version": "1.0",
+              "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+              "creado_en": "2026-10-16T18:00:00-05:00",
+              "origen": "sintetico",
+              "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+              "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+              "datos_version": "escenario-1.0",
+              "politica_version": "oeste-prioridad-apoyo-pa-1",
+              "estado_demanda": "validada",
+              "demanda_litros": 3000.0,
+              "metodo_demanda": "directa",
+              "confirmacion_demanda": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "clase_prioridad": "general",
+              "confirmacion_clase": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "ventana_atencion": {
+                "inicio": "2026-10-17T08:00:00-05:00",
+                "fin": "2026-10-17T12:00:00-05:00"
+              },
+              "horas_sin_agua": 84.0,
+              "personas_atendidas": 250,
+              "vulnerabilidad": "alta",
+              "confirmacion_vulnerabilidad": {
+                "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+                "confirmado_en": "2026-10-16T18:00:00-05:00",
+                "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+              },
+              "ultima_atencion_confirmada_en": null,
+              "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+              "estado_prioridad": "calculada",
+              "puntaje": 70.0,
+              "componentes": {
+                "duracion_normalizada": 0.5,
+                "vulnerabilidad_normalizada": 1.0,
+                "poblacion_normalizada": 0.5,
+                "aporte_duracion": 20.0,
+                "aporte_vulnerabilidad": 40.0,
+                "aporte_poblacion": 10.0
+              },
+              "posicion": 1,
+              "pendientes": [],
+              "supuestos": [
+                "Demanda y factores sintéticos; no se calculó una dotación oficial."
+              ],
+              "requiere_revision_urgente": false
+            }
+          ],
+          "alertas_revision": [
+            "Ranking de ensayo con política sintética oeste-prioridad-apoyo-pa-1; se conserva el origen de cada necesidad. No constituye autorización operativa."
+          ]
+        },
+        "coincide": true
+      }
+    ],
+    "metricas": {
+      "casos": 3,
+      "coincidentes": 3
+    }
+  }
+}

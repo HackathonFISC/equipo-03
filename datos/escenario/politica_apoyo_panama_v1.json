@@ -1,0 +1,16 @@
+{
+  "politica_version": "oeste-prioridad-apoyo-pa-1",
+  "estado": "propuesta_demo",
+  "origen": "sintetico",
+  "peso_duracion": 0.4,
+  "peso_vulnerabilidad": 0.4,
+  "peso_poblacion": 0.2,
+  "tope_horas": 168.0,
+  "tope_personas": 500,
+  "vulnerabilidad_moderada": 0.5,
+  "fundamento": "Política técnica del proyecto apoyada en normativa panameña, no fórmula oficial del Estado. Críticos confirmados antes de generales. Puntaje intraclase: 40% vulnerabilidad confirmada, 40% tiempo sin suministro y 20% población efectivamente atendida. El antecedente operativo IDAAN/SERTV de 02-04-2026 respalda considerar dependencia sanitaria, sin imponer porcentajes. ASEP AN 1480-Agua y DGNTI-COPANIT 21-2019 con reforma 122/2021 orientan requisitos sanitarios fuera del puntaje; su control no está implementado por score_needs. Topes 168 horas y 500 personas y nivel moderado 0.5 son decisiones de escala del proyecto, sin carácter legal. Estado de propuesta para ensayo sintético; uso real requiere validación del operador y adaptación del contrato. Ver docs/politica_prioridad_oeste.md.",
+  "confirmacion_activacion": null,
+  "criticos_obligatorios": true,
+  "faltantes_fuera_ranking": true,
+  "orden_desempate": "ultima_atencion_luego_incidente_luego_id"
+}

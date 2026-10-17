@@ -4,6 +4,17 @@
 
 demanda, prioridad, matriz, solver, verificador, orden_llegada
 
+## Plan V3: bloques 4 y 5
+
+Disponibles `calculo.solver.solve_routes` (implementado en `solver_v3.py`) y `calculo.verificador.verify_plan`. Selección parcial por criticidad/ranking, restricciones del MVP, motivos por punto e informe independiente. Consultar [método, estados y límites](PLAN_V3.md).
+
+```powershell
+.\.venv\Scripts\python.exe -m calculo.demo_plan_v3
+.\.venv\Scripts\python.exe -m pytest calculo/tests/test_plan_v3.py -q
+```
+
+Las tres demos de plan cubren propuesta completa, una cisterna y déficit crítico. Ningún resultado autoriza publicación. Las funciones y pruebas locales no acreditan la integración del bloque 6.
+
 ## Tools de necesidad V2
 
 Disponibles `calculo.demanda.validate_need` y `calculo.prioridad.score_needs` con los contratos compartidos. Consultar [reglas y límites de V2](NECESIDADES_V2.md).
