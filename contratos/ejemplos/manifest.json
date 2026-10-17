@@ -26,5 +26,7 @@
   "solicitud_estado_sector.json": "contratos.consultas:SolicitudEstadoSector",
   "estado_sector_con_plan.json": "contratos.consultas:EstadoSector",
   "estado_sector_sin_plan.json": "contratos.consultas:EstadoSector",
-  "estado_sector_sin_puntos.json": "contratos.consultas:EstadoSector"
+  "estado_sector_sin_puntos.json": "contratos.consultas:EstadoSector",
+  "respuesta_aclaracion_texto.json": "contratos.modelos:RespuestaAclaracion",
+  "respuesta_aclaracion_ubicacion.json": "contratos.modelos:RespuestaAclaracion"
 }

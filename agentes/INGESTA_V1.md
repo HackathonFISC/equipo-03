@@ -128,3 +128,7 @@ POST real de Noel. Comprobar en su GET/panel la extracción y en eventos la traz
 
 Referencias: [Gemini y JSON Schema](https://ai.google.dev/gemini-api/docs/generate-content/structured-output)
 y [funciones de base de datos de Supabase](https://supabase.com/docs/guides/database/functions).
+
+## Extensión V2
+
+Con 0006 instalada, el cierre que necesita aclaración crea la pregunta en la misma transacción. La toma devuelve respuestas aceptadas; se reprocesan con el texto original y evidencias separadas. Si falta destino verificable, pasa a revisión. Ver [V2](../docs/V2_EMILIA.md). Los límites anteriores describen V1 antes de esa migración.

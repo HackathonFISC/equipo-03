@@ -1,0 +1,69 @@
+{
+  "fecha": "2026-10-16T22:51:05-05:00",
+  "entorno": "macOS, Python .venv del repositorio y PostgreSQL temporal PGlite",
+  "python": {
+    "pruebas": 169,
+    "subpruebas": 66,
+    "resultado": "aprobadas",
+    "advertencias": "Cuatro avisos de deprecación existentes de Starlette/OR-Tools"
+  },
+  "sql": {
+    "migraciones": [
+      "0006",
+      "0007"
+    ],
+    "smokes": [
+      "0005 (antes de V2)",
+      "0006",
+      "0007 territorial",
+      "0007 priorizacion"
+    ],
+    "resultado": "aprobados",
+    "service_role_permitido": true,
+    "anon_bloqueado": true,
+    "datos_sinteticos_revertidos": true
+  },
+  "flujo_local": {
+    "pasos": [
+      "Ingesta",
+      "Territorial",
+      "aclaracion",
+      "respuesta",
+      "Ingesta",
+      "Territorial",
+      "Priorizacion pendiente"
+    ],
+    "reportes": 3,
+    "incidentes": 1,
+    "reportes_independientes": 3,
+    "texto_original_conservado": true,
+    "evidencias_separadas": true,
+    "extractor": "doble determinista, no Gemini real"
+  },
+  "limites": [
+    "No aplicado a Supabase real",
+    "Sin Telegram real ni API de Noel",
+    "Funciones de demanda y prioridad de José aún ausentes en este clon",
+    "Sin prueba de concurrencia de servidores reales"
+  ],
+  "sha256_codigo": {
+    "geografia/catalogo.py": "899175501abd7b6f9f87a3eb3fb64e1cf6a7edd5aed1f67f3aa3930b7a5f5499",
+    "geografia/resolver.py": "2f745ed969b9e56e7d5d4626a1a4b0e805d45fffddd941c8c31b37244d8619d2",
+    "geografia/consolidacion.py": "44bc89e89a02480c8aaf4c0f7db336c71cba9c82d3e809bec03eb2afba93f7e9",
+    "geografia/tests/test_resolver_v2.py": "3412edffc5d28dea78546346a27408c5c0ca7421306ff9469b3d4f8e623459a0",
+    "agentes/territorial.py": "fe6e071e8d69789011357d751902bcfec4ad4d5f3bdf0798b99c9ec2718e8f8d",
+    "agentes/priorizacion.py": "8f84fa0b2879122b80a563b6a029507fc76306e7ef6c2444b57bd1c06bf417a0",
+    "agentes/ingesta.py": "4f5510a1e89a43d785f1df517daf8025f755129191e0150b548681d92917e5c0",
+    "agentes/tests/test_aclaraciones_v2.py": "2ea699b417a20da95057b4b09a97e8f3f007bd2e53f6b3c098b7e53e19593650",
+    "agentes/tests/test_priorizacion_v2.py": "fe701b1dcdecfe860f2bd81d79c2be72326442ad46654d3ffa252cc68ad8b363",
+    "orquestador/flujo.py": "f3c0f410a42d7ff454ca77400b76d861745d90469c47ef3ae0113d6ff650b189",
+    "orquestador/trabajador.py": "d500cb7e3d5d19fba1e24f3402ff1e5d1daa016823131a272c504f7db51fb5b9",
+    "orquestador/tests/test_trabajador_v2.py": "d74aecd9bd9e3859c7ca1ac8b0a3ac80f501c3a2f537879c579f45db0d17ebca",
+    "contratos/modelos.py": "04ea13e954f4d813e6d3c106a6decc7d68c92924a7756eaac961467722459c81",
+    "supabase/migrations/0006_aclaraciones_v2.sql": "9367f203b2080080539cfd3487bee0d77a2edd57948fd73d021fe4f9f419b29b",
+    "supabase/migrations/0007_territorial_orquestador_v2.sql": "f3ef6cd01d732682443d45a8571654d57250fb899e718ffe40065fd8c0d14857",
+    "supabase/tests/0006_aclaraciones_smoke.sql": "deae05bf101a21ab14acb495a2abc0456afa45d5f6ba18b4542c85ea14d135a6",
+    "supabase/tests/0007_territorial_smoke.sql": "a69a4ef2714312c1d51d45b2316a27c3668f6ae475a19c30850438c9790c092f",
+    "supabase/tests/0007_priorizacion_smoke.sql": "739299cb2d3b3af0fbbc30eac9e1cd36cdd95fd019931b8ebbea3ca1a24e9d57"
+  }
+}

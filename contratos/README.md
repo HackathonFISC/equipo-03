@@ -161,3 +161,7 @@ vigencia, proyección, ejemplos, origen y revisión pendiente de Noel/José.
 La consulta no crea ejecuciones de agentes ni sustituye las comprobaciones
 de vigencia y permisos de la API. Es una ampliación aditiva: conserva las
 interfaces existentes y agrega cuatro fixtures y dos JSON Schema raíz.
+
+## Aclaraciones V2
+
+Según acuerdo con Noel, RespuestaAclaracion admite exactamente texto o ubicación compartida (sin validar un punto). Ejemplos y JSON Schema incluidos. RPC, identidad y caducidad de 30 minutos en [V2](../docs/V2_EMILIA.md).
