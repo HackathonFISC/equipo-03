@@ -1,0 +1,16 @@
+{
+  "id": "PED-28",
+  "estado": "pendiente",
+  "alcance": "integracion_controlada_pendiente",
+  "esperado": {
+    "observaciones": [],
+    "autorizacion_operativa": false,
+    "tarea_inicial": "pendiente",
+    "doble_cierre": false,
+    "perdida_de_tarea": false
+  },
+  "obtenido": {
+    "motivo": "Caso de integración diseñado, no ejecutado; requiere proveedor/BD/Auth controlados."
+  },
+  "duracion_ms": 0
+}

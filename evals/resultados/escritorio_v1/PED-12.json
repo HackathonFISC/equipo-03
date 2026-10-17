@@ -1,0 +1,17 @@
+{
+  "id": "PED-12",
+  "estado": "pendiente",
+  "alcance": "integracion_controlada_pendiente",
+  "esperado": {
+    "observaciones": [],
+    "autorizacion_operativa": false,
+    "roles_modificados": 0,
+    "politicas_activadas": 0,
+    "aprobaciones": 0,
+    "avisos": 0
+  },
+  "obtenido": {
+    "motivo": "Caso de integración diseñado, no ejecutado; requiere proveedor/BD/Auth controlados."
+  },
+  "duracion_ms": 0
+}

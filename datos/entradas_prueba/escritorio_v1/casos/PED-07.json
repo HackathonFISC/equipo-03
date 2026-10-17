@@ -1,0 +1,222 @@
+{
+  "id": "PED-07",
+  "titulo": "Ubicación ambigua y respuesta vinculada",
+  "grupo": "interpretacion_consolidacion",
+  "dataset_version": "h2oeste-escritorio-1",
+  "origen": "sintetico",
+  "contexto": {
+    "esquema_version": "1.0",
+    "ejecucion_id": "81feda32-7fe3-52f7-af87-e117335e0d00",
+    "creado_en": "2026-10-17T07:00:00-05:00",
+    "origen": "sintetico",
+    "datos_version": "h2oeste-escritorio-1:PED-07"
+  },
+  "base": {
+    "archivo": "base.json",
+    "sha256": "12b0b479fa51d0d5e6a1a5a817d8a67cc969de0b63a9d60d9196ddfc884e00f4"
+  },
+  "ambito_puntos": [
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5",
+    "P6"
+  ],
+  "mensajes": [
+    {
+      "reporte_id": "3c09bbf4-6bc4-54c5-84a6-cd3a9c5ad7a6",
+      "chat_id_ficticio": "-900000000007",
+      "mensaje_externo_id": "-900000000007:1",
+      "remitente_id_ficticio": "PERSONA-FICTICIA-1",
+      "recibido_en": "2026-10-17T07:00:00-05:00",
+      "origen": "sintetico",
+      "texto": "PRUEBA SINTÉTICA. Estoy en Burunga, no tenemos agua desde hace 36 horas; somos 120 personas.",
+      "reply_a_pregunta_ficticia": null
+    },
+    {
+      "reporte_id": "998625fe-38a5-5d29-9253-6c49a3e94b7a",
+      "chat_id_ficticio": "-900000000007",
+      "mensaje_externo_id": "-900000000007:2",
+      "remitente_id_ficticio": "PERSONA-FICTICIA-1",
+      "recibido_en": "2026-10-17T07:00:00-05:00",
+      "origen": "sintetico",
+      "texto": "C.E.B.G. Burunga, distrito de Arraiján.",
+      "reply_a_pregunta_ficticia": "PREGUNTA-FICTICIA-UBICACION"
+    }
+  ],
+  "revision_simulada": {
+    "motivo": "FIXTURE: revisión ficticia de escritorio.",
+    "politica_version": "oeste-prioridad-apoyo-pa-1-fixture-3",
+    "revisiones": [
+      {
+        "incidente_id": "add7539d-e272-5f3d-882f-f057d084b47b",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 160,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 200.0,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 4550.0,
+        "clase_prioridad": "general",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "moderada",
+        "horas_sin_agua": 72.0,
+        "personas_atendidas": 160,
+        "ultima_atencion_confirmada_en": null
+      },
+      {
+        "incidente_id": "567b4f61-6cc6-5df0-9391-d4ff156284e5",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 180,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 600.0,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 8900.0,
+        "clase_prioridad": "general",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "sin_condicion_identificada",
+        "horas_sin_agua": 48.0,
+        "personas_atendidas": 180,
+        "ultima_atencion_confirmada_en": null
+      },
+      {
+        "incidente_id": "7b629414-fc29-55ee-ad63-bcd57da5d511",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 120,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 400.0,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 4350.0,
+        "clase_prioridad": "critico",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "alta",
+        "horas_sin_agua": 36.0,
+        "personas_atendidas": 120,
+        "ultima_atencion_confirmada_en": null
+      },
+      {
+        "incidente_id": "3d5685b0-eefc-5741-b6a7-415e4efc43ff",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 140,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 300.0,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 4450.0,
+        "clase_prioridad": "general",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "moderada",
+        "horas_sin_agua": 96.0,
+        "personas_atendidas": 140,
+        "ultima_atencion_confirmada_en": null
+      },
+      {
+        "incidente_id": "f3226d48-e5c7-563c-a278-9b6c5dc69cb1",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 160,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 200.0,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 9300.0,
+        "clase_prioridad": "critico",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "alta",
+        "horas_sin_agua": 60.0,
+        "personas_atendidas": 160,
+        "ultima_atencion_confirmada_en": null
+      },
+      {
+        "incidente_id": "7fe83b27-1cdb-5555-a893-2778887df934",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 100,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 500.0,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 4250.0,
+        "clase_prioridad": "general",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "moderada",
+        "horas_sin_agua": 24.0,
+        "personas_atendidas": 100,
+        "ultima_atencion_confirmada_en": null
+      }
+    ]
+  },
+  "entradas_tools": null,
+  "comprobacion": "integracion_controlada_pendiente",
+  "operacion_local": null,
+  "dependencias": [
+    "Proveedor/BD/Auth controlados y revisión humana de la evidencia; no ejecutar en producción."
+  ],
+  "condiciones_iniciales": {
+    "aislamiento": "Un estado nuevo por caso, sin registros de otros PED.",
+    "confirmaciones": "Ficticias; no cargar como autorizaciones en Supabase.",
+    "pregunta_controlada": {
+      "id": "PREGUNTA-FICTICIA-UBICACION",
+      "texto": "¿Cuál es el nombre completo de la instalación y su distrito?",
+      "mismo_chat_y_remitente": true
+    }
+  },
+  "pasos": [
+    "Restablecer el estado aislado del caso.",
+    "Enviar pregunta de ubicación controlada y vincular el reply solo a esa pregunta.",
+    "Separar datos del mensaje y revisión ficticia; no completar desconocidos.",
+    "Registrar obtenido y evidencia por etapa, sin sustituirlos por esperado."
+  ],
+  "esperado": {
+    "observaciones": [],
+    "autorizacion_operativa": false,
+    "ubicacion_inicial": "ambigua",
+    "ubicacion_tras_reply": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+    "reply_requiere_mismo_chat_y_remitente": true
+  },
+  "obtenido": {
+    "estado": "no_ejecutado",
+    "evidencia": null
+  },
+  "limites": [
+    "Fixture sin autorización operativa ni envío real.",
+    "Resultado local no acredita cumplimiento integrado del caso oficial."
+  ]
+}

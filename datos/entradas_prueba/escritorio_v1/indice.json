@@ -1,0 +1,219 @@
+{
+  "esquema_dataset": "1.0",
+  "dataset_version": "h2oeste-escritorio-1",
+  "origen": "sintetico",
+  "formato_huellas": "sha256_texto_lf",
+  "casos": [
+    {
+      "id": "PED-01",
+      "archivo": "casos/PED-01.json",
+      "sha256": "54d00a68f63f07e0fcd27aeae8037975dab53993ec4ee34718275013759ae72f",
+      "grupo": "reportes_completos",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-02",
+      "archivo": "casos/PED-02.json",
+      "sha256": "13dfb4658943f64b3ad80bb8ea2a6eb7b9c03ea34777d869a94cfbff45a81f13",
+      "grupo": "reportes_completos",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-03",
+      "archivo": "casos/PED-03.json",
+      "sha256": "8bfaa85beea977e442539b32fbf94167b711236c1f687b571994bd978717da74",
+      "grupo": "reportes_completos",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-04",
+      "archivo": "casos/PED-04.json",
+      "sha256": "54330fa997932b82a0802379515932f5437b367395921445a24f7dbb181125e3",
+      "grupo": "reportes_completos",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-05",
+      "archivo": "casos/PED-05.json",
+      "sha256": "6db50122a58013d94d049a3fbe28ca0ff06056578dc8327add88e1a5a9389b5e",
+      "grupo": "reportes_completos",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-06",
+      "archivo": "casos/PED-06.json",
+      "sha256": "9d0c60e079f2a409b5eaf685bcc647e307172daf66e14e28f230717730cb2a15",
+      "grupo": "reportes_completos",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-07",
+      "archivo": "casos/PED-07.json",
+      "sha256": "3765846582565768023c970ae2c66e0030d7fbbb063facfdecc69420f19046f1",
+      "grupo": "interpretacion_consolidacion",
+      "comprobacion": "integracion_controlada_pendiente"
+    },
+    {
+      "id": "PED-08",
+      "archivo": "casos/PED-08.json",
+      "sha256": "6e106b6556811e5b2c515673fa0b4c9fcc085087e251a10a5555732fb294c266",
+      "grupo": "interpretacion_consolidacion",
+      "comprobacion": "integracion_controlada_pendiente"
+    },
+    {
+      "id": "PED-09",
+      "archivo": "casos/PED-09.json",
+      "sha256": "495a752807db562eea3a33b1e8a773c04c0e1f40ff40e4f2879ce5e461d1d1f1",
+      "grupo": "interpretacion_consolidacion",
+      "comprobacion": "integracion_controlada_pendiente"
+    },
+    {
+      "id": "PED-10",
+      "archivo": "casos/PED-10.json",
+      "sha256": "d37f15d7a3142b4da2b82574b093434525e21d192303ecc077c9825d6b6e9ea7",
+      "grupo": "interpretacion_consolidacion",
+      "comprobacion": "integracion_controlada_pendiente"
+    },
+    {
+      "id": "PED-11",
+      "archivo": "casos/PED-11.json",
+      "sha256": "c5f1acf391c7ae5bb8d0be9f5824f2ab2c7d6e03e31dc9797660012daaa73d7f",
+      "grupo": "interpretacion_consolidacion",
+      "comprobacion": "integracion_controlada_pendiente"
+    },
+    {
+      "id": "PED-12",
+      "archivo": "casos/PED-12.json",
+      "sha256": "294a83a023e74c75998a687ba9411e2c6c78db785fdaaad9cbaa6797eeafe876",
+      "grupo": "interpretacion_consolidacion",
+      "comprobacion": "integracion_controlada_pendiente"
+    },
+    {
+      "id": "PED-13",
+      "archivo": "casos/PED-13.json",
+      "sha256": "a37c8cf8e861b59bd28f48fbe309355eb8fd9df4c024f90d298dd785e2bd2714",
+      "grupo": "demanda_prioridad",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-14",
+      "archivo": "casos/PED-14.json",
+      "sha256": "06af27874e4469a44d0983b5e32196528f1564d0a25e7a522527849c0bac2718",
+      "grupo": "demanda_prioridad",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-15",
+      "archivo": "casos/PED-15.json",
+      "sha256": "d3bfea0d8c8a7529be6658837ea2ac59109956b3a79a446e905a42ff4196c608",
+      "grupo": "demanda_prioridad",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-16",
+      "archivo": "casos/PED-16.json",
+      "sha256": "068cd06859d885ddce45f255d482f9cef8d431caebddd48d179ebe146e6e99bc",
+      "grupo": "demanda_prioridad",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-17",
+      "archivo": "casos/PED-17.json",
+      "sha256": "5a8337695b0801b7ae66abbc3400a5edcb129ee41422544fcec7581392bc2899",
+      "grupo": "demanda_prioridad",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-18",
+      "archivo": "casos/PED-18.json",
+      "sha256": "b744d9a3cb26392f6760e581ceb2eb17efeaea8f737be5edadb76a298633fa65",
+      "grupo": "demanda_prioridad",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-19",
+      "archivo": "casos/PED-19.json",
+      "sha256": "8a4f1fc1ae6a674ad7cdc7496ef621dd18825b4fd2bee5f731ffba32f7a1f1d0",
+      "grupo": "planificacion",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-20",
+      "archivo": "casos/PED-20.json",
+      "sha256": "a6eb687e7005a51bd7953a7cf2253cb6f07c6c1fed7dc907bd92da23381929ed",
+      "grupo": "planificacion",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-21",
+      "archivo": "casos/PED-21.json",
+      "sha256": "20e5d0378c72b9c9bb168b361db0ad997fe2637859d1539568bdb8f3c8841d26",
+      "grupo": "planificacion",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-22",
+      "archivo": "casos/PED-22.json",
+      "sha256": "85c0b30803bfa59bf6a54a76c2c772283ecc26f1db81222a65bb4061b546fe4d",
+      "grupo": "planificacion",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-23",
+      "archivo": "casos/PED-23.json",
+      "sha256": "311fc86f3c6b5f179c0e44c534f6109db771207cf326186fbdc7bcf2ee9ad852",
+      "grupo": "planificacion",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-24",
+      "archivo": "casos/PED-24.json",
+      "sha256": "e096c464d321c30d55749761034aa3d6c482efb2f559fd77628ba727a07ebae7",
+      "grupo": "planificacion",
+      "comprobacion": "local_tools"
+    },
+    {
+      "id": "PED-25",
+      "archivo": "casos/PED-25.json",
+      "sha256": "e751f445919481ed4a73bf0933b0ecd9da7d2f206365a4c33676ebc226c548b4",
+      "grupo": "permisos_recuperacion",
+      "comprobacion": "integracion_controlada_pendiente"
+    },
+    {
+      "id": "PED-26",
+      "archivo": "casos/PED-26.json",
+      "sha256": "34b9f8db2ca9455e2673615fbe191d35f929c6a9a9454930eedc6713c3f39cae",
+      "grupo": "permisos_recuperacion",
+      "comprobacion": "integracion_controlada_pendiente"
+    },
+    {
+      "id": "PED-27",
+      "archivo": "casos/PED-27.json",
+      "sha256": "e28962a8eb6e27a5330833e175043144c67f82e419f878b0a7838b25a76a33a4",
+      "grupo": "permisos_recuperacion",
+      "comprobacion": "integracion_controlada_pendiente"
+    },
+    {
+      "id": "PED-28",
+      "archivo": "casos/PED-28.json",
+      "sha256": "c2712f195d55feec5bb32d98929b27a82a7a54b07ac466aacb1a3725e70f936b",
+      "grupo": "permisos_recuperacion",
+      "comprobacion": "integracion_controlada_pendiente"
+    },
+    {
+      "id": "PED-29",
+      "archivo": "casos/PED-29.json",
+      "sha256": "19dd94104472ca585b071405f77c05c4642792f5fa09eec844b19fb354a0244c",
+      "grupo": "permisos_recuperacion",
+      "comprobacion": "integracion_controlada_pendiente"
+    },
+    {
+      "id": "PED-30",
+      "archivo": "casos/PED-30.json",
+      "sha256": "84126c323abc03cd90eb75aad7352a0bc0dd241039706d5a583ac85b21380e4f",
+      "grupo": "permisos_recuperacion",
+      "comprobacion": "integracion_controlada_pendiente"
+    }
+  ],
+  "autorizacion_operativa": false
+}

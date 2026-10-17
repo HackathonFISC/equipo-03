@@ -1,0 +1,202 @@
+{
+  "id": "PED-25",
+  "titulo": "Usuario sin rol",
+  "grupo": "permisos_recuperacion",
+  "dataset_version": "h2oeste-escritorio-1",
+  "origen": "sintetico",
+  "contexto": {
+    "esquema_version": "1.0",
+    "ejecucion_id": "7fe7af48-21f6-5196-a059-cc8d2212e84d",
+    "creado_en": "2026-10-17T07:00:00-05:00",
+    "origen": "sintetico",
+    "datos_version": "h2oeste-escritorio-1:PED-25"
+  },
+  "base": {
+    "archivo": "base.json",
+    "sha256": "12b0b479fa51d0d5e6a1a5a817d8a67cc969de0b63a9d60d9196ddfc884e00f4"
+  },
+  "ambito_puntos": [
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5",
+    "P6"
+  ],
+  "mensajes": [],
+  "revision_simulada": {
+    "motivo": "FIXTURE: revisión ficticia de escritorio.",
+    "politica_version": "oeste-prioridad-apoyo-pa-1-fixture-3",
+    "revisiones": [
+      {
+        "incidente_id": "dbe22888-f982-53be-b691-0a7daa5ffa8c",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 160,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 200.0,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 4550.0,
+        "clase_prioridad": "general",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "moderada",
+        "horas_sin_agua": 72.0,
+        "personas_atendidas": 160,
+        "ultima_atencion_confirmada_en": null
+      },
+      {
+        "incidente_id": "a7adde42-72ad-5388-89b0-c899fea41b6a",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 180,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 600.0,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 8900.0,
+        "clase_prioridad": "general",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "sin_condicion_identificada",
+        "horas_sin_agua": 48.0,
+        "personas_atendidas": 180,
+        "ultima_atencion_confirmada_en": null
+      },
+      {
+        "incidente_id": "cd794ff5-5c33-5b00-8096-80e32e241079",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 120,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 400.0,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 4350.0,
+        "clase_prioridad": "critico",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "alta",
+        "horas_sin_agua": 36.0,
+        "personas_atendidas": 120,
+        "ultima_atencion_confirmada_en": null
+      },
+      {
+        "incidente_id": "49a8c8d4-44cd-53f8-bea6-6a7806004c54",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 140,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 300.0,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 4450.0,
+        "clase_prioridad": "general",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "moderada",
+        "horas_sin_agua": 96.0,
+        "personas_atendidas": 140,
+        "ultima_atencion_confirmada_en": null
+      },
+      {
+        "incidente_id": "cb1bae63-8f5c-55dc-8049-f0b37b3d7cc5",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 160,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 200.0,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 9300.0,
+        "clase_prioridad": "critico",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "alta",
+        "horas_sin_agua": 60.0,
+        "personas_atendidas": 160,
+        "ultima_atencion_confirmada_en": null
+      },
+      {
+        "incidente_id": "e954c3b5-7a82-528a-a579-ed2d2ac6453a",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 100,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 500.0,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 4250.0,
+        "clase_prioridad": "general",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "moderada",
+        "horas_sin_agua": 24.0,
+        "personas_atendidas": 100,
+        "ultima_atencion_confirmada_en": null
+      }
+    ]
+  },
+  "entradas_tools": null,
+  "comprobacion": "integracion_controlada_pendiente",
+  "operacion_local": null,
+  "dependencias": [
+    "Proveedor/BD/Auth controlados y revisión humana de la evidencia; no ejecutar en producción."
+  ],
+  "condiciones_iniciales": {
+    "aislamiento": "Un estado nuevo por caso, sin registros de otros PED.",
+    "confirmaciones": "Ficticias; no cargar como autorizaciones en Supabase.",
+    "sesion_controlada": {
+      "usuario_id": "e9044375-642b-550a-adca-67fe7f0fb73b",
+      "rol": "consulta",
+      "activo": true,
+      "referencia": "DOBLE_AUTH_VERIFICADO_SIN_ROL_COORDINADOR"
+    }
+  },
+  "pasos": [
+    "Restablecer el estado aislado del caso.",
+    "Con sesión verificada sin rol coordinador activo, intentar revisar/aprobar; comparar BD antes/después.",
+    "Separar datos del mensaje y revisión ficticia; no completar desconocidos.",
+    "Registrar obtenido y evidencia por etapa, sin sustituirlos por esperado."
+  ],
+  "esperado": {
+    "observaciones": [],
+    "autorizacion_operativa": false,
+    "http": 403,
+    "codigo": "sin_permiso",
+    "escrituras": 0
+  },
+  "obtenido": {
+    "estado": "no_ejecutado",
+    "evidencia": null
+  },
+  "limites": [
+    "Fixture sin autorización operativa ni envío real.",
+    "Resultado local no acredita cumplimiento integrado del caso oficial."
+  ]
+}

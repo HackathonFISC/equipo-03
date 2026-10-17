@@ -1,0 +1,238 @@
+{
+  "id": "PED-17",
+  "estado": "aprobado",
+  "alcance": "local_tools",
+  "esperado": {
+    "observaciones": [],
+    "autorizacion_operativa": false,
+    "estado_demanda": "validada",
+    "demanda_litros": 12000,
+    "estado_prioridad": "calculada",
+    "rutas": 0,
+    "litros_asignados": 0,
+    "verificacion_valida": false,
+    "deficit_litros": 12000
+  },
+  "obtenido": {
+    "validaciones": [
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "b2c15fd6-f43f-5c15-88a7-616f1c7ae8ca",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "71977695-aa68-5cf3-a579-ec180d72bc8f",
+        "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+        "datos_version": "h2oeste-escritorio-1:PED-17",
+        "metodo": "directa",
+        "estado": "validada",
+        "demanda_litros": 12000.0,
+        "fuente": "FIXTURE: necesidad directa ficticia de 12000 L, no medición institucional.",
+        "confirmacion": {
+          "usuario_id": "83b91faa-0af1-570c-b930-02d6ea98f6f3",
+          "confirmado_en": "2026-10-17T07:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO: revisión ficticia de escritorio, sin rol ni autorización real."
+        },
+        "faltantes": [],
+        "motivos": [],
+        "supuestos": [
+          "Cinco personas por familia es una hipótesis de tamaño de grupo, no promedio censal de Panamá Oeste.",
+          "20 L/persona/día durante un día para un ensayo de cobertura doméstica básica de emergencia; no cubre todo uso doméstico o institucional ni es una cuota legal panameña.",
+          "Reserva utilizable igual al agua almacenada solo por hipótesis de este ensayo; la calidad real no se ha comprobado.",
+          "Tanques nominales de 5000 L o banco equivalente de dos tanques de 5000 L. No se afirma que existan en estas instalaciones.",
+          "Margen de almacenamiento 5%, caudal de descarga 300 L/min y preparación 5 min son decisiones arbitrarias de modelado, no normas.",
+          "CASO FICTICIO: grupo con personas dependientes sin alternativa suficiente para obtener agua; no describe usuarios reales ni el uso institucional de la instalación.",
+          "Grupos vecinales ficticios asociados a referencias documentales; no son mediciones o diagnósticos de las instalaciones."
+        ]
+      }
+    ],
+    "ranking": {
+      "esquema_version": "1.0",
+      "ejecucion_id": "b2c15fd6-f43f-5c15-88a7-616f1c7ae8ca",
+      "creado_en": "2026-10-17T07:00:00-05:00",
+      "origen": "sintetico",
+      "datos_version": "h2oeste-escritorio-1:PED-17",
+      "politica_version": "oeste-prioridad-apoyo-pa-1-fixture-3",
+      "evaluaciones": [
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "b2c15fd6-f43f-5c15-88a7-616f1c7ae8ca",
+          "creado_en": "2026-10-17T07:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "71977695-aa68-5cf3-a579-ec180d72bc8f",
+          "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+          "datos_version": "h2oeste-escritorio-1:PED-17",
+          "politica_version": "oeste-prioridad-apoyo-pa-1-fixture-3",
+          "estado_demanda": "validada",
+          "demanda_litros": 12000.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "83b91faa-0af1-570c-b930-02d6ea98f6f3",
+            "confirmado_en": "2026-10-17T07:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO: revisión ficticia de escritorio, sin rol ni autorización real."
+          },
+          "clase_prioridad": "critico",
+          "confirmacion_clase": {
+            "usuario_id": "83b91faa-0af1-570c-b930-02d6ea98f6f3",
+            "confirmado_en": "2026-10-17T07:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO: revisión ficticia de escritorio, sin rol ni autorización real."
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 36.0,
+          "personas_atendidas": 120,
+          "vulnerabilidad": "alta",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "83b91faa-0af1-570c-b930-02d6ea98f6f3",
+            "confirmado_en": "2026-10-17T07:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO: revisión ficticia de escritorio, sin rol ni autorización real."
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-17T07:00:00-05:00",
+          "estado_prioridad": "calculada",
+          "puntaje": 53.371428571428574,
+          "componentes": {
+            "duracion_normalizada": 0.21428571428571427,
+            "vulnerabilidad_normalizada": 1.0,
+            "poblacion_normalizada": 0.24,
+            "aporte_duracion": 8.571428571428571,
+            "aporte_vulnerabilidad": 40.0,
+            "aporte_poblacion": 4.8
+          },
+          "posicion": 1,
+          "pendientes": [],
+          "supuestos": [
+            "Cinco personas por familia es una hipótesis de tamaño de grupo, no promedio censal de Panamá Oeste.",
+            "20 L/persona/día durante un día para un ensayo de cobertura doméstica básica de emergencia; no cubre todo uso doméstico o institucional ni es una cuota legal panameña.",
+            "Reserva utilizable igual al agua almacenada solo por hipótesis de este ensayo; la calidad real no se ha comprobado.",
+            "Tanques nominales de 5000 L o banco equivalente de dos tanques de 5000 L. No se afirma que existan en estas instalaciones.",
+            "Margen de almacenamiento 5%, caudal de descarga 300 L/min y preparación 5 min son decisiones arbitrarias de modelado, no normas.",
+            "CASO FICTICIO: grupo con personas dependientes sin alternativa suficiente para obtener agua; no describe usuarios reales ni el uso institucional de la instalación.",
+            "Grupos vecinales ficticios asociados a referencias documentales; no son mediciones o diagnósticos de las instalaciones."
+          ],
+          "requiere_revision_urgente": false
+        }
+      ],
+      "alertas_revision": [
+        "Ranking de ensayo con política sintética oeste-prioridad-apoyo-pa-1-fixture-3; se conserva el origen de cada necesidad. No constituye autorización operativa."
+      ]
+    },
+    "propuesta": {
+      "esquema_version": "1.0",
+      "ejecucion_id": "b2c15fd6-f43f-5c15-88a7-616f1c7ae8ca",
+      "creado_en": "2026-10-17T07:00:00-05:00",
+      "origen": "sintetico",
+      "plan_id": "819fc144-30ca-5b24-96b0-1f5c166ddf62",
+      "version": 1,
+      "datos_version": "h2oeste-escritorio-1:PED-17",
+      "politica_version": "oeste-prioridad-apoyo-pa-1-fixture-3",
+      "estado": "pendiente_revision",
+      "estado_solver": "inviabilidad_demostrada",
+      "rutas": [],
+      "no_atendidos": [
+        {
+          "incidente_id": "71977695-aa68-5cf3-a579-ec180d72bc8f",
+          "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+          "clase_prioridad": "critico",
+          "demanda_pendiente_litros": 12000.0,
+          "codigo": "demanda_supera_vehiculo",
+          "motivo": "Demanda indivisible mayor que cualquier cisterna disponible; sin dividir ni recargar."
+        }
+      ],
+      "verificacion": null,
+      "supuestos": [
+        "Una salida por vehículo, sin recargas ni entregas divididas; matriz dirigida por UUID y descarga completa dentro de ventana.",
+        "Objetivo: máximo número de críticos cubiertos, luego orden lexicográfico del ranking, luego mínima duración total de rutas.",
+        "No se declara optimalidad global de cobertura.",
+        "Matriz h2oeste-escritorio-1:PED-17:matriz, origen sintetico; no certifica acceso vial, recepción ni condiciones sanitarias.",
+        "Cantidades exactas hasta mililitros; fechas y viajes con precisión de microsegundos.",
+        "HUELLA_ENTRADAS_SHA256=735ea5eef04992eb79e013cd672a0f880c086bfcaa14bfb84a3d280e7ec05b46"
+      ],
+      "bloqueos_publicacion": [
+        "Sin verificación independiente ni aprobación autorizada de esta versión.",
+        "Política sintética: el cálculo no acredita autorización operativa ni calidad del agua.",
+        "Cobertura crítica o posible urgencia pendiente: escalar y bloquear publicación.",
+        "Estado del solver: inviabilidad_demostrada; sin reparto positivo autorizado."
+      ],
+      "aprobacion": null
+    },
+    "verificacion": {
+      "esquema_version": "1.0",
+      "ejecucion_id": "b2c15fd6-f43f-5c15-88a7-616f1c7ae8ca",
+      "creado_en": "2026-10-17T07:00:00-05:00",
+      "origen": "sintetico",
+      "plan_id": "819fc144-30ca-5b24-96b0-1f5c166ddf62",
+      "version": 1,
+      "datos_version": "h2oeste-escritorio-1:PED-17",
+      "politica_version": "oeste-prioridad-apoyo-pa-1-fixture-3",
+      "valido": false,
+      "violaciones": [
+        {
+          "codigo": "otro",
+          "detalle": "No hay propuesta factible del solver; el diagnóstico no autoriza un plan.",
+          "referencia_id": null
+        },
+        {
+          "codigo": "cobertura_critica",
+          "detalle": "Crítico o posible urgencia sin cubrir: escalar; no aprobar publicación.",
+          "referencia_id": "66597297-f57e-54ac-b7f1-7a66cc35253f"
+        }
+      ],
+      "comprobaciones": [
+        "capacidad",
+        "horarios",
+        "ventanas",
+        "retorno",
+        "asignacion_unica",
+        "demanda_completa",
+        "version_entradas",
+        "cobertura_critica"
+      ]
+    },
+    "metricas": {
+      "cobertura_puntos": {
+        "atendidos": 0,
+        "total": 1,
+        "fraccion": 0.0
+      },
+      "cobertura_critica": {
+        "atendidos": 0,
+        "total": 1,
+        "fraccion": 0.0
+      },
+      "cobertura_critica_calculable": {
+        "atendidos": 0,
+        "total": 1,
+        "fraccion": 0.0
+      },
+      "cobertura_clase_general": {
+        "atendidos": 0,
+        "total": 0,
+        "fraccion": null
+      },
+      "puntos_requeridos": 1,
+      "puntos_calculables": 1,
+      "criticos_sin_datos": 0,
+      "puntos_sin_clase": 0,
+      "puntos_demanda_desconocida": 0,
+      "puntos_demanda_no_validada": 0,
+      "puntos_sin_visita": 1,
+      "puntos_demanda_cero_validada": 0,
+      "demanda_conocida_litros": 12000.0,
+      "demanda_validada_litros": 12000.0,
+      "litros_asignados": 0.0,
+      "deficit_conocido_litros": 12000.0,
+      "deficit_total_litros": 12000.0,
+      "deficit_critico_conocido_litros": 12000.0,
+      "deficit_total_completo": true,
+      "salidas_deposito": 0,
+      "tramos": 0,
+      "viaje_total_minutos": 0,
+      "servicio_total_minutos": 0,
+      "duracion_rutas_minutos": 0.0,
+      "espera_en_puntos_minutos": 0.0
+    }
+  },
+  "duracion_ms": 1
+}
