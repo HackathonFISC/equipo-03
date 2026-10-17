@@ -26,12 +26,16 @@ La barra superior cambia de página; la página activa queda en la dirección
 ### Reportes (`src/paginas/Reportes.jsx`)
 
 - Lista de `GET /reportes`, del más reciente al más antiguo.
+- Se actualiza automáticamente cinco segundos después de cada consulta completada,
+  sin solapar peticiones. Al salir de la página se detiene el sondeo y se ignoran
+  respuestas tardías. No es necesario pulsar F5 para ver una interpretación nueva.
 - Estado derivado de la interpretación: **Interpretado**, **Necesita aclaración**,
   **Sin interpretar** o **Fuera de alcance**, con filtros y conteos.
 - Cada fila se despliega: resumen, ubicación declarada, campos extraídos (un dato
   desconocido dice "No indicado", nunca 0), frases que sustentan la lectura y faltantes.
 - **Seguimiento:** al abrir la fila, pide `GET /ejecuciones/{id}` y muestra la etapa actual
   y cada decisión de los agentes, con su resultado, hora, duración y herramienta.
+  Mientras la fila siga abierta, actualiza también la traza mediante sondeo.
 - Fechas en hora de Panamá.
 
 ### Necesidades (`src/paginas/Necesidades.jsx`) — V2

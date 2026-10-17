@@ -6,8 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.errores_http import ErrorApi, respuesta_error
 from api.rutas import aclaraciones, avisos, ejecuciones, incidentes, reportes
 from contratos.errores import CodigoError
+from orquestador.servicio import ciclo_vida_agentes
 
-app = FastAPI(title="RutaAgua Oeste API", version="0.0.1")
+app = FastAPI(title="RutaAgua Oeste API", version="0.0.1", lifespan=ciclo_vida_agentes)
 
 # Permite que el panel React (servidor de desarrollo de Vite) llame a la API.
 app.add_middleware(
@@ -57,3 +58,10 @@ app.include_router(incidentes.router)
 def salud() -> dict[str, str]:
     """Endpoint de prueba de V0: confirma que la API está viva."""
     return {"estado": "ok"}
+
+
+@app.get("/salud/agentes")
+def salud_agentes(request: Request) -> dict[str, str]:
+    """Estado del proceso local; no acredita servicios externos ni avance de la cola."""
+    servicio = getattr(request.app.state, 'servicio_agentes', None)
+    return {'estado': servicio.consultar() if servicio is not None else 'sin_iniciar'}

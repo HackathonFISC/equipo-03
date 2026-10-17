@@ -1,0 +1,52 @@
+{
+  "fecha": "2026-10-17T07:39:55.952966+00:00",
+  "origen": "sintetico",
+  "alcance": "Procesos y servicios simulados; sin cola real, Gemini, Supabase o Telegram",
+  "entrada": {
+    "inicio": "Ciclo de vida FastAPI",
+    "trabajador_automatico": "true por defecto; false durante pytest salvo dobles explícitos",
+    "sondeo_segundos": 5
+  },
+  "esperado": [
+    "Trabajador administrado al iniciar API",
+    "Evitar hijos administrados duplicados en checkout",
+    "Dejar de reservar nuevas etapas al cerrar",
+    "Panel y traza abiertos actualizados sin F5",
+    "Conservar esperas y controles de autorización"
+  ],
+  "obtenido": {
+    "python": {
+      "pruebas_aprobadas": 527,
+      "subpruebas_aprobadas": 66,
+      "fallos": 0,
+      "advertencias": 4,
+      "junit_tests": 593
+    },
+    "frontend": {
+      "pruebas_sondeo": 4,
+      "lint": "aprobado",
+      "build": "aprobado"
+    },
+    "arranque_real_ejecutado": false
+  },
+  "trazas": [
+    "regresion.xml",
+    "orquestador/tests/test_servicio_automatico.py",
+    "frontend/tests/sondeo.test.mjs"
+  ],
+  "huellas": {
+    "api/main.py": "9b3b2e48a8a006475a2debc811a9012a4aa7df104f3e0b84bea7fd508290693a",
+    "orquestador/servicio.py": "c073e8ff14f6531c3c8b0964b4f25a51cb4b36f550a857891207a59dfb105a46",
+    "orquestador/trabajador.py": "8dd00faa158d3fba25d1cb00c56ce710ebf40853236438adf4a599a33ae9b95f",
+    "conftest.py": "7348331b804ea749b09d1eabb64c7edb1e7b290ef7f386b6b33a8bb6744cd05b",
+    "orquestador/tests/test_servicio_automatico.py": "f05e30491353d25f1f2b5f388fa6d95d68ccdb580e5d612962d30586f954df83",
+    "frontend/src/paginas/Reportes.jsx": "76ec2cebcb93fe162e139b7a690abe81b5e25791ce3cc96889084a198c83c75f",
+    "frontend/src/api/sondeo.js": "7a6422106a2894fb99d7c31e9708e610a9f7db73199572583e8e129d7286181a",
+    "frontend/tests/sondeo.test.mjs": "56ffd8b085f72dc701da7f553a9b34b10749be2ce9a73f7d30df2db31076c585"
+  },
+  "limites": [
+    "No acredita estado remoto de migraciones o credenciales",
+    "No prueba recuperación tras caída abrupta del sistema",
+    "No acredita aprobación o envío real ni cierre V4"
+  ]
+}

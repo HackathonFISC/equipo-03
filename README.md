@@ -23,6 +23,18 @@ Agentes, herramientas, flujos y punto de intervención humana (incluir el diagra
 
 ## Instalación y ejecución
 
+Con las dependencias y `.env` configurados, iniciar la API también inicia el
+trabajador de agentes; ya no requiere una terminal adicional:
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn api.main:app --reload
+```
+
+El bot y la interfaz se arrancan como indican sus guías. Los reportes se procesan
+en segundo plano y la pantalla de Reportes actualiza resultados y trazas sin F5.
+Consultar [arranque automático y diagnóstico](orquestador/README.md). Las esperas
+por datos, confirmaciones y revisión humana permanecen explícitas.
+
 Para preparar el entorno de cálculo V0, desde la raíz del repositorio en Windows con Python 3.12:
 
 ```powershell

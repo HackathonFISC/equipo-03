@@ -43,6 +43,14 @@ CORS admite solo `http://localhost:5173` (servidor de desarrollo del panel).
 
 ## Rutas
 
+La API inicia y detiene automáticamente el trabajador de agentes desde su ciclo
+de vida. No se inicia al importar el módulo. `TRABAJADOR_AUTOMATICO=true` es el
+valor predeterminado; usar `false` solo si se administra un trabajador externo.
+Reiniciar la API tras actualizar para activar esta integración.
+`GET /salud/agentes` informa el estado del proceso, sin credenciales ni contenido
+de reportes; no equivale a una prueba de conectividad externa. Ver
+[arranque del trabajador](../orquestador/README.md).
+
 | Método y ruta | Quién la usa | Secreto | Qué hace |
 | --- | --- | --- | --- |
 | `GET /salud` | Cualquiera | No | Prueba de vida. |
