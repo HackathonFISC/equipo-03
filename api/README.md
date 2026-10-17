@@ -61,7 +61,7 @@ de reportes; no equivale a una prueba de conectividad externa. Ver
 | --- | --- | --- | --- |
 | `GET /salud` | Cualquiera | No | Prueba de vida. |
 | `POST /reportes` | Bot | Sí | Registra un mensaje de Telegram. 201 si es nuevo, 200 si ya estaba. |
-| `GET /reportes?limite=50` | Panel | No (V1) | Lista reportes, del más reciente al más antiguo (1 a 200). |
+| `GET /reportes?limite=50` | Panel | Token | Lista reportes y pines compartidos, del más reciente al más antiguo (1 a 200). 403 sin sesión válida. |
 | `GET /ejecuciones/{ejecucion_id}` | Panel | Token | Estado, etapa y traza de los agentes. 403 sin sesión válida; 404 si no existe. |
 | `GET /eventos` | Panel | Token | Registro general de eventos, del más nuevo al más antiguo. Filtros opcionales: `agente`, `actor_tipo`, `ejecucion_id`; `limite` (1–200, 100 por defecto). Sin `detalles`, `entrada_ids`, `salida_ids` ni `usuario_id`. 403 sin sesión; 422 filtro inválido; 503. |
 | `POST /aclaraciones/reservar` | Bot | Sí | Reserva la siguiente pregunta pendiente. 204 si no hay. |
@@ -113,7 +113,9 @@ Responde un `ReporteRegistrado` validado con los contratos de Emilia.
 
 ### `GET /reportes`
 
-Cada elemento: `{registrado, interpretado, seguimiento}`.
+Requiere sesión válida (`Authorization: Bearer`). Cada elemento: `{registrado, interpretado, seguimiento, ubicacion_reportada}`.
+
+- `ubicacion_reportada`: último pin aceptado de Telegram (latitud, longitud y precisión) o `null`. Se lee de las aclaraciones aceptadas, sin esperar al reprocesamiento. No crea un punto de atención ni confirma una entrega.
 
 - `registrado`: ID, ejecución, fecha, origen y entrada (canal, modalidad, texto).
   **No incluye** `remitente_ref`, `mensaje_externo_id` ni el destino.
@@ -287,3 +289,23 @@ Usan una base de datos y RPC simuladas: no necesitan red, claves ni Supabase.
 - V4: la migración `0002`. `auth.py`, el inicio de sesión del panel, las rutas de aprobar y rechazar y las de sector/destino
   (sobre la migración `0012`) ya están, probadas con RPC simuladas; falta aplicar las migraciones en Supabase real.
   La bandeja de salida ya está (migración `0011`, sin aplicar todavía).
+
+
+### Localización automática (0018)
+
+`GET /reportes` incluye `localizacion_resuelta`: `{ubicacion, place_id, resuelta_en, expira_en}`
+o `null`. La ubicación puede proceder de Telegram (`compartida`) o de Google Maps
+(`geocodificada`). No requiere revisión del coordinador. Los pines originales se
+siguen mostrando en `ubicacion_reportada` antes del procesamiento. La API omite
+coordenadas Google vencidas; el mantenimiento elimina la copia temporal. Los
+place IDs permanecen disponibles para abrir Google Maps.
+
+La RPC `ra_finalizar_localizacion` cierra la localización en `completada/terminada`;
+no crea incidentes, puntos, vínculos ni modifica cálculos. El circuito de lugares
+reconocidos del catálogo sigue utilizando `ra_finalizar_territorial`.
+Ver [activación y límites](../docs/LOCALIZACION_AUTOMATICA.md).
+
+
+### Rutas Google
+
+Con sesión: GET `/planes/destinos-localizados` lista reportes con coordenadas vigentes y depósitos activos. POST `/planes/ruta-localizada` recibe `{deposito_id, reportes_ids}` (1–6 IDs únicos); devuelve orden vial, minutos, metros y navegación, sin guardar un plan ni asignar litros. GET `/planes` agrega `navegacion_url` y `tramos_navegacion` por cisterna, usando coordenadas del snapshot. Ver [guía](../docs/RUTAS_GOOGLE.md).

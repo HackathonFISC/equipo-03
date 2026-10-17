@@ -5,23 +5,12 @@ import { llamarConSesion } from './sesion.js'
 // Pásalo a false cuando la API esté corriendo y tenga reportes guardados.
 export const USAR_EJEMPLOS = false
 
-const URL_API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
-
 // Cada elemento: { registrado: ReporteRegistrado, interpretado: ReporteInterpretado | null }
 export async function obtenerReportes() {
   if (USAR_EJEMPLOS) {
     return reportesEjemplo
   }
-  let respuesta
-  try {
-    respuesta = await fetch(`${URL_API}/reportes`)
-  } catch {
-    throw new Error('No se pudo conectar con la API. Comprueba que esté en marcha.')
-  }
-  if (!respuesta.ok) {
-    throw new Error(`La API respondió con el código ${respuesta.status}.`)
-  }
-  return respuesta.json()
+  return llamarConSesion('/reportes')
 }
 
 // Estado, etapa y traza de los agentes de una ejecución (GET /ejecuciones/{id}). Exige sesión válida.

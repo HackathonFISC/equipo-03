@@ -115,13 +115,19 @@ class Consulta:
                     for e in self.db.tablas["ejecuciones"]
                     if e["reporte_id"] == f["reporte_id"]
                 ]
+        if self.tabla == "reportes" and "aclaraciones(" in self.columnas:
+            for f in resultado:
+                f["aclaraciones"] = [
+                    {k: a.get(k) for k in ("respuesta_ubicacion", "respondida_en")}
+                    for a in self.db.tablas["aclaraciones"] if a["reporte_id"] == f["reporte_id"]
+                ]
         resultado.sort(key=lambda f: f.get("creado_en", ""), reverse=self.descendente)
         return Respuesta(resultado[: self.limite])
 
 
 class BaseFalsa:
     def __init__(self):
-        self.tablas = {"remitentes": [], "reportes": [], "ejecuciones": [], "eventos": [], "destinos": []}
+        self.tablas = {"remitentes": [], "reportes": [], "ejecuciones": [], "eventos": [], "destinos": [], "aclaraciones": []}
         self.error_proximo = None
         self.duplicado_proximo = None
         self.fila_oculta = None
@@ -477,3 +483,56 @@ def test_la_lista_no_expone_el_destino(cliente, db, monkeypatch):
     monkeypatch.setattr(servicio_reportes, "GUARDAR_DESTINO_ORIGEN", True)
     cliente.post("/reportes", json=CUERPO, headers=CABECERA)
     assert "destino" not in json.dumps(cliente.get("/reportes").json())
+
+
+def test_pines_solo_visibles_con_sesion(db):
+    db.error_proximo = AssertionError("No debe consultar la base")
+    assert TestClient(app).get("/reportes").status_code == 403
+
+
+def test_lista_ultimo_pin_aceptado_sin_asignar_punto(cliente, db):
+    cliente.post("/reportes", json=CUERPO, headers=CABECERA)
+    reporte_id = db.tablas["reportes"][0]["reporte_id"]
+    for fecha, latitud in [("2026-10-17T12:00:00+00:00", 8.9),
+                           ("2026-10-17T11:00:00+00:00", 8.8), (None, 8.7)]:
+        db.tablas["aclaraciones"].append({
+            "reporte_id": reporte_id, "respondida_en": fecha,
+            "respuesta_ubicacion": {"latitud": latitud, "longitud": -79.7,
+                                   "precision_metros": 12.5, "fuente": "compartida"},
+        })
+    # Another report's pin must never be attached to this report.
+    db.tablas["aclaraciones"].append({
+        "reporte_id": str(uuid4()), "respondida_en": "2026-10-17T13:00:00+00:00",
+        "respuesta_ubicacion": {"latitud": 9.9, "longitud": -79.7},
+    })
+    datos = cliente.get("/reportes").json()[0]
+    assert datos["ubicacion_reportada"] == {
+        "latitud": 8.9, "longitud": -79.7, "precision_metros": 12.5,
+        "fuente": "compartida", "representa_punto_atencion": None,
+    }
+    assert datos["seguimiento"]["etapa"] == "ingesta"
+    assert "punto_atencion_id" not in datos
+    assert "aclaraciones" not in datos and "remitente_ref" not in json.dumps(datos)
+
+
+def test_lista_omite_pin_invalido_y_admite_coordenadas_cero(cliente, db):
+    cliente.post("/reportes", json=CUERPO, headers=CABECERA)
+    fila = db.tablas["reportes"][0]
+    fila["ubicacion_compartida"] = {"latitud": 999.0, "longitud": -79.7}
+    assert cliente.get("/reportes").json()[0]["ubicacion_reportada"] is None
+    fila["ubicacion_compartida"] = {"latitud": 0.0, "longitud": 0.0}
+    assert cliente.get("/reportes").json()[0]["ubicacion_reportada"]["latitud"] == 0.0
+
+
+def test_panel_muestra_localizacion_google_automatica(cliente,db):
+    cliente.post('/reportes',json=CUERPO,headers=CABECERA)
+    loc={'ubicacion':{'latitud':8.91,'longitud':-79.71,'fuente':'geocodificada'},
+         'place_id':'google-1','resuelta_en':'2026-10-17T12:00:00+00:00',
+         'expira_en':'2099-01-01T00:00:00+00:00'}
+    db.tablas['reportes'][0]['localizacion_resuelta']=loc
+    salida=cliente.get('/reportes').json()[0]['localizacion_resuelta']
+    assert salida['ubicacion']['fuente']=='geocodificada' and salida['place_id']=='google-1'
+    assert salida['ubicacion']['representa_punto_atencion'] is None
+    loc['expira_en']='2000-01-01T00:00:00+00:00'
+    salida=cliente.get('/reportes').json()[0]['localizacion_resuelta']
+    assert salida['ubicacion'] is None and salida['place_id']=='google-1'

@@ -245,3 +245,19 @@ quedan en revisión. No activa políticas, aprueba ni envía. Fuente y RPC restr
 a `service_role`; ejecutar `../tests/0017_lotes_confirmados_smoke.sql` completo,
 que revierte sus fixtures. Reiniciar el trabajador. Las revisiones anteriores sin
 instantánea no se reconstruyen; los lotes ya preparados siguen funcionando.
+
+
+### 0018 — Localización automática
+
+Después de 0017. Guarda coordenadas resueltas automáticamente en el reporte y
+completa su etapa territorial sin revisión de ubicación. No crea incidentes ni
+puntos, no modifica necesidades ni el circuito de distribución. La RPC valida
+reserva, snapshot, fuente y coordenadas y está restringida a service_role.
+El mantenimiento retira coordenadas Google expiradas; conserva place IDs.
+Prueba aislada: `../tests/0018_integracion_local.mjs` con RA_PGLITE_PACKAGE
+apuntando a un package.json temporal que incluya @electric-sql/pglite.
+
+
+### 0019 — Matriz vial de planificación
+
+Después de 0018. `ra_actualizar_matriz_planificacion` permite al trabajador reemplazar solo la matriz antes del cálculo, verificando reserva, snapshot, nodos y tiempos. No altera planes cerrados ni cantidades. RPC exclusiva de service_role. Integración efímera: RA_PROBAR_RUTAS_GOOGLE=1 en `../tests/0016_integracion_local.mjs`.

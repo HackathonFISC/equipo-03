@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import RutaLocalizada from './RutaLocalizada.jsx'
 import { obtenerPlanes, USAR_EJEMPLOS_PLANES } from '../api/planes.js'
 import './Plan.css'
 import { useQuitados } from '../useQuitados.js'
@@ -132,6 +133,16 @@ function RutaCisterna({ plan, ruta, numeroCisterna }) {
         <span className="carga-barra" aria-hidden="true">
           <span style={{ width: `${Math.min(100, (carga / capacidad) * 100)}%` }} />
         </span>
+      )}
+      {ruta.navegacion_url && (
+        <p><a href={ruta.navegacion_url} target="_blank" rel="noopener noreferrer">Abrir recorrido en Google Maps</a></p>
+      )}
+      {ruta.tramos_navegacion?.length > 0 && (
+        <details><summary>Navegar por tramos</summary><ol>
+          {ruta.tramos_navegacion.map((url, i) => <li key={url + i}>
+            <a href={url} target="_blank" rel="noopener noreferrer">{i === ruta.paradas.length ? 'Regreso al depósito' : `Ir a parada ${i + 1}`}</a>
+          </li>)}
+        </ol></details>
       )}
       <ol className="paradas">
         {ruta.paradas.map((p) => (
@@ -349,6 +360,8 @@ export default function Plan() {
         </div>
         <p>Rutas propuestas para las cisternas, con lo que queda sin atender y su verificación.</p>
       </header>
+
+      {!USAR_EJEMPLOS_PLANES && !sinSesion && !cargando && <RutaLocalizada />}
 
       {USAR_EJEMPLOS_PLANES && (
         <p className="aviso-ejemplos" role="note">
