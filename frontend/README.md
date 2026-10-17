@@ -33,14 +33,14 @@ La barra superior cambia de página; la página activa queda en la dirección
   **Sin interpretar** o **Fuera de alcance**, con filtros y conteos.
 - Cada fila se despliega: resumen, ubicación declarada, campos extraídos (un dato
   desconocido dice "No indicado", nunca 0), frases que sustentan la lectura y faltantes.
-- **Seguimiento:** al abrir la fila, pide `GET /ejecuciones/{id}` y muestra la etapa actual
+- **Seguimiento:** al abrir la fila, pide `GET /ejecuciones/{id}` (con la sesión; sin ella la API responde 403) y muestra la etapa actual
   y cada decisión de los agentes, con su resultado, hora, duración y herramienta.
   Mientras la fila siga abierta, actualiza también la traza mediante sondeo.
 - Fechas en hora de Panamá.
 
 ### Necesidades (`src/paginas/Necesidades.jsx`) — V2
 
-- Lee `GET /incidentes`: un elemento por incidente con vínculos activos. El botón
+- Lee `GET /incidentes` con la sesión (sin ella la API responde 403 y la página ofrece ir al inicio de sesión): un elemento por incidente con vínculos activos. El botón
   **Actualizar** vuelve a pedirlos (útil mientras el trabajador de Emilia procesa).
 - **Orden de atención:** necesidades con prioridad calculada, numeradas por la `posicion`
   del cálculo; la página no reordena.
@@ -169,3 +169,21 @@ El acceso vive en `#acceso` y `src/paginas/Acceso.jsx`, desde el avatar del enca
 Aprobación ya no contiene el formulario ni el cierre de sesión. Los permisos para
 aprobar siguen dependiendo de la API. Lint y compilación comprobados; recorrido
 visual y login real no verificados en esta sesión.
+
+## Refinamiento visual por función — 17 de octubre
+
+Se añadió `src/editorial.css`, cargado después de la capa compartida, para diferenciar
+las pantallas manteniendo la paleta Agua institucional y el nombre actual H2Oeste.
+
+- Reportes: bandeja con filas continuas, filtros subrayados, sellos suaves, títulos
+  serif y resumen derivado de los reportes recibidos. El resumen solo aparece con
+  una respuesta válida y no vacía.
+- Necesidades: rangos tipográficos, separación entre puntaje de urgencia y confianza,
+  barras de aportes diferenciadas y resumen real de calculadas/pendientes.
+- Aprobación: expediente con metadatos compactos y bloque de firma independiente.
+- Plan: rutas y métricas con una jerarquía distinta de la bandeja ciudadana.
+
+Georgia es la serif local para títulos editoriales; Inter se conserva en controles,
+cuerpo y datos. No se cambian contratos, permisos, cálculos ni selección de origen.
+Lint y build con configLoader native aprobados. No hubo inspección visual en navegador.
+Las tres imágenes nuevas adjuntas no se incorporaron porque su descarga falló.

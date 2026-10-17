@@ -7,12 +7,20 @@ from fastapi.testclient import TestClient
 from postgrest.exceptions import APIError
 
 import api.servicios.reportes as servicio_reportes
+from api.auth import obtener_verificador
 from api.dependencias import obtener_db, secreto_configurado
 from api.main import app
 from contratos.modelos import ReporteRegistrado
 
 SECRETO = "secreto-de-prueba-0123456789"
 CABECERA = {"X-Secreto-Bot": SECRETO}
+AUTH = {"Authorization": "Bearer aaa.bbb.ccc"}
+
+
+class VerificadorFalso:
+    def usuario_id(self, token):
+        return uuid4()
+
 CUERPO = {
     "usuario_telegram_id": 111,
     "chat_id": -1001,
@@ -127,13 +135,14 @@ def db():
     base = BaseFalsa()
     app.dependency_overrides[obtener_db] = lambda: base
     app.dependency_overrides[secreto_configurado] = lambda: SECRETO
+    app.dependency_overrides[obtener_verificador] = lambda: VerificadorFalso()
     yield base
     app.dependency_overrides.clear()
 
 
 @pytest.fixture
 def cliente(db):
-    return TestClient(app)
+    return TestClient(app, headers=AUTH)
 
 
 def cuerpo(**cambios):
@@ -390,6 +399,11 @@ def test_error_de_la_ejecucion_solo_expone_el_codigo(cliente, db):
     assert datos["estado"] == "fallida"
     assert datos["error_codigo"] == "proveedor_no_disponible"
     assert "detalle interno" not in json.dumps(datos)
+
+
+def test_ejecucion_sin_sesion_es_403_y_no_toca_la_base(db):
+    r = TestClient(app).get(f"/ejecuciones/{uuid4()}")
+    assert r.status_code == 403 and r.json()["codigo"] == "sin_permiso"
 
 
 def test_ejecucion_inexistente_responde_404(cliente, db):

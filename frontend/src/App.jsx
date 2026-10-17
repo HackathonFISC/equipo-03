@@ -7,6 +7,7 @@ import Plan from './paginas/Plan.jsx'
 import Reportes from './paginas/Reportes.jsx'
 import './App.css'
 import './design-system.css'
+import './editorial.css'
 
 const PAGINAS = [
   { id: 'reportes', nombre: 'Reportes', detalle: 'Escuchar a la comunidad', simbolo: '01', Componente: Reportes },

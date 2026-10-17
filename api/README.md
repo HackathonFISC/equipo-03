@@ -40,6 +40,7 @@ CORS admite solo `http://localhost:5173` (servidor de desarrollo del panel).
 | `rutas/ejecuciones.py`, `servicios/ejecuciones.py` | Estado de una ejecución y traza de sus agentes. |
 | `rutas/aclaraciones.py`, `servicios/aclaraciones.py` | Circuito de aclaración: reservar, registrar envío y entregar respuesta. |
 | `rutas/incidentes.py`, `servicios/incidentes.py` | Incidentes consolidados con su necesidad o sus pendientes. |
+| `rutas/priorizacion.py`, `servicios/priorizacion.py` | Prepara el lote revisado de priorización: arma el lote con los incidentes reales y la política elegida, bloquea lo que necesita revisión y llama a `ra_preparar_priorizacion_v2`. |
 | `rutas/avisos.py`, `servicios/bandeja_salida.py` | Bandeja de salida: reservar el siguiente aviso vigente y registrar su envío. |
 | `rutas/sectores.py`, `servicios/sectores.py` | Estado de un sector, selección del plan que Comunicación usará por sector y habilitación de un destino de ensayo. Llaman a las RPC de la migración 0012 (Emilia) y traducen sus errores. |
 | `rutas/planes.py`, `servicios/planes.py`, `servicios/aprobacion.py` | Listar planes guardados; aprobar y rechazar una versión del plan: solo coordinador activo; llaman a las RPC de la migración 0003 y traducen sus errores a códigos de D003. |
@@ -60,11 +61,12 @@ de reportes; no equivale a una prueba de conectividad externa. Ver
 | `GET /salud` | Cualquiera | No | Prueba de vida. |
 | `POST /reportes` | Bot | Sí | Registra un mensaje de Telegram. 201 si es nuevo, 200 si ya estaba. |
 | `GET /reportes?limite=50` | Panel | No (V1) | Lista reportes, del más reciente al más antiguo (1 a 200). |
-| `GET /ejecuciones/{ejecucion_id}` | Panel | No (V1) | Estado, etapa y traza de los agentes. 404 si no existe. |
+| `GET /ejecuciones/{ejecucion_id}` | Panel | Token | Estado, etapa y traza de los agentes. 403 sin sesión válida; 404 si no existe. |
 | `POST /aclaraciones/reservar` | Bot | Sí | Reserva la siguiente pregunta pendiente. 204 si no hay. |
 | `POST /aclaraciones/{aclaracion_id}/envio` | Bot | Sí | Registra `enviado`, `fallido` o `incierto`. 204. |
 | `POST /aclaraciones/respuestas` | Bot | Sí | Entrega un reply a una pregunta. Siempre 200 con un resultado. |
-| `GET /incidentes` | Panel | No (V2) | Incidentes con vínculos activos, su necesidad calculada o sus pendientes. |
+| `GET /incidentes` | Panel | Token | Incidentes con vínculos activos, su necesidad calculada o sus pendientes. 403 sin sesión válida. |
+| `POST /ejecuciones/{ejecucion_id}/priorizacion` | Panel | Token + coordinador | Cuerpo: `politica_version`, `motivo`, `revisiones` (opcional). 202 con `datos_version`, `incidentes` y `sin_revisar`; repetir el mismo envío da `repetido: true`. 403 / 404 / 409 (`version_obsoleta`, `politica_no_activa`) / 422 (`datos_insuficientes`: ámbito que necesita revisión; `contrato_invalido`) / 503. |
 | `POST /avisos/reservar` | Bot | Sí | Reserva el siguiente aviso vigente. 204 si no hay. Requiere la migración 0011. |
 | `POST /avisos/{aviso_id}/envio` | Bot | Sí | Registra `enviado`, `fallido` o `incierto`. 204. |
 | `GET /planes` | Panel | Token | Las 20 versiones de plan más recientes con rutas y paradas (nombre del punto del catálogo), `datos_version`, `politica_version` y bloqueos. Lectura de tablas; no expone la solicitud ni quién creó el plan. |
@@ -119,7 +121,7 @@ Cada elemento: `{registrado, interpretado, seguimiento}`.
 
 ### `GET /ejecuciones/{ejecucion_id}`
 
-Estado, etapa, intentos, código del último error (solo el código, nunca el mensaje)
+Requiere sesión válida (`Authorization: Bearer`). Estado, etapa, intentos, código del último error (solo el código, nunca el mensaje)
 y eventos de traza: agente, decisión, herramienta, resultado, duración y siguiente estado.
 No expone `detalles`, `entrada_ids` ni `salida_ids`.
 
@@ -169,6 +171,8 @@ crea avisos (los crea Comunicación) ni los aprueba: solo entrega al bot uno a l
 
 ### `GET /incidentes` (V2)
 
+Requiere sesión válida (`Authorization: Bearer`); sin ella, 403.
+
 Se arma con las RPC de la migración `0007_territorial_orquestador_v2.sql`:
 
 1. `ra_incidentes_snapshot_v2()`: incidentes con al menos un vínculo activo.
@@ -192,6 +196,28 @@ lugar (`sector_id`, `punto_atencion_id`, `punto`), consolidación (`estado_valid
 - **No incluye** remitentes, chats, mensajes, textos de reportes, `creado_por`, `motivo` ni
   `ubicacion`.
 - Orden: del detectado más recientemente al más antiguo; la página ordena por prioridad.
+
+### `POST /ejecuciones/{ejecucion_id}/priorizacion` (V2)
+
+Prepara el lote que el trabajador automático calculará (`validate_need` y `score_needs`). La ejecución debe estar en la
+etapa `priorizacion` y ya existir: esta ruta no crea otra. La decisión de aceptar el lote la toma la RPC
+`ra_preparar_priorizacion_v2` (Emilia); la API ensambla y comprueba antes.
+
+- **Quién:** coordinador activo con sesión. El usuario que confirma sale del token; un `usuario_id` en el cuerpo se rechaza.
+- **Política:** `politica_version` es obligatoria y se lee de `politicas_prioridad` con estado `activa`. Nunca se elige la
+  primera ni la más reciente. Va al lote tal como está guardada, sin columnas administrativas.
+- **Ámbito completo:** el lote cubre todos los incidentes de `ra_incidentes_contexto_v2(ejecucion_id)`, que no se limita al
+  sector que se ve en pantalla. Se bloquea con 422 (`datos_insuficientes`) si hay incidentes sin punto, dos en el mismo
+  punto o datos de distinto origen: no se omite, no se suman demandas y no se recorta en silencio.
+- **Sin inventar:** `revisiones` lleva lo que el coordinador confirma por incidente (demanda directa o por fórmula, clase,
+  ventana si es crítico, vulnerabilidad, horas sin agua, personas, última atención). Cada confirmación lleva el usuario de la
+  sesión, la hora y el motivo. Lo que no se envía queda pendiente con su motivo, sin confirmaciones.
+- **Origen:** el del lote es el de la ejecución. Esta ruta no convierte datos reales en sintéticos.
+- **Idempotencia:** `datos_version` es una huella de la política, el motivo y las revisiones; el mismo envío da la misma
+  versión y el mismo lote. Cambiar cualquier entrada cambia la versión. `sin_revisar` cuenta los incidentes sin revisión.
+- **Seguimiento:** un lote aceptado queda `pendiente`. Tras la migración 0015 el seguimiento puede mostrar `espera_validacion`
+  en la etapa `ingesta` por un reintento programado; no significa que se espere la aprobación de un plan.
+- **Aún no probado contra la base real:** las pruebas usan RPC simuladas. Falta ejecutarla contra Supabase con la 0014 y la 0015.
 
 ## Errores
 
@@ -244,6 +270,9 @@ Usan una base de datos y RPC simuladas: no necesitan red, claves ni Supabase.
   selección de plan y destino de ensayo con usuario tomado del token, cuerpo inválido, cada error de la RPC y solo coordinador.
 - `tests/test_api_sectores_listas.py`: listas de sectores y destinos con tablas simuladas: columnas pedidas, identificador
   truncado, tabla de 0012 ausente (`null`) frente a otros fallos (503), acceso solo de coordinador.
+- `tests/test_api_priorizacion.py`: lote con todos los incidentes, política tal como está guardada, confirmaciones con el usuario
+  de la sesión, lo no revisado queda pendiente, idempotencia y cambio de versión de datos, bloqueos (mismo punto, sin punto,
+  origen mezclado, política inactiva o duplicada, etapa), acceso solo de coordinador y cada error de la RPC.
 - `tests/test_api_avisos.py`: reserva, forma inesperada de la RPC, campos que no se exponen,
   registro de envío coherente, reserva ajena, secreto y errores de la base.
 

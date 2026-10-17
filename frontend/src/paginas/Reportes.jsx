@@ -274,9 +274,18 @@ export default function Reportes() {
   return (
     <section className="reportes" aria-labelledby="titulo-reportes">
       <header className="reportes-cabecera">
+        <span className="seccion-etiqueta">COMUNIDAD / RECEPCIÓN</span>
         <h1 id="titulo-reportes">Reportes recibidos</h1>
         <p>Mensajes de la comunidad, del más reciente al más antiguo.</p>
       </header>
+
+      {!cargando && !error && reportes.length > 0 && (
+        <dl className="bandeja-resumen" aria-label="Resumen de reportes recibidos">
+          <div><dt>Reportes recibidos</dt><dd>{conteos.todos}</dd></div>
+          <div><dt>Interpretados</dt><dd>{conteos.interpretado}</dd></div>
+          <div className="resumen-atencion"><dt>Necesitan aclaración</dt><dd>{conteos.aclaracion}</dd></div>
+        </dl>
+      )}
 
       {USAR_EJEMPLOS && (
         <p className="aviso-ejemplos" role="note">

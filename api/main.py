@@ -4,7 +4,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.errores_http import ErrorApi, respuesta_error
-from api.rutas import aclaraciones, avisos, ejecuciones, incidentes, planes, reportes, sectores, sesion
+from api.rutas import aclaraciones, avisos, ejecuciones, incidentes, planes, priorizacion, reportes, sectores, sesion
 from contratos.errores import CodigoError
 from orquestador.servicio import ciclo_vida_agentes
 
@@ -49,6 +49,7 @@ async def manejar_validacion(request: Request, error: RequestValidationError):
 
 app.include_router(reportes.router)
 app.include_router(ejecuciones.router)
+app.include_router(priorizacion.router)
 app.include_router(aclaraciones.router)
 app.include_router(avisos.router)
 app.include_router(incidentes.router)

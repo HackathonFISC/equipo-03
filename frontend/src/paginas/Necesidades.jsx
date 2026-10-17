@@ -258,6 +258,7 @@ export default function Necesidades() {
   const [items, setItems] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
+  const [sinSesion, setSinSesion] = useState(false)
   const [intento, setIntento] = useState(0)
 
   useEffect(() => {
@@ -267,10 +268,12 @@ export default function Necesidades() {
         if (cancelado) return
         setItems(datos)
         setError(null)
+        setSinSesion(false)
         setCargando(false)
       })
       .catch((e) => {
         if (cancelado) return
+        setSinSesion(e.codigo === 'sin_permiso')
         setError(e.message)
         setCargando(false)
       })
@@ -282,6 +285,7 @@ export default function Necesidades() {
   function reintentar() {
     setCargando(true)
     setError(null)
+    setSinSesion(false)
     setIntento((n) => n + 1)
   }
 
@@ -297,6 +301,7 @@ export default function Necesidades() {
   return (
     <section className="necesidades" aria-labelledby="titulo-necesidades">
       <header className="necesidades-cabecera">
+        <span className="seccion-etiqueta">TERRITORIO / PRIORIZACIÓN</span>
         <div className="necesidades-titulo">
           <h1 id="titulo-necesidades">Necesidades</h1>
           <button type="button" className="actualizar" onClick={reintentar} disabled={cargando}>
@@ -306,6 +311,14 @@ export default function Necesidades() {
         <p>Puntos de atención con falta de agua, en el orden en que se atenderían.</p>
       </header>
 
+      {!cargando && !error && items.length > 0 && (
+        <div className="necesidades-balance" aria-label="Resumen de necesidades">
+          <p><strong>{enOrden.length}</strong><span>En el orden de atención</span></p>
+          <p><strong>{pendientes.length}</strong><span>Pendientes de revisión</span></p>
+          <span className="balance-nota">La prioridad y la confianza se evalúan por separado.</span>
+        </div>
+      )}
+
       {USAR_EJEMPLOS_NECESIDADES && (
         <p className="aviso-ejemplos" role="note">
           Datos de ejemplo. Estas necesidades son sintéticas y no vienen de la API.
@@ -314,7 +327,14 @@ export default function Necesidades() {
 
       {cargando && items.length === 0 && <p className="mensaje">Cargando necesidades…</p>}
 
-      {error && (
+      {error && sinSesion && (
+        <div className="mensaje" role="status">
+          <p>Para ver las necesidades hay que iniciar sesión.</p>
+          <a className="cuenta-cta" href="#acceso">Ir al inicio de sesión</a>
+        </div>
+      )}
+
+      {error && !sinSesion && (
         <div className="mensaje mensaje-error" role="alert">
           <p>No se pudieron cargar las necesidades. {error}</p>
           <button type="button" onClick={reintentar}>
