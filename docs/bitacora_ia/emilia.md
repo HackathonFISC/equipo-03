@@ -33,3 +33,20 @@
 | 2026-10-17 08:03 America/Panama | Codex | Usuario solicita A1 completo: queja, agentes, recursos ficticios por falta de datos verificados IDAAN y devolución de resultado; conservar procedencia | Cola transaccional y puente 0016 sobre la misma ejecución; necesita revisiones persistidas, toma política activa y solo infraestructura del ensayo aprobado. Conserva origen de reportes/necesidades y etiqueta escenario sintético/modo ensayo. Vigencia ante cambios de necesidades. Base 825, candidata 843 pruebas + 66 subpruebas; smoke 0016 y regresiones SQL aprobados en PGlite. Integración local: cuatro herramientas reales, cinco agentes, 15 000 L y seis avisos; destino no habilitado bloqueado, cambios invalidan/cancelan. | Fixtures controlados, incluso los que llevan campo origen real; Gemini y persona aprobadora simulados. Sin SQL remoto, Telegram, cambios de contratos o tools, ni edición de API/bot/panel/cálculo ajenos. Relevo a Noel: captura de origen y recepción explícita. 0014/0015 y ambos smoke confirmados por el usuario. No se acredita cierre conjunto ni envío. Sin commit/push; José consolida bitácora al recibir cambios. |
 
 Actualización de integración: durante el cierre llegó f1fe718 de Noel con formulario y capacidad de recepción. Se conservaron sus archivos completos; queda pendiente clasificar la procedencia en captura de Telegram. Base nueva: 828 pruebas, candidato final: 846 pruebas + 66 subpruebas, cuatro advertencias conocidas.
+
+### 2026-10-17 — Lotes automáticos con fuente humana verificable
+
+Emilia autorizó automatizar la preparación con datos/confirmaciones vigentes.
+Codex añadió 0017, fuente persistida de revisión, comparación del ámbito, controles
+de política/coordinadores/ventana, comprobación de demanda y preparación antes de
+reservar. Se conservan autores, fechas y valores; no hay aprobación automática.
+Se añadieron nueve pruebas de Python, smoke SQL adverso e integración opcional
+sobre el runner 0016. Las revisiones anteriores sin instantánea no se reconstruyen.
+Las confirmaciones de prueba y revisión de lugar en integración son fixtures.
+Sin cambios en API/bot/panel, contratos, tools ni migraciones históricas; sin SQL
+remoto, mensajes, commit o push. Se preservan los cambios concurrentes de Noel/José.
+
+Validación final de esta ampliación sobre ca54140: 894 pruebas y 66 subpruebas;
+smokes 0016/0017 en PostgreSQL local (PGlite); integración de cinco agentes con lote
+automático, 15 000 L y seis avisos de ensayo. Destino no habilitado bloqueado y
+avisos cancelados al cambiar necesidades. No prueba Gemini/Telegram reales.

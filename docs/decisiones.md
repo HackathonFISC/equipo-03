@@ -223,3 +223,22 @@ Referencia de la versión recibida de main: D005. Se registra como D008 para con
 - Evidencia local: base 825 y candidata 843 pruebas + 66 subpruebas, cuatro advertencias conocidas. Smoke 0016 y regresiones SQL aprobados en PGlite. Fixture con campo origen real conservado, cuatro tools reales, cinco agentes bajo una ejecución, 15 000 L y seis avisos; proveedor y aprobación simulados, sin Telegram. SQL remoto y recorrido conjunto pendientes. Usuario confirmó 0014/0015 y sus smoke en Supabase; Codex no los repitió allí.
 
 Actualización de integración: durante el cierre llegó f1fe718 de Noel con formulario y capacidad de recepción. Se conservaron sus archivos completos; queda pendiente clasificar la procedencia en captura de Telegram. Base nueva: 828 pruebas, candidato final: 846 pruebas + 66 subpruebas, cuatro advertencias conocidas.
+
+## D020 Preparación automática con confirmaciones vigentes
+
+- Fecha: 17 de octubre de 2026 (Panamá).
+- Solicitud expresa de Emilia: automatizar la preparación cuando existan datos
+  y confirmaciones vigentes; revisión solo por faltantes, conflictos o cambios.
+- Decisión: 0017 conserva instantáneas de revisiones humanas y reutiliza la más
+  reciente del ámbito exacto, con política `oeste-prioridad-apoyo-pa-1` activa,
+  coordinadores activos, lugar validado y ventanas vigentes. No se renuevan
+  confirmaciones ni se activa política, aprueba plan o envía un aviso.
+- Alternativas descartadas: confirmar automáticamente desde Telegram; copiar
+  valores del fixture; tratar un lote histórico sin instantánea como vigente.
+- Efecto: el trabajador prepara antes de reservar priorización; guarda el motivo
+  de revisión si falta algún requisito. Una revisión nueva permite reevaluar las
+  esperas. Los lotes ya preparados continúan por el camino existente.
+- Límite detectado: Territorial deja un pendiente de validación operativa del
+  lugar que la ruta de revisión de cantidades no resuelve. Debe resolverse mediante
+  revisión humana real; no se borra para forzar automatización. Ver
+  `docs/LOTES_AUTOMATICOS_V2.md`.
