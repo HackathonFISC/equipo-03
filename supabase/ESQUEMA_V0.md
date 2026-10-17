@@ -96,3 +96,22 @@ Se comprobó además la migración en un PostgreSQL temporal en memoria mediante
 - PGlite, PostgreSQL temporal para validación local: https://pglite.dev/docs/
 
 Consulta: 16 de octubre de 2026. Las credenciales y el proyecto real nunca se usan en la prueba local.
+
+## Revisión de identidad y deduplicación
+
+Ver [identidad y reportes](IDENTIDAD_REPORTES.md) para la integración del bot
+de Noel. `remitente_ref` es un UUID interno; Telegram se resuelve a través de
+`remitentes(canal, identificador_externo)`. El adaptador construye una identidad
+de mensaje estable por chat e ID de mensaje; no usa solo message_id.
+
+La migración adicional `0004_identidad_reportes.sql` requiere 0001 y conserva
+0002/0003 para Noel. Añade correspondencia obligatoria entre canal del reporte
+y del remitente y unicidad de mensaje Telegram independiente del remitente.
+La regla previa de panel permanece. Si hay datos incompatibles, aborta sin
+corregirlos ni eliminarlos. Emilia confirmó en esta conversación la ejecución correcta de la migración y su smoke en Supabase; no se volvió a ejecutar desde Codex.
+
+Probada en PostgreSQL temporal PGlite: dos guardas de datos previos, smoke 0004,
+regresión smoke 0001, restricciones con service_role, permisos de navegador
+cerrados y ROLLBACK de datos sintéticos. No prueba el bot ni concurrencia real
+de procesos de la API. Ejecutar `tests/0004_identidad_reportes_smoke.sql` después
+de aplicar 0004, con rol administrativo; revierte sus inserciones.

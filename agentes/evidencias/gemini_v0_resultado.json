@@ -1,0 +1,55 @@
+{
+  "estado": "ok",
+  "fecha": "2026-10-16T20:02:26.361624-05:00",
+  "modelo_solicitado": "gemini-3.8-flash",
+  "origen": "sintetico",
+  "contrato": "ExtraccionReporteLLM",
+  "entrada_sintetica": "En el Punto de prueba A llevamos 48 horas sin agua. Hay 120 personas afectadas.",
+  "http_status": 200,
+  "duracion_ms": 23104,
+  "finish_reason": "STOP",
+  "modelo_respuesta": "gemini-3.8-flash",
+  "controles": {
+    "horas_correctas": true,
+    "personas_correctas": true,
+    "problema_correcto": true,
+    "ubicacion_solo_declarada": true,
+    "vulnerabilidad_no_inventada": true,
+    "institucion_no_inventada": true,
+    "evidencia_literal": true,
+    "dentro_de_alcance": true
+  },
+  "salida_validada": {
+    "resumen": "Reporte de interrupción total del suministro de agua durante 48 horas afectando a 120 personas en Punto de prueba A.",
+    "ubicacion_declarada": "Punto de prueba A",
+    "campos": {
+      "horas_sin_agua": 48.0,
+      "personas_afectadas": 120,
+      "vulnerabilidad_declarada": null,
+      "institucion_declarada": null,
+      "tipo_problema": "sin_suministro"
+    },
+    "evidencia_textual": [
+      "Punto de prueba A",
+      "48 horas sin agua",
+      "120 personas afectadas"
+    ],
+    "faltantes": [],
+    "requiere_aclaracion": false,
+    "fuera_de_alcance": false
+  },
+  "uso_tokens": {
+    "promptTokenCount": 129,
+    "candidatesTokenCount": 143,
+    "totalTokenCount": 852,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 129
+      }
+    ],
+    "thoughtsTokenCount": 580,
+    "serviceTier": "standard"
+  },
+  "motivo": "Contrato y hechos sintéticos comprobados."
+}
