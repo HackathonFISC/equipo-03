@@ -23,6 +23,22 @@ Abrir http://localhost:5173. La API debe permitir ese origen (CORS en `api/main.
 La barra superior cambia de página; la página activa queda en la dirección
 (`#reportes`, `#necesidades`, `#plan`, `#aprobacion`) para que recargar no la pierda.
 
+### Acceso y transiciones
+
+- **El acceso es la primera pantalla.** Sin sesión no se muestra el panel: cualquier dirección (`#necesidades`, etc.) abre el
+  inicio de sesión. Al entrar, se abre la página que se pidió en la dirección o Reportes si no hubo ninguna. Si la sesión
+  vence, vuelve al acceso con el aviso "Tu sesión venció". Sin `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` el acceso
+  lo dice y no hay forma de entrar.
+- **Diseño del acceso** (`Acceso.jsx`, `Acceso.css`): a la izquierda, el paisaje de la foto de bienvenida (recorte sin el
+  texto incrustado, `h2oeste-paisaje.webp`), el logo, el lema y el recorrido Reporte, Prioridad, Plan y Firma; a la derecha, el
+  formulario con iconos, botón para mostrar la contraseña, aviso de Bloq Mayús y estado de carga. En móvil la foto pasa
+  arriba. `Mi cuenta` conserva la tarjeta anterior.
+- **Transiciones** (`src/transiciones.css`): cada una responde a una acción de la persona. La página nueva entra con un
+  movimiento corto (220 ms) al cambiar de sección; lo que se despliega (detalles de un reporte, formulario de un punto,
+  mensajes y errores, menú móvil) aparece con un desplazamiento leve; botones, chips y opciones cambian de color y
+  borde con suavidad; las barras de aporte crecen una vez. Con "reducir movimiento" en el sistema todo se desactiva
+  (regla en `index.css`).
+
 ### Reportes (`src/paginas/Reportes.jsx`)
 
 - Lista de `GET /reportes`, del más reciente al más antiguo.
