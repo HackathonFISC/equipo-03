@@ -5,7 +5,16 @@
 `ejecutar.py` reúne las pruebas de contratos, cálculo, servicios compartidos,
 API, bot, agentes, geografía, orquestador y las evaluaciones independientes.
 `metricas.py` separa aprobados, fallidos, errores y pendientes con denominadores
-explícitos. No calcula todavía la comparación con orden de llegada (V5).
+explícitos. Incluye métricas de comparación local de V5, sin acreditar su cierre integrado.
+
+Para comparar prioridad y orden de llegada con el mismo escenario y probar el retiro de una cisterna:
+
+```powershell
+.\.venv\Scripts\python.exe -m evals.comparar_v5
+```
+
+Consultar [metodología, métricas y pendientes V5](V5.md). La demo conserva los
+resultados desfavorables y rechazos por cobertura crítica; no publica planes.
 
 Desde la raíz del repositorio, en PowerShell:
 

@@ -102,7 +102,7 @@ def _rutas_candidatas(s, vehiculos, elegibles, deadline, ignorar_capacidad=False
                   tuple(str(p['punto_atencion_id']) for p in c['ruta']['paradas']))), True
 
 
-def _seleccionar(candidatas, elegibles, vehiculos, segundos):
+def _seleccionar(candidatas, elegibles, vehiculos, segundos, *, por_llegada=False):
     inicio_modelo = time.monotonic()
     modelo = cp_model.CpModel()
     decisiones = [modelo.new_bool_var(f'ruta_{i}') for i in range(len(candidatas))]
@@ -111,10 +111,12 @@ def _seleccionar(candidatas, elegibles, vehiculos, segundos):
     for pid in elegibles:
         modelo.add(sum(x for x, c in zip(decisiones, candidatas) if pid in c['puntos']) <= 1)
     modelo.add(sum(decisiones) >= 1)
-    # Máximo número de críticos; después lexicografía del ranking; finalmente duración.
-    ordenadas = sorted(elegibles.values(), key=lambda n: (n.clase_prioridad != 'critico', n.posicion, str(n.incidente_id)))
+    # Misma región factible para el comparador V5; solo cambia la selección.
+    ordenadas = sorted(elegibles.values(), key=(
+        (lambda n: (n.primera_deteccion_en, str(n.incidente_id))) if por_llegada else
+        (lambda n: (n.clase_prioridad != 'critico', n.posicion, str(n.incidente_id)))))
     dominante = 2 ** len(ordenadas)
-    pesos = {n.punto_atencion_id: (dominante if n.clase_prioridad == 'critico' else 0)
+    pesos = {n.punto_atencion_id: (dominante if not por_llegada and n.clase_prioridad == 'critico' else 0)
              + 2 ** (len(ordenadas) - i - 1) for i, n in enumerate(ordenadas)}
     max_coste = sum(max((c['coste'] for c in candidatas if c['ruta']['vehiculo_id'] == v.vehiculo_id), default=0)
                     for v in vehiculos) + 1
@@ -133,6 +135,11 @@ def _seleccionar(candidatas, elegibles, vehiculos, segundos):
 
 
 def solve_routes(entrada: SolicitudResolverRutas) -> PropuestaDistribucion:
+    """Tool operativa: críticos, ranking y duración; su firma y objetivo se conservan."""
+    return _resolver(entrada)
+
+
+def _resolver(entrada: SolicitudResolverRutas, *, por_llegada=False) -> PropuestaDistribucion:
     inicio = time.monotonic()
     s = SolicitudResolverRutas.model_validate(entrada.model_dump(mode='json'))
     if s.politica.estado != 'activa':
@@ -188,7 +195,10 @@ def solve_routes(entrada: SolicitudResolverRutas) -> PropuestaDistribucion:
         if not completa or restante <= 0:
             estado = 'timeout_sin_solucion'
         elif candidatas:
-            seleccion, estado_cp = _seleccionar(candidatas, elegibles, vehiculos, restante)
+            if por_llegada:
+                seleccion, estado_cp = _seleccionar(candidatas, elegibles, vehiculos, restante, por_llegada=True)
+            else:
+                seleccion, estado_cp = _seleccionar(candidatas, elegibles, vehiculos, restante)
             if estado_cp == cp_model.UNKNOWN:
                 estado = 'timeout_sin_solucion'
             elif estado_cp not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
@@ -253,8 +263,9 @@ def solve_routes(entrada: SolicitudResolverRutas) -> PropuestaDistribucion:
             for c in seleccion:
                 cargas[c['ruta']['vehiculo_id']] -= sum(_cantidad(elegibles[p].demanda_litros) for p in c['puntos'])
             codigo = 'sin_capacidad' if _cantidad(n.demanda_litros) > max(cargas.values(), default=0) else 'otro'
-            motivo = ('No cabe íntegramente en la capacidad restante de las rutas elegidas por prioridad.'
-                      if codigo == 'sin_capacidad' else 'Tiene rutas individuales factibles; queda fuera de la combinación elegida por prioridad y restricciones conjuntas. No implica imposibilidad individual.')
+            criterio = 'antigüedad del incidente' if por_llegada else 'prioridad'
+            motivo = (f'No cabe íntegramente en la capacidad restante de las rutas elegidas por {criterio}.'
+                      if codigo == 'sin_capacidad' else f'Tiene rutas individuales factibles; queda fuera de la combinación elegida por {criterio} y restricciones conjuntas. No implica imposibilidad individual.')
         pendientes.append(dict(incidente_id=n.incidente_id, punto_atencion_id=pid, clase_prioridad=n.clase_prioridad,
                                demanda_pendiente_litros=n.demanda_litros, codigo=codigo, motivo=motivo))
     bloqueos = ['Sin verificación independiente ni aprobación autorizada de esta versión.',
@@ -273,7 +284,8 @@ def solve_routes(entrada: SolicitudResolverRutas) -> PropuestaDistribucion:
         rutas=[c['ruta'] for c in seleccion], no_atendidos=pendientes, verificacion=None, aprobacion=None,
         bloqueos_publicacion=bloqueos, supuestos=[
             'Una salida por vehículo, sin recargas ni entregas divididas; matriz dirigida por UUID y descarga completa dentro de ventana.',
-            'Objetivo: máximo número de críticos cubiertos, luego orden lexicográfico del ranking, luego mínima duración total de rutas.',
+            ('COMPARADOR EXPERIMENTAL V5: cobertura lexicográfica por primera detección e ID, luego mínima duración total; no prioriza clase ni puntaje.'
+             if por_llegada else 'Objetivo: máximo número de críticos cubiertos, luego orden lexicográfico del ranking, luego mínima duración total de rutas.'),
             'Óptimo demostrado para ese objetivo en este snapshot.' if optimo else 'No se declara optimalidad global de cobertura.',
             f'Matriz {s.matriz.matriz_version}, origen {s.matriz.origen}; no certifica acceso vial, recepción ni condiciones sanitarias.',
             'Cantidades exactas hasta mililitros; fechas y viajes con precisión de microsegundos.',
