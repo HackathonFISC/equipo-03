@@ -6,6 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 from postgrest.exceptions import APIError
 
+import api.servicios.reportes as servicio_reportes
 from api.dependencias import obtener_db, secreto_configurado
 from api.main import app
 from contratos.modelos import ReporteRegistrado
@@ -22,6 +23,7 @@ UNICAS = {
     "remitentes": ("canal", "identificador_externo"),
     "reportes": ("canal", "mensaje_externo_id"),
     "ejecuciones": ("clave_idempotencia",),
+    "destinos": ("canal", "identificador_externo"),
 }
 # Valores por defecto que pone la base en 0001_esquema.sql.
 DEFECTOS = {
@@ -38,6 +40,7 @@ COLUMNA_ID = {
     "reportes": "reporte_id",
     "ejecuciones": "ejecucion_id",
     "eventos": "evento_id",
+    "destinos": "destino_id",
 }
 
 
@@ -110,7 +113,7 @@ class Consulta:
 
 class BaseFalsa:
     def __init__(self):
-        self.tablas = {"remitentes": [], "reportes": [], "ejecuciones": [], "eventos": []}
+        self.tablas = {"remitentes": [], "reportes": [], "ejecuciones": [], "eventos": [], "destinos": []}
         self.error_proximo = None
         self.duplicado_proximo = None
         self.fila_oculta = None
@@ -403,3 +406,60 @@ def test_ejecucion_con_base_caida_responde_503(cliente, db):
     db.error_proximo = APIError({"message": "caída", "code": "XX000"})
     r = cliente.get(f"/ejecuciones/{uuid4()}")
     assert r.status_code == 503 and r.json()["codigo"] == "proveedor_no_disponible"
+
+
+# --- Destino de origen (chat) para las aclaraciones de V2 ---
+
+
+def test_grupo_crea_destino_sin_remitente(cliente, db):
+    cliente.post("/reportes", json=CUERPO, headers=CABECERA)
+    assert len(db.tablas["destinos"]) == 1
+    destino = db.tablas["destinos"][0]
+    assert destino["identificador_externo"] == "-1001"
+    assert destino["canal"] == "telegram"
+    assert destino["remitente_ref"] is None
+    assert "autorizado" not in destino  # queda en su valor por defecto (false)
+
+
+def test_chat_privado_asocia_el_destino_al_remitente(cliente, db):
+    cliente.post("/reportes", json=cuerpo(chat_id=111), headers=CABECERA)
+    destino = db.tablas["destinos"][0]
+    assert destino["remitente_ref"] == db.tablas["remitentes"][0]["remitente_ref"]
+
+
+def test_otra_persona_en_el_grupo_no_cambia_el_destino(cliente, db):
+    cliente.post("/reportes", json=CUERPO, headers=CABECERA)
+    antes = dict(db.tablas["destinos"][0])
+    r = cliente.post("/reportes", json=cuerpo(usuario_telegram_id=222, message_id=8), headers=CABECERA)
+    assert r.status_code == 201
+    assert len(db.tablas["destinos"]) == 1
+    assert db.tablas["destinos"][0] == antes
+    assert len(db.tablas["remitentes"]) == 2
+
+
+def test_carrera_al_crear_el_destino_reutiliza_el_existente(cliente, db):
+    existente = {
+        "destino_id": str(uuid4()), "canal": "telegram", "identificador_externo": "-1001",
+        "remitente_ref": None, "creado_en": "2026-10-16T18:00:00-05:00",
+    }
+    db.duplicado_proximo, db.fila_oculta = "destinos", existente
+    r = cliente.post("/reportes", json=CUERPO, headers=CABECERA)
+    assert r.status_code == 201
+    assert [d["destino_id"] for d in db.tablas["destinos"]] == [existente["destino_id"]]
+
+
+def test_destino_origen_no_se_guarda_sin_la_migracion(cliente, db):
+    cliente.post("/reportes", json=CUERPO, headers=CABECERA)
+    assert "destino_origen_id" not in db.tablas["reportes"][0]
+
+
+def test_destino_origen_se_guarda_con_la_migracion(cliente, db, monkeypatch):
+    monkeypatch.setattr(servicio_reportes, "GUARDAR_DESTINO_ORIGEN", True)
+    cliente.post("/reportes", json=CUERPO, headers=CABECERA)
+    assert db.tablas["reportes"][0]["destino_origen_id"] == db.tablas["destinos"][0]["destino_id"]
+
+
+def test_la_lista_no_expone_el_destino(cliente, db, monkeypatch):
+    monkeypatch.setattr(servicio_reportes, "GUARDAR_DESTINO_ORIGEN", True)
+    cliente.post("/reportes", json=CUERPO, headers=CABECERA)
+    assert "destino" not in json.dumps(cliente.get("/reportes").json())
