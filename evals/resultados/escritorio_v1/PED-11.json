@@ -1,0 +1,18 @@
+{
+  "id": "PED-11",
+  "estado": "pendiente",
+  "alcance": "integracion_controlada_pendiente",
+  "esperado": {
+    "observaciones": [],
+    "autorizacion_operativa": false,
+    "reportes": 2,
+    "episodios_esperados": 1,
+    "personas_del_episodio": 120,
+    "demanda_revisada_litros": 2000,
+    "sumar_cantidades_automaticamente": false
+  },
+  "obtenido": {
+    "motivo": "Caso de integración diseñado, no ejecutado; requiere proveedor/BD/Auth controlados."
+  },
+  "duracion_ms": 0
+}

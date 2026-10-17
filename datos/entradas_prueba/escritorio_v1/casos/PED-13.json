@@ -1,0 +1,289 @@
+{
+  "id": "PED-13",
+  "titulo": "Reserva utilizable desconocida",
+  "grupo": "demanda_prioridad",
+  "dataset_version": "h2oeste-escritorio-1",
+  "origen": "sintetico",
+  "contexto": {
+    "esquema_version": "1.0",
+    "ejecucion_id": "a9748efc-070a-5278-99b7-77f8d9581b82",
+    "creado_en": "2026-10-17T07:00:00-05:00",
+    "origen": "sintetico",
+    "datos_version": "h2oeste-escritorio-1:PED-13"
+  },
+  "base": {
+    "archivo": "base.json",
+    "sha256": "12b0b479fa51d0d5e6a1a5a817d8a67cc969de0b63a9d60d9196ddfc884e00f4"
+  },
+  "ambito_puntos": [
+    "P3"
+  ],
+  "mensajes": [
+    {
+      "reporte_id": "69bcf7b7-cd40-5437-a60e-013b68d36cb5",
+      "chat_id_ficticio": "-900000000013",
+      "mensaje_externo_id": "-900000000013:1",
+      "remitente_id_ficticio": "PERSONA-FICTICIA-1",
+      "recibido_en": "2026-10-17T07:00:00-05:00",
+      "origen": "sintetico",
+      "texto": "PRUEBA SINTÉTICA. En C.E.B.G. Burunga, Arraiján, llevamos 36 horas sin agua y somos 120 personas afectadas.",
+      "reply_a_pregunta_ficticia": null
+    }
+  ],
+  "revision_simulada": {
+    "motivo": "FIXTURE: revisión ficticia de escritorio.",
+    "politica_version": "oeste-prioridad-apoyo-pa-1-fixture-3",
+    "revisiones": [
+      {
+        "incidente_id": "d664b862-f440-5c2d-9544-92d259adfbba",
+        "version_incidente": 1,
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 120,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": null,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida."
+        },
+        "capacidad_recepcion_litros": 4350.0,
+        "clase_prioridad": "critico",
+        "ventana_atencion": {
+          "inicio": "2026-10-17T08:00:00-05:00",
+          "fin": "2026-10-17T12:00:00-05:00"
+        },
+        "vulnerabilidad": "alta",
+        "horas_sin_agua": 36.0,
+        "personas_atendidas": 120,
+        "ultima_atencion_confirmada_en": null
+      }
+    ]
+  },
+  "entradas_tools": {
+    "solicitudes_demanda": [
+      {
+        "esquema_version": "1.0",
+        "ejecucion_id": "a9748efc-070a-5278-99b7-77f8d9581b82",
+        "creado_en": "2026-10-17T07:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "d664b862-f440-5c2d-9544-92d259adfbba",
+        "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+        "datos_version": "h2oeste-escritorio-1:PED-13",
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 120,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": null,
+          "fuente": "Hipótesis domésticas sintéticas de parametros.json; no demanda institucional medida.",
+          "confirmacion": {
+            "usuario_id": "83b91faa-0af1-570c-b930-02d6ea98f6f3",
+            "confirmado_en": "2026-10-17T07:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO: revisión ficticia de escritorio, sin rol ni autorización real."
+          }
+        },
+        "capacidad_recepcion_litros": 4350.0,
+        "supuestos": [
+          "Cinco personas por familia es una hipótesis de tamaño de grupo, no promedio censal de Panamá Oeste.",
+          "20 L/persona/día durante un día para un ensayo de cobertura doméstica básica de emergencia; no cubre todo uso doméstico o institucional ni es una cuota legal panameña.",
+          "Reserva utilizable igual al agua almacenada solo por hipótesis de este ensayo; la calidad real no se ha comprobado.",
+          "Tanques nominales de 5000 L o banco equivalente de dos tanques de 5000 L. No se afirma que existan en estas instalaciones.",
+          "Margen de almacenamiento 5%, caudal de descarga 300 L/min y preparación 5 min son decisiones arbitrarias de modelado, no normas.",
+          "CASO FICTICIO: grupo con personas dependientes sin alternativa suficiente para obtener agua; no describe usuarios reales ni el uso institucional de la instalación.",
+          "Grupos vecinales ficticios asociados a referencias documentales; no son mediciones o diagnósticos de las instalaciones."
+        ]
+      }
+    ],
+    "solicitud_rutas": {
+      "esquema_version": "1.0",
+      "ejecucion_id": "a9748efc-070a-5278-99b7-77f8d9581b82",
+      "creado_en": "2026-10-17T07:00:00-05:00",
+      "origen": "sintetico",
+      "plan_id": "e7e94cf0-d7a1-5765-be4b-6d679bf97cd7",
+      "version": 1,
+      "datos_version": "h2oeste-escritorio-1:PED-13",
+      "politica": {
+        "politica_version": "oeste-prioridad-apoyo-pa-1-fixture-3",
+        "estado": "activa",
+        "origen": "sintetico",
+        "peso_duracion": 0.4,
+        "peso_vulnerabilidad": 0.4,
+        "peso_poblacion": 0.2,
+        "tope_horas": 168.0,
+        "tope_personas": 500,
+        "vulnerabilidad_moderada": 0.5,
+        "fundamento": "Política técnica del proyecto apoyada en normativa panameña, no fórmula oficial del Estado. Críticos confirmados antes de generales. Puntaje intraclase: 40% vulnerabilidad confirmada, 40% tiempo sin suministro y 20% población efectivamente atendida. El antecedente operativo IDAAN/SERTV de 02-04-2026 respalda considerar dependencia sanitaria, sin imponer porcentajes. ASEP AN 1480-Agua y DGNTI-COPANIT 21-2019 con reforma 122/2021 orientan requisitos sanitarios fuera del puntaje; su control no está implementado por score_needs. Topes 168 horas y 500 personas y nivel moderado 0.5 son decisiones de escala del proyecto, sin carácter legal. Estado de propuesta para ensayo sintético; uso real requiere validación del operador y adaptación del contrato. Ver docs/politica_prioridad_oeste.md. Copia activa exclusivamente en fixture local con identidad ficticia.",
+        "confirmacion_activacion": {
+          "usuario_id": "83b91faa-0af1-570c-b930-02d6ea98f6f3",
+          "confirmado_en": "2026-10-17T07:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO: revisión ficticia de escritorio, sin rol ni autorización real."
+        },
+        "criticos_obligatorios": true,
+        "faltantes_fuera_ranking": true,
+        "orden_desempate": "ultima_atencion_luego_incidente_luego_id"
+      },
+      "deposito": {
+        "deposito_id": "b510bbba-5a8e-5778-9feb-209ac69fc88a",
+        "nombre": "Depósito ficticio del ensayo oeste-1.0; sin instalación acordada",
+        "ubicacion": {
+          "latitud": 8.9,
+          "longitud": -79.74,
+          "fuente": "escenario",
+          "precision_metros": null,
+          "representa_punto_atencion": null
+        },
+        "origen": "sintetico"
+      },
+      "vehiculos": [
+        {
+          "vehiculo_id": "cafb1a61-101b-5fda-98b3-c9b5c0d0468f",
+          "capacidad_litros": 10000.0,
+          "disponible": true,
+          "turno": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "origen": "sintetico"
+        },
+        {
+          "vehiculo_id": "f2c6a5ef-f9f3-5515-84c3-00fb0ba65210",
+          "capacidad_litros": 10000.0,
+          "disponible": true,
+          "turno": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "origen": "sintetico"
+        }
+      ],
+      "puntos": [
+        {
+          "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+          "sector_id": "8fa71373-37be-5929-9b54-f05fc04fb5d6",
+          "nombre": "C.E.B.G. Burunga",
+          "ubicacion": {
+            "latitud": 8.96713,
+            "longitud": -79.67437,
+            "fuente": "catalogo",
+            "precision_metros": null,
+            "representa_punto_atencion": null
+          },
+          "origen": "real"
+        }
+      ],
+      "necesidades": [
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "a9748efc-070a-5278-99b7-77f8d9581b82",
+          "creado_en": "2026-10-17T07:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "d664b862-f440-5c2d-9544-92d259adfbba",
+          "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+          "datos_version": "h2oeste-escritorio-1:PED-13",
+          "politica_version": "oeste-prioridad-apoyo-pa-1-fixture-3",
+          "estado_demanda": "pendiente",
+          "demanda_litros": null,
+          "metodo_demanda": "formula",
+          "confirmacion_demanda": {
+            "usuario_id": "83b91faa-0af1-570c-b930-02d6ea98f6f3",
+            "confirmado_en": "2026-10-17T07:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO: revisión ficticia de escritorio, sin rol ni autorización real."
+          },
+          "clase_prioridad": "critico",
+          "confirmacion_clase": {
+            "usuario_id": "83b91faa-0af1-570c-b930-02d6ea98f6f3",
+            "confirmado_en": "2026-10-17T07:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO: revisión ficticia de escritorio, sin rol ni autorización real."
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 36.0,
+          "personas_atendidas": 120,
+          "vulnerabilidad": "alta",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "83b91faa-0af1-570c-b930-02d6ea98f6f3",
+            "confirmado_en": "2026-10-17T07:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO: revisión ficticia de escritorio, sin rol ni autorización real."
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-17T07:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "prioridad_por_calcular"
+          ],
+          "supuestos": [
+            "Cinco personas por familia es una hipótesis de tamaño de grupo, no promedio censal de Panamá Oeste.",
+            "20 L/persona/día durante un día para un ensayo de cobertura doméstica básica de emergencia; no cubre todo uso doméstico o institucional ni es una cuota legal panameña.",
+            "Reserva utilizable igual al agua almacenada solo por hipótesis de este ensayo; la calidad real no se ha comprobado.",
+            "Tanques nominales de 5000 L o banco equivalente de dos tanques de 5000 L. No se afirma que existan en estas instalaciones.",
+            "Margen de almacenamiento 5%, caudal de descarga 300 L/min y preparación 5 min son decisiones arbitrarias de modelado, no normas.",
+            "CASO FICTICIO: grupo con personas dependientes sin alternativa suficiente para obtener agua; no describe usuarios reales ni el uso institucional de la instalación.",
+            "Grupos vecinales ficticios asociados a referencias documentales; no son mediciones o diagnósticos de las instalaciones."
+          ],
+          "requiere_revision_urgente": false
+        }
+      ],
+      "matriz": {
+        "matriz_version": "h2oeste-escritorio-1:PED-13:matriz",
+        "origen": "sintetico",
+        "nodos_ids": [
+          "b510bbba-5a8e-5778-9feb-209ac69fc88a",
+          "66597297-f57e-54ac-b7f1-7a66cc35253f"
+        ],
+        "minutos": [
+          [
+            0,
+            25
+          ],
+          [
+            25,
+            0
+          ]
+        ],
+        "descripcion": "Tabla manual inventada de 7×7 en minutos. No usa coordenadas para calcular tiempos, red vial, tráfico, velocidad ni proveedor externo; no valida acceso ni factibilidad física. El orden lo fijan nodos_ids; no incluye descarga."
+      },
+      "servicios": [
+        {
+          "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+          "descarga_minutos": 12
+        }
+      ],
+      "limite_solver_segundos": 5,
+      "recargas_permitidas": false,
+      "entregas_parciales_permitidas": false
+    }
+  },
+  "comprobacion": "local_tools",
+  "operacion_local": "necesidad",
+  "dependencias": [
+    "Sin red; funciones reales de cálculo y contratos."
+  ],
+  "condiciones_iniciales": {
+    "aislamiento": "Un estado nuevo por caso, sin registros de otros PED.",
+    "confirmaciones": "Ficticias; no cargar como autorizaciones en Supabase."
+  },
+  "pasos": [
+    "Restablecer el estado aislado del caso.",
+    "Separar datos del mensaje y revisión ficticia; no completar desconocidos.",
+    "Registrar obtenido y evidencia por etapa, sin sustituirlos por esperado."
+  ],
+  "esperado": {
+    "observaciones": [],
+    "autorizacion_operativa": false,
+    "estado_demanda": "pendiente",
+    "demanda_litros": null,
+    "estado_prioridad": "pendiente"
+  },
+  "obtenido": {
+    "estado": "no_ejecutado",
+    "evidencia": null
+  },
+  "limites": [
+    "Fixture sin autorización operativa ni envío real.",
+    "Resultado local no acredita cumplimiento integrado del caso oficial."
+  ]
+}

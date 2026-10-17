@@ -1,0 +1,16 @@
+{
+  "id": "PED-25",
+  "estado": "pendiente",
+  "alcance": "integracion_controlada_pendiente",
+  "esperado": {
+    "observaciones": [],
+    "autorizacion_operativa": false,
+    "http": 403,
+    "codigo": "sin_permiso",
+    "escrituras": 0
+  },
+  "obtenido": {
+    "motivo": "Caso de integración diseñado, no ejecutado; requiere proveedor/BD/Auth controlados."
+  },
+  "duracion_ms": 0
+}

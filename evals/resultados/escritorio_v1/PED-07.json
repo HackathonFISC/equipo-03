@@ -1,0 +1,16 @@
+{
+  "id": "PED-07",
+  "estado": "pendiente",
+  "alcance": "integracion_controlada_pendiente",
+  "esperado": {
+    "observaciones": [],
+    "autorizacion_operativa": false,
+    "ubicacion_inicial": "ambigua",
+    "ubicacion_tras_reply": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+    "reply_requiere_mismo_chat_y_remitente": true
+  },
+  "obtenido": {
+    "motivo": "Caso de integración diseñado, no ejecutado; requiere proveedor/BD/Auth controlados."
+  },
+  "duracion_ms": 0
+}

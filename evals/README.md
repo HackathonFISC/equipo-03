@@ -2,6 +2,13 @@
 
 **Dueño:** José
 
+Dataset de escritorio: [30 casos PED](../datos/entradas_prueba/escritorio_v1/README.md),
+con mensajes, revisión ficticia y esperado. `python -m evals.escritorio --validar`
+comprueba todos los casos; `python -m evals.escritorio --salida CARPETA_NUEVA`
+ejecuta 18 comprobaciones de tools y conserva 12 pendientes de integración.
+Los resultados se escriben separados de las entradas; código 2 significa pendiente,
+no fallo de las tools ni cierre de los treinta casos.
+
 `ejecutar.py` reúne las pruebas de contratos, cálculo, servicios compartidos,
 API, bot, agentes, geografía, orquestador y las evaluaciones independientes.
 `metricas.py` separa aprobados, fallidos, errores y pendientes con denominadores

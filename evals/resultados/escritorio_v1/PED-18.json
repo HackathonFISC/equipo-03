@@ -1,0 +1,15 @@
+{
+  "id": "PED-18",
+  "estado": "aprobado",
+  "alcance": "local_tools",
+  "esperado": {
+    "observaciones": [],
+    "autorizacion_operativa": false,
+    "error_dominio": "politica_no_activa",
+    "activacion_automatica": false
+  },
+  "obtenido": {
+    "error_dominio": "politica_no_activa"
+  },
+  "duracion_ms": 1
+}

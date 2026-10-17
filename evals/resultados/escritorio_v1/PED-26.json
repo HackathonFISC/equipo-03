@@ -1,0 +1,16 @@
+{
+  "id": "PED-26",
+  "estado": "pendiente",
+  "alcance": "integracion_controlada_pendiente",
+  "esperado": {
+    "observaciones": [],
+    "autorizacion_operativa": false,
+    "cierres_comunicacion": 1,
+    "avisos_distintos": 6,
+    "duplicados": 0
+  },
+  "obtenido": {
+    "motivo": "Caso de integración diseñado, no ejecutado; requiere proveedor/BD/Auth controlados."
+  },
+  "duracion_ms": 0
+}

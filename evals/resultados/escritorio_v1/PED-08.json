@@ -1,0 +1,16 @@
+{
+  "id": "PED-08",
+  "estado": "pendiente",
+  "alcance": "integracion_controlada_pendiente",
+  "esperado": {
+    "observaciones": [],
+    "autorizacion_operativa": false,
+    "personas_extraidas": null,
+    "demanda_por_formula": null,
+    "requiere_aclaracion": true
+  },
+  "obtenido": {
+    "motivo": "Caso de integración diseñado, no ejecutado; requiere proveedor/BD/Auth controlados."
+  },
+  "duracion_ms": 0
+}

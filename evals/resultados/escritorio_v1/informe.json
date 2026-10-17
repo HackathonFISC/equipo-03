@@ -1,0 +1,179 @@
+{
+  "esquema": "escritorio-resultados-1",
+  "dataset_version": "h2oeste-escritorio-1",
+  "registrado_en": "2026-10-17T13:50:48.008863+00:00",
+  "origen": "sintetico",
+  "indice_sha256": "83c412721dae7496724fb8f6d8041af651a38b5df784b5277283471678ab8779",
+  "base_sha256": "12b0b479fa51d0d5e6a1a5a817d8a67cc969de0b63a9d60d9196ddfc884e00f4",
+  "huellas_codigo": {
+    "evals/escritorio.py": "2aacb028d0c1aa9e8d622ef1a6ae44e244dd4e2a96ec9be211bff397401914ea",
+    "calculo/demanda.py": "8714805e82fda3090976d98e742ac0316b805de8f3c20e07874a10549383e00f",
+    "calculo/prioridad.py": "75e1a28974f91f65ff7429e00f1e9716736c4ecc1064b4c1d23f9bd9a5cd1270",
+    "calculo/solver_v3.py": "7bf0b4ec7b87dcaab17af9917a258e797e5ba50f395240e7cd708c498e8ad802",
+    "calculo/verificador.py": "d39008a7a73273d8027b0afcd08d3848eecb45fce26401212e3ab93ae27af39c"
+  },
+  "cierre_integrado": false,
+  "resumen": {
+    "total": 30,
+    "ejecutados": 18,
+    "aprobado": 18,
+    "error": 0,
+    "fallido": 0,
+    "pendiente": 12,
+    "cobertura_ejecucion": 0.6,
+    "tasa_exito_ejecutados": 1.0,
+    "proporcion_aprobada_total": 0.6
+  },
+  "casos": [
+    {
+      "id": "PED-01",
+      "estado": "aprobado",
+      "evidencia": "PED-01.json"
+    },
+    {
+      "id": "PED-02",
+      "estado": "aprobado",
+      "evidencia": "PED-02.json"
+    },
+    {
+      "id": "PED-03",
+      "estado": "aprobado",
+      "evidencia": "PED-03.json"
+    },
+    {
+      "id": "PED-04",
+      "estado": "aprobado",
+      "evidencia": "PED-04.json"
+    },
+    {
+      "id": "PED-05",
+      "estado": "aprobado",
+      "evidencia": "PED-05.json"
+    },
+    {
+      "id": "PED-06",
+      "estado": "aprobado",
+      "evidencia": "PED-06.json"
+    },
+    {
+      "id": "PED-07",
+      "estado": "pendiente",
+      "evidencia": "PED-07.json"
+    },
+    {
+      "id": "PED-08",
+      "estado": "pendiente",
+      "evidencia": "PED-08.json"
+    },
+    {
+      "id": "PED-09",
+      "estado": "pendiente",
+      "evidencia": "PED-09.json"
+    },
+    {
+      "id": "PED-10",
+      "estado": "pendiente",
+      "evidencia": "PED-10.json"
+    },
+    {
+      "id": "PED-11",
+      "estado": "pendiente",
+      "evidencia": "PED-11.json"
+    },
+    {
+      "id": "PED-12",
+      "estado": "pendiente",
+      "evidencia": "PED-12.json"
+    },
+    {
+      "id": "PED-13",
+      "estado": "aprobado",
+      "evidencia": "PED-13.json"
+    },
+    {
+      "id": "PED-14",
+      "estado": "aprobado",
+      "evidencia": "PED-14.json"
+    },
+    {
+      "id": "PED-15",
+      "estado": "aprobado",
+      "evidencia": "PED-15.json"
+    },
+    {
+      "id": "PED-16",
+      "estado": "aprobado",
+      "evidencia": "PED-16.json"
+    },
+    {
+      "id": "PED-17",
+      "estado": "aprobado",
+      "evidencia": "PED-17.json"
+    },
+    {
+      "id": "PED-18",
+      "estado": "aprobado",
+      "evidencia": "PED-18.json"
+    },
+    {
+      "id": "PED-19",
+      "estado": "aprobado",
+      "evidencia": "PED-19.json"
+    },
+    {
+      "id": "PED-20",
+      "estado": "aprobado",
+      "evidencia": "PED-20.json"
+    },
+    {
+      "id": "PED-21",
+      "estado": "aprobado",
+      "evidencia": "PED-21.json"
+    },
+    {
+      "id": "PED-22",
+      "estado": "aprobado",
+      "evidencia": "PED-22.json"
+    },
+    {
+      "id": "PED-23",
+      "estado": "aprobado",
+      "evidencia": "PED-23.json"
+    },
+    {
+      "id": "PED-24",
+      "estado": "aprobado",
+      "evidencia": "PED-24.json"
+    },
+    {
+      "id": "PED-25",
+      "estado": "pendiente",
+      "evidencia": "PED-25.json"
+    },
+    {
+      "id": "PED-26",
+      "estado": "pendiente",
+      "evidencia": "PED-26.json"
+    },
+    {
+      "id": "PED-27",
+      "estado": "pendiente",
+      "evidencia": "PED-27.json"
+    },
+    {
+      "id": "PED-28",
+      "estado": "pendiente",
+      "evidencia": "PED-28.json"
+    },
+    {
+      "id": "PED-29",
+      "estado": "pendiente",
+      "evidencia": "PED-29.json"
+    },
+    {
+      "id": "PED-30",
+      "estado": "pendiente",
+      "evidencia": "PED-30.json"
+    }
+  ]
+}
