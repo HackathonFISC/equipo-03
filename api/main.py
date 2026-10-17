@@ -4,7 +4,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.errores_http import ErrorApi, respuesta_error
-from api.rutas import aclaraciones, avisos, ejecuciones, incidentes, planes, reportes, sesion
+from api.rutas import aclaraciones, avisos, ejecuciones, incidentes, planes, reportes, sectores, sesion
 from contratos.errores import CodigoError
 from orquestador.servicio import ciclo_vida_agentes
 
@@ -54,6 +54,7 @@ app.include_router(avisos.router)
 app.include_router(incidentes.router)
 app.include_router(sesion.router)
 app.include_router(planes.router)
+app.include_router(sectores.router)
 
 
 @app.get("/salud")

@@ -20,7 +20,7 @@ from dotenv import dotenv_values
 from fastapi import Depends, Header
 from postgrest.exceptions import APIError
 
-from api.dependencias import obtener_db
+from api.dependencias import obtener_db, secreto_configurado, verificar_secreto_bot
 from api.errores_http import ErrorApi
 from comun.config import RAIZ_PROYECTO, ErrorConfiguracion, cargar_configuracion
 from contratos.errores import CodigoError
@@ -166,3 +166,31 @@ def coordinador_actual(
     if not fila or fila.get("rol") != "coordinador" or fila.get("activo") is not True:
         raise ErrorApi(CodigoError.SIN_PERMISO, "Solo un coordinador activo puede hacer esto.")
     return usuario
+
+
+def verificador_opcional() -> VerificadorSupabase | None:
+    """El verificador si está configurado; None si no. Permite que una ruta acepte también el secreto del bot."""
+    try:
+        return obtener_verificador()
+    except ErrorApi:
+        return None
+
+
+def sesion_o_bot(
+    x_secreto_bot: str | None = Header(default=None),
+    authorization: str | None = Header(default=None),
+    secreto: str = Depends(secreto_configurado),
+    verificador: VerificadorSupabase | None = Depends(verificador_opcional),
+) -> None:
+    """Lecturas que puede pedir el panel (con sesión válida) o el bot (con su secreto). No identifica a nadie."""
+    if x_secreto_bot is not None:
+        verificar_secreto_bot(x_secreto_bot, secreto)
+        return
+    token = extraer_token(authorization)
+    if verificador is None:
+        raise ErrorApi(
+            CodigoError.PROVEEDOR_NO_DISPONIBLE,
+            "La API no tiene configurada la verificación de sesiones (SUPABASE_URL y SUPABASE_ANON_KEY).",
+            recuperable=True,
+        )
+    verificador.usuario_id(token)
