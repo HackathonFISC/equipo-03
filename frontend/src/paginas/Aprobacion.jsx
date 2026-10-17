@@ -4,6 +4,9 @@ import { iniciarSondeo } from '../api/sondeo.js'
 import { limpiarSesion, obtenerSesion } from '../api/sesion.js'
 import ComunicacionSector from './ComunicacionSector.jsx'
 import './Aprobacion.css'
+import { useBorrador } from '../useBorrador.js'
+import { useQuitados } from '../useQuitados.js'
+import { BarraQuitados, BotonQuitar } from '../componentes/Quitar.jsx'
 
 const ESTADOS = {
   calculando: 'Calculando',
@@ -54,8 +57,9 @@ function Rutas({ rutas }) {
 }
 
 function Decision({ plan, alDecidir }) {
-  const [reconocidos, setReconocidos] = useState([])
-  const [motivo, setMotivo] = useState('')
+  const borrador = `aprobacion.${plan.plan_id}:${plan.version}`
+  const [reconocidos, setReconocidos] = useBorrador(`${borrador}.reconocidos`, [])
+  const [motivo, setMotivo] = useBorrador(`${borrador}.motivo`, '')
   const [confirmando, setConfirmando] = useState(false)
   const [trabajando, setTrabajando] = useState(false)
   const [error, setError] = useState(null)
@@ -74,6 +78,8 @@ function Decision({ plan, alDecidir }) {
     setError(null)
     try {
       await accion()
+      setMotivo('')
+      setReconocidos([])
       alDecidir()
     } catch (e) {
       setError(e.message)
@@ -124,7 +130,7 @@ function Decision({ plan, alDecidir }) {
   )
 }
 
-function TarjetaPlan({ plan, puedeDecidir, alDecidir }) {
+function TarjetaPlan({ plan, puedeDecidir, alDecidir, alQuitar }) {
   return (
     <article className={`aprob-plan aprob-plan-${plan.estado}`}>
       <header>
@@ -154,6 +160,9 @@ function TarjetaPlan({ plan, puedeDecidir, alDecidir }) {
       {plan.estado === 'pendiente_revision' && !puedeDecidir && (
         <p className="aprob-suave">Tu cuenta no es coordinador activo: puedes ver el plan, no decidirlo.</p>
       )}
+      <div className="quitar-fila">
+        <BotonQuitar tipo="plan" nombre={`Plan ${plan.plan_id.slice(0, 8)}, versión ${plan.version}`} alConfirmar={alQuitar} />
+      </div>
     </article>
   )
 }
@@ -164,6 +173,7 @@ function Aprobacion({ conSesion, alExpirar }) {
   const [planes, setPlanes] = useState(null)
   const [error, setError] = useState(null)
   const [recarga, setRecarga] = useState(0)
+  const { quitados, quitar, restaurarTodos } = useQuitados('plan')
 
   useEffect(() => {
     if (!conSesion) return undefined
@@ -187,8 +197,11 @@ function Aprobacion({ conSesion, alExpirar }) {
   }, [conSesion, recarga, alExpirar])
 
 
-  const ordenados = planes === null ? null : [...planes].sort((a, b) => Number(b.estado === 'pendiente_revision') - Number(a.estado === 'pendiente_revision'))
-  const pendientes = planes === null ? 0 : planes.filter((p) => p.estado === 'pendiente_revision').length
+  const clavePlan = (p) => `${p.plan_id}:${p.version}`
+  const vigentes = planes === null ? null : planes.filter((p) => !quitados.has(clavePlan(p)))
+  const cantidadQuitados = planes === null ? 0 : planes.length - vigentes.length
+  const ordenados = vigentes === null ? null : [...vigentes].sort((a, b) => Number(b.estado === 'pendiente_revision') - Number(a.estado === 'pendiente_revision'))
+  const pendientes = vigentes === null ? 0 : vigentes.filter((p) => p.estado === 'pendiente_revision').length
 
   if (!conSesion) {
     return (
@@ -213,12 +226,17 @@ function Aprobacion({ conSesion, alExpirar }) {
       {error && <p className="aprob-error" role="alert">{error}</p>}
       {planes === null && !error && <p className="aprob-suave">Cargando planes…</p>}
       {planes !== null && planes.length === 0 && <p className="aprob-suave">Todavía no hay planes guardados.</p>}
+      <BarraQuitados
+        cantidad={cantidadQuitados} unidad="plan" plural="planes" alMostrar={restaurarTodos}
+        nota="Un plan quitado sigue vigente: solo se oculta aquí."
+      />
       {ordenados?.map((plan) => (
         <TarjetaPlan
           key={`${plan.plan_id}-${plan.version}`}
           plan={plan}
           puedeDecidir={sesion?.es_coordinador === true}
           alDecidir={() => setRecarga((n) => n + 1)}
+          alQuitar={() => quitar(clavePlan(plan))}
         />
       ))}
       {sesion?.es_coordinador === true && planes !== null && <ComunicacionSector planes={planes} />}

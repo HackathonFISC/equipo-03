@@ -3,6 +3,8 @@ import { obtenerNecesidades, USAR_EJEMPLOS_NECESIDADES } from '../api/necesidade
 import { iniciarSondeo } from '../api/sondeo.js'
 import FormularioRevision from './FormularioRevision.jsx'
 import './Necesidades.css'
+import { useQuitados } from '../useQuitados.js'
+import { BarraQuitados, BotonQuitar } from '../componentes/Quitar.jsx'
 
 // Urgencia y confianza se muestran por separado (documento de versiones, V2):
 // la urgencia sale del puntaje de prioridad; la confianza, de la consolidación del incidente.
@@ -184,7 +186,7 @@ function Confianza({ incidente }) {
   )
 }
 
-function TarjetaNecesidad({ item }) {
+function TarjetaNecesidad({ item, alQuitar }) {
   const { punto } = item
   const evaluacion = item.evaluacion_necesidad
   const recalculo = requiereRecalculo(item)
@@ -255,6 +257,9 @@ function TarjetaNecesidad({ item }) {
           {evaluacion && `; política ${evaluacion.politica_version}, versión de datos ${evaluacion.datos_version}`}.
         </p>
       </details>
+      <div className="quitar-fila">
+        <BotonQuitar tipo="incidente" nombre={punto?.nombre ?? 'Lugar sin identificar'} alConfirmar={alQuitar} />
+      </div>
     </li>
   )
 }
@@ -323,13 +328,16 @@ export default function Necesidades({ conSesion }) {
   }
 
   // El orden lo decide el cálculo (posición); la página no reordena por su cuenta.
+  const { quitados, quitar, restaurarTodos } = useQuitados('incidente')
+  const cantidadQuitados = items.filter((i) => quitados.has(i.incidente_id)).length
   const { enOrden, pendientes } = useMemo(() => {
-    const calculadas = items
+    const vigentes = items.filter((i) => !quitados.has(i.incidente_id))
+    const calculadas = vigentes
       .filter((i) => i.evaluacion_necesidad?.estado_prioridad === 'calculada')
       .sort((a, b) => a.evaluacion_necesidad.posicion - b.evaluacion_necesidad.posicion)
-    const sinPuntaje = items.filter((i) => i.evaluacion_necesidad?.estado_prioridad !== 'calculada')
+    const sinPuntaje = vigentes.filter((i) => i.evaluacion_necesidad?.estado_prioridad !== 'calculada')
     return { enOrden: calculadas, pendientes: sinPuntaje }
-  }, [items])
+  }, [items, quitados])
 
   return (
     <section className="necesidades" aria-labelledby="titulo-necesidades">
@@ -388,12 +396,19 @@ export default function Necesidades({ conSesion }) {
         </p>
       )}
 
+      {!cargando && !error && (
+        <BarraQuitados
+          cantidad={cantidadQuitados} unidad="incidente" plural="incidentes" alMostrar={restaurarTodos}
+          nota="La revisión de prioridad sigue incluyéndolos: el cálculo necesita todos los puntos."
+        />
+      )}
+
       {!cargando && !error && enOrden.length > 0 && (
         <>
           <h2 className="grupo-titulo">Orden de atención</h2>
           <ol className="lista-necesidades">
             {enOrden.map((item) => (
-              <TarjetaNecesidad key={item.incidente_id} item={item} />
+              <TarjetaNecesidad key={item.incidente_id} item={item} alQuitar={() => quitar(item.incidente_id)} />
             ))}
           </ol>
         </>
@@ -409,7 +424,7 @@ export default function Necesidades({ conSesion }) {
           {conSesion && <a className="cuenta-cta" href="#revision" onClick={(e) => { e.preventDefault(); document.getElementById('revision')?.scrollIntoView({ behavior: 'smooth' }) }}>Confirmar estos datos</a>}
           <ul className="lista-necesidades">
             {pendientes.map((item) => (
-              <TarjetaNecesidad key={item.incidente_id} item={item} />
+              <TarjetaNecesidad key={item.incidente_id} item={item} alQuitar={() => quitar(item.incidente_id)} />
             ))}
           </ul>
         </>

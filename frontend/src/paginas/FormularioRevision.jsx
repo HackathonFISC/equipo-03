@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { consultarEtapa, listarPoliticas, prepararPriorizacion } from '../api/priorizacion.js'
+import { lugaresDelAmbito, razonDeLugar, SIN_LUGAR } from './lugares.js'
 import './FormularioRevision.css'
+import { useBorrador } from '../useBorrador.js'
 
 // Estados en los que la RPC acepta un lote (ra_preparar_priorizacion_v2).
 const ESTADOS_ACEPTADOS = ['pendiente', 'ejecutando', 'espera_validacion', 'espera_revision']
@@ -124,7 +126,9 @@ function Opciones({ nombre, valor, opciones, alCambiar, ayudaId }) {
   )
 }
 
-function EstadoPunto({ incluir, faltan, problemas }) {
+function EstadoPunto({ incluir, faltan, problemas, lugar }) {
+  // El lugar bloquea el envío de todo el ámbito, esté el punto marcado o no.
+  if (lugar) return <span className="rev-chip rev-chip-error">{lugar === SIN_LUGAR ? 'Falta el lugar' : 'Lugar repetido'}</span>
   if (!incluir) return <span className="rev-chip rev-chip-neutro">No se revisará</span>
   if (problemas.length > 0) return <span className="rev-chip rev-chip-error">Hay que corregir</span>
   if (faltan.length === 0) return <span className="rev-chip rev-chip-ok">Completo</span>
@@ -132,7 +136,7 @@ function EstadoPunto({ incluir, faltan, problemas }) {
   return <span className="rev-chip rev-chip-aviso">{hechos} de {TOTAL_DATOS} datos</span>
 }
 
-function PuntoRevision({ item, valor, incluir, alCambiar, alIncluir }) {
+function PuntoRevision({ item, valor, incluir, alCambiar, alIncluir, problemaLugar }) {
   const id = item.incidente_id
   const base = `rev-${id.slice(0, 8)}`
   const faltan = faltantesDe(valor)
@@ -153,8 +157,16 @@ function PuntoRevision({ item, valor, incluir, alCambiar, alIncluir }) {
             <small>{lugar || 'Sin ubicación'} · Reporte {id.slice(0, 8)}</small>
           </span>
         </label>
-        <EstadoPunto incluir={incluir} faltan={faltan} problemas={problemas} />
+        <EstadoPunto incluir={incluir} faltan={faltan} problemas={problemas} lugar={problemaLugar} />
       </legend>
+
+      {problemaLugar && (
+        <p className="rev-aviso-lugar" role="alert">
+          {problemaLugar === SIN_LUGAR
+            ? 'Este reporte aún no tiene un lugar identificado. Hace falta saber a qué punto de atención corresponde antes de calcular el orden.'
+            : 'Otro incidente ya usa este mismo punto de atención. Consolida el episodio: no se suman ni se omiten.'}
+        </p>
+      )}
 
       {incluir && (
         <div className="rev-cuerpo">
@@ -247,10 +259,10 @@ export default function FormularioRevision({ items, calculo, alEnviar, alActuali
   const clave = useMemo(() => [...new Set(items.map((i) => i.ejecucion_id))].slice(0, 12).join(','), [items])
   const [ejecucion, setEjecucion] = useState({ estado: 'buscando' })
   const [politicas, setPoliticas] = useState({ estado: 'cargando', lista: [] })
-  const [politica, setPolitica] = useState('')
-  const [motivo, setMotivo] = useState('')
-  const [filas, setFilas] = useState({})
-  const [excluidos, setExcluidos] = useState({})
+  const [politica, setPolitica] = useBorrador('revision.politica', '')
+  const [motivo, setMotivo] = useBorrador('revision.motivo', '')
+  const [filas, setFilas] = useBorrador('revision.filas', {})
+  const [excluidos, setExcluidos] = useBorrador('revision.excluidos', {})
   const [envio, setEnvio] = useState({ estado: 'libre' })
 
   // Busca una ejecución que acepte el lote: etapa priorización y un estado que la RPC admita.
@@ -293,8 +305,12 @@ export default function FormularioRevision({ items, calculo, alEnviar, alActuali
   const conProblemas = incluidos.filter((i) => problemasDe(filaDe(i.incidente_id)).length > 0)
   const incompletos = incluidos.filter((i) => faltantesDe(filaDe(i.incidente_id)).length > 0)
 
+  const lugares = useMemo(() => lugaresDelAmbito(items), [items])
+  const razonLugar = razonDeLugar(lugares)
+
   const razon = ejecucion.estado !== 'lista' ? 'Todavía no hay una ejecución lista para priorizar.'
-    : !politicaElegida ? 'Elige la política de prioridad.'
+    : razonLugar ? razonLugar
+      : !politicaElegida ? 'Elige la política de prioridad.'
       : !motivo.trim() ? 'Escribe el motivo de la revisión.'
         : conProblemas.length > 0 ? `Corrige ${conProblemas[0].punto?.nombre ?? 'un punto'} antes de enviar.`
           : null
@@ -380,7 +396,7 @@ export default function FormularioRevision({ items, calculo, alEnviar, alActuali
               {items.map((item) => (
                 <PuntoRevision
                   key={item.incidente_id} item={item} valor={filaDe(item.incidente_id)} incluir={incluido(item)}
-                  alCambiar={cambiar} alIncluir={alIncluir}
+                  alCambiar={cambiar} alIncluir={alIncluir} problemaLugar={lugares.problemas[item.incidente_id]}
                 />
               ))}
             </div>

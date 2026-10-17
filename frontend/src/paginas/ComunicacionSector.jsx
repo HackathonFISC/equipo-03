@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { configurarDestinoEnsayo, estadoSector, listarDestinos, listarSectores, seleccionarPlanSector } from '../api/sectores.js'
 import './ComunicacionSector.css'
+import { useBorrador } from '../useBorrador.js'
 
 const ESTADOS_SECTOR = {
   sin_plan_vigente: 'Sin plan vigente',
@@ -25,14 +26,14 @@ const ESTADOS_PUNTO = {
 
 function Sector({ planes, sectores }) {
   const aprobados = planes.filter((p) => p.estado === 'aprobado')
-  const [sectorId, setSectorId] = useState('')
+  const [sectorId, setSectorId] = useBorrador('comunicacion.sector', '')
   // Cada respuesta guarda el sector que se pidió: solo se muestra si sigue siendo el que está escrito.
   const [consulta, setConsulta] = useState(null)
   const [mensaje, setMensaje] = useState(null)
-  const [eleccion, setEleccion] = useState('')
-  const [motivo, setMotivo] = useState('')
+  const [eleccion, setEleccion] = useBorrador('comunicacion.eleccion', '')
+  const [motivo, setMotivo] = useBorrador('comunicacion.motivo', '')
   const [trabajando, setTrabajando] = useState(false)
-  const sectorActual = useRef('')
+  const sectorActual = useRef(sectorId.trim())
 
   const idSector = sectorId.trim()
   const sectorValido = idSector !== ''
@@ -128,7 +129,7 @@ function Sector({ planes, sectores }) {
       )}
       <label>
         Plan aprobado
-        <select value={eleccion} onChange={(e) => setEleccion(e.target.value)} disabled={aprobados.length === 0}>
+        <select value={plan ? eleccion : ''} onChange={(e) => setEleccion(e.target.value)} disabled={aprobados.length === 0}>
           <option value="">{aprobados.length === 0 ? 'No hay planes aprobados' : 'Elige un plan'}</option>
           {aprobados.map((p) => (
             <option key={`${p.plan_id}:${p.version}`} value={`${p.plan_id}:${p.version}`}>
@@ -163,8 +164,8 @@ function estadoEnsayo(destino) {
 }
 
 function Destino({ destinos, alCambiar }) {
-  const [destinoId, setDestinoId] = useState('')
-  const [motivo, setMotivo] = useState('')
+  const [destinoId, setDestinoId] = useBorrador('comunicacion.destino', '')
+  const [motivo, setMotivo] = useBorrador('comunicacion.destino_motivo', '')
   const [trabajando, setTrabajando] = useState(false)
   const [error, setError] = useState(null)
   const [resultado, setResultado] = useState(null)
@@ -179,6 +180,7 @@ function Destino({ destinos, alCambiar }) {
     try {
       const r = await configurarDestinoEnsayo(destinoId, habilitado, motivo.trim())
       setResultado(r.habilitado ? 'Destino de ensayo habilitado.' : 'Destino de ensayo deshabilitado.')
+      setMotivo('')
       alCambiar()
     } catch (e) {
       setError(e.message)
@@ -196,7 +198,7 @@ function Destino({ destinos, alCambiar }) {
       </p>
       <label>
         Destino
-        <select value={destinoId} onChange={(e) => { setDestinoId(e.target.value); setResultado(null) }} disabled={destinos.length === 0}>
+        <select value={destino ? destinoId : ''} onChange={(e) => { setDestinoId(e.target.value); setResultado(null) }} disabled={destinos.length === 0}>
           <option value="">{destinos.length === 0 ? 'No hay destinos de Telegram' : 'Elige un destino'}</option>
           {destinos.map((d) => (
             <option key={d.destino_id} value={d.destino_id}>

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import RutaLocalizada from './RutaLocalizada.jsx'
 import { obtenerPlanes, USAR_EJEMPLOS_PLANES } from '../api/planes.js'
 import './Plan.css'
+import { useQuitados } from '../useQuitados.js'
+import { BarraQuitados, BotonQuitar } from '../componentes/Quitar.jsx'
 
 const ESTADO_PLAN = {
   calculando: 'Calculando',
@@ -213,7 +215,7 @@ function Pendientes({ plan }) {
   )
 }
 
-function TarjetaPlan({ plan }) {
+function TarjetaPlan({ plan, alQuitar }) {
   const factible = plan.estado_solver === 'factible'
   const paradas = plan.rutas.flatMap((r) => r.paradas)
   const litros = paradas.reduce((suma, p) => suma + p.litros_asignados, 0)
@@ -299,6 +301,9 @@ function TarjetaPlan({ plan }) {
         {ORIGEN[plan.origen] ?? plan.origen} ({plan.datos_version}), política {plan.politica_version}
         {huella && <>, huella de entradas {huella.split('=')[1].slice(0, 12)}</>}.
       </p>
+      <div className="quitar-fila">
+        <BotonQuitar tipo="plan" nombre={`Plan versión ${plan.version}`} alConfirmar={alQuitar} />
+      </div>
     </article>
   )
 }
@@ -309,6 +314,10 @@ export default function Plan() {
   const [error, setError] = useState(null)
   const [sinSesion, setSinSesion] = useState(false)
   const [intento, setIntento] = useState(0)
+  const { quitados, quitar, restaurarTodos } = useQuitados('plan')
+  const clavePlan = (p) => `${p.plan_id}:${p.version}`
+  const vigentes = planes.filter((p) => !quitados.has(clavePlan(p)))
+  const cantidadQuitados = planes.length - vigentes.length
 
   useEffect(() => {
     let cancelado = false
@@ -382,10 +391,12 @@ export default function Plan() {
         <p className="mensaje">Todavía no hay planes. Aparecerán cuando se calcule una propuesta.</p>
       )}
 
-      {!cargando && !error && planes.length > 0 && (
+      {!cargando && !error && <BarraQuitados cantidad={cantidadQuitados} unidad="plan" plural="planes" alMostrar={restaurarTodos} />}
+
+      {!cargando && !error && vigentes.length > 0 && (
         <div className="lista-planes">
-          {planes.map((p) => (
-            <TarjetaPlan key={`${p.plan_id}-${p.version}-${p.ejemplo ?? ''}`} plan={p} />
+          {vigentes.map((p) => (
+            <TarjetaPlan key={`${p.plan_id}-${p.version}-${p.ejemplo ?? ''}`} plan={p} alQuitar={() => quitar(clavePlan(p))} />
           ))}
         </div>
       )}

@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { obtenerEjecucion, obtenerReportes, USAR_EJEMPLOS } from '../api/reportes.js'
 import { iniciarSondeo } from '../api/sondeo.js'
 import './Reportes.css'
+import { useBorrador } from '../useBorrador.js'
+import { useQuitados } from '../useQuitados.js'
+import { BarraQuitados, BotonQuitar } from '../componentes/Quitar.jsx'
 
 // Estado que ve la persona operadora. Se deriva de la interpretación;
 // el contrato no guarda un campo "estado" para los reportes.
@@ -158,7 +161,7 @@ function Seguimiento({ ejecucionId, seguimiento, traza, onReintentar }) {
   )
 }
 
-function FilaReporte({ item }) {
+function FilaReporte({ item, alQuitar }) {
   const { registrado, interpretado, seguimiento, localizacion_resuelta: localizacion } = item
   const ubicacion = item.ubicacion_reportada ?? localizacion?.ubicacion
   const esGoogle = ubicacion?.fuente === 'geocodificada'
@@ -269,23 +272,29 @@ function FilaReporte({ item }) {
           </p>
         </div>
       </details>
+      <div className="quitar-fila">
+        <BotonQuitar tipo="reporte" nombre={registrado.entrada.texto.slice(0, 160)} alConfirmar={alQuitar} />
+      </div>
     </li>
   )
 }
 
 export default function Reportes() {
-  const [reportes, setReportes] = useState([])
+  const [recibidos, setReportes] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
   const [sinSesion, setSinSesion] = useState(false)
-  const [filtro, setFiltro] = useState('todos')
+  const [filtro, setFiltro] = useBorrador('reportes.filtro', 'todos')
   const [intento, setIntento] = useState(0)
-  const [rango, setRango] = useState('todo')
-  const [desde, setDesde] = useState('')
-  const [hasta, setHasta] = useState('')
-  const [orden, setOrden] = useState('recientes')
+  const [rango, setRango] = useBorrador('reportes.rango', 'todo')
+  const [desde, setDesde] = useBorrador('reportes.desde', '')
+  const [hasta, setHasta] = useBorrador('reportes.hasta', '')
+  const [orden, setOrden] = useBorrador('reportes.orden', 'recientes')
   // "Ahora" se refresca con cada consulta, para que "Últimos 15 min" se mueva solo.
   const [ahora, setAhora] = useState(() => Date.now())
+  const { quitados, quitar, restaurarTodos } = useQuitados('reporte')
+  const reportes = useMemo(() => recibidos.filter((r) => !quitados.has(r.registrado.reporte_id)), [recibidos, quitados])
+  const cantidadQuitados = recibidos.length - reportes.length
 
   useEffect(() => {
     return iniciarSondeo(obtenerReportes, {
@@ -421,18 +430,22 @@ export default function Reportes() {
         </div>
       )}
 
+      {!cargando && !error && <BarraQuitados cantidad={cantidadQuitados} unidad="reporte" plural="reportes" alMostrar={restaurarTodos} />}
+
       {!cargando && !error && visibles.length === 0 && (
         <p className="mensaje">
-          {reportes.length === 0
+          {recibidos.length === 0
             ? 'Todavía no hay reportes. Aparecerán aquí cuando alguien escriba al bot.'
-            : 'Ningún reporte coincide con los filtros elegidos. Prueba con otra hora o quita los filtros.'}
+            : reportes.length === 0
+              ? 'Quitaste todos los reportes de este panel. Muéstralos de nuevo si los necesitas.'
+              : 'Ningún reporte coincide con los filtros elegidos. Prueba con otra hora o quita los filtros.'}
         </p>
       )}
 
       {!cargando && !error && visibles.length > 0 && (
         <ul className="lista">
           {visibles.map((item) => (
-            <FilaReporte key={item.registrado.reporte_id} item={item} />
+            <FilaReporte key={item.registrado.reporte_id} item={item} alQuitar={() => quitar(item.registrado.reporte_id)} />
           ))}
         </ul>
       )}
