@@ -1,4 +1,4 @@
-"""Validación humana del lugar de un incidente (migración 0018, RPC ra_validar_lugar_v1).
+"""Validación humana del lugar de un incidente (migración 0020, RPC ra_validar_lugar_v1).
 
 La decisión ocurre dentro de la RPC, en una transacción: coordinador activo, versión vigente, punto con
 ubicación, evidencia escrita y un evento de auditoría. Aquí solo se traducen sus errores a los códigos
