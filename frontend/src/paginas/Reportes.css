@@ -1,0 +1,235 @@
+.reportes {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+.reportes-cabecera h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.reportes-cabecera p {
+  margin: 0 0 1.25rem;
+  color: var(--tinta-suave);
+}
+
+.aviso-ejemplos {
+  margin: 0 0 1.25rem;
+  padding: 0.6rem 0.8rem;
+  border-left: 4px solid var(--ambar);
+  background: var(--ambar-fondo);
+  font-size: 0.9rem;
+}
+
+/* Filtros */
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.filtro {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  background: var(--papel);
+  color: var(--tinta);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.filtro:hover {
+  border-color: var(--agua);
+}
+
+.filtro[aria-pressed='true'] {
+  background: var(--agua);
+  border-color: var(--agua);
+  color: #fff;
+}
+
+.filtro-conteo {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* Lista */
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.reporte {
+  --color-estado: var(--agua);
+  border: 1px solid var(--borde);
+  border-left: 6px solid var(--color-estado);
+  border-radius: 4px;
+  background: var(--papel);
+}
+
+.reporte[data-estado='aclaracion'] { --color-estado: var(--ambar); }
+.reporte[data-estado='sin_interpretar'] { --color-estado: var(--gris); }
+.reporte[data-estado='fuera_de_alcance'] { --color-estado: var(--ladrillo); }
+
+.reporte summary {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.reporte summary::-webkit-details-marker {
+  display: none;
+}
+
+.reporte summary:hover {
+  background: var(--fondo);
+}
+
+.reporte-texto {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.reporte-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+}
+
+.sello {
+  padding: 0.1rem 0.5rem;
+  border-radius: 3px;
+  background: var(--color-estado);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* Ficha expandida */
+.ficha {
+  padding: 0.25rem 1rem 1rem;
+  border-top: 1px dashed var(--borde);
+}
+
+.ficha-resumen {
+  margin: 0.8rem 0;
+}
+
+.campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.75rem 1.5rem;
+  margin: 0 0 1rem;
+}
+
+.campo dt {
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+.campo dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.campo-vacio {
+  color: var(--tinta-suave);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.faltantes h3,
+.evidencia h3 {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.9rem;
+}
+
+.faltantes ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.evidencia blockquote {
+  margin: 0 0 0.4rem;
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--borde);
+  color: var(--tinta-suave);
+}
+
+.ficha-pie {
+  margin: 1rem 0 0;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+/* Mensajes */
+.mensaje {
+  padding: 1rem;
+  border: 1px dashed var(--borde);
+  border-radius: 4px;
+  color: var(--tinta-suave);
+}
+
+.mensaje-error {
+  border-style: solid;
+  border-color: var(--ladrillo);
+  color: var(--tinta);
+}
+
+.mensaje-error p {
+  margin: 0 0 0.6rem;
+}
+
+.mensaje-error button {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--ladrillo);
+  border-radius: 4px;
+  background: var(--papel);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Foco visible y movimiento reducido */
+.filtro:focus-visible,
+.reporte summary:focus-visible,
+.mensaje-error button:focus-visible {
+  outline: 3px solid var(--agua);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .filtro {
+    transition: background-color 0.15s, border-color 0.15s;
+  }
+}
+
+@media (min-width: 40rem) {
+  .reporte summary {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 1rem;
+  }
+
+  .reporte-meta {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+  }
+}
