@@ -30,6 +30,8 @@ Si no puede cubrir el conjunto completo, V1 devuelve todas las necesidades como 
 
 Todas las salidas están pendientes de revisión, sin aprobación ni informe de verificación y con publicación bloqueada. Las aserciones de las pruebas comprueban físicamente rutas calculadas, pero no implementan `verify_plan` ni sustituyen el verificador independiente de V3. No registrar esta función como `solve_routes` operativa antes de completar esa versión.
 
+Los finalizadores fijan primero retornos tempranos para todos los vehículos y después maximizan sus salidas sin retrasar esos retornos. Así se evita la espera inicial innecesaria cuando el turno empieza antes que las ventanas. No se promete eliminar esperas intermedias impuestas por ventanas diferentes ni optimizar globalmente todas las rutas. La regresión con turno desde 06:00 sale a 07:50, inicia servicio a 08:00 y retorna a 09:00; la demo base sigue 08:00–09:10. Son ahora 17 pruebas V1, incluidas las dos de esta corrección; el XML de V1 conserva la ejecución histórica original de 15 pruebas de cálculo más contratos.
+
 ## Evidencia reproducible
 
 ```powershell

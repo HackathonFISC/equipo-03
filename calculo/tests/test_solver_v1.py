@@ -111,6 +111,21 @@ def test_espera_hasta_ventana(payload):
     comprobar_fisica(entrada, plan)
 
 
+@pytest.mark.parametrize('turno_inicio,salida_esperada', [('06:00', '07:50'), ('08:00', '08:00')])
+def test_retorno_temprano_y_salida_sin_espera_inicial(payload, turno_inicio, salida_esperada):
+    for v in payload['vehiculos']:
+        v['turno']['inicio'] = f'2026-10-17T{turno_inicio}:00-05:00'
+    entrada = SolicitudResolverRutas.model_validate(payload)
+    plan = solve_routes_minimo(entrada)
+    comprobar_fisica(entrada, plan)
+    zona = entrada.vehiculos[0].turno.inicio.tzinfo
+    assert len(plan.rutas) == 2
+    for ruta in plan.rutas:
+        assert ruta.salida_estimada.astimezone(zona).strftime('%H:%M') == salida_esperada
+        assert ruta.paradas[0].llegada_estimada == ruta.paradas[0].inicio_descarga
+        assert ruta.retorno_estimado.astimezone(zona).strftime('%H:%M') == ('09:00' if turno_inicio == '06:00' else '09:10')
+
+
 def test_matriz_dirigida_arco_bloqueado(payload):
     payload['matriz']['minutos'][1][2] = None
     payload['matriz']['minutos'][2][1] = 17

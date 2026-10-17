@@ -54,3 +54,11 @@ Límites: aceptar el contrato no activa la política `demo-1.0`, no confirma los
 - Evidencia: 43 pruebas nuevas de V2; regresión de 204 pruebas y 57 subpruebas aprobadas, pip check correcto. Demo: 2500 L directos, 1500 L por fórmula, demanda desconocida sin reserva, seis puntos priorizados con confirmaciones ficticias y seis necesidades originales V0 conservadas pendientes. Entrada/salida y métricas en `evals/resultados/necesidades_v2.json`; ejecución de pruebas en `v2_pruebas.xml`.
 - Supuesto exclusivo del ensayo: recepción sintética de 5000 L por punto para probar las seis demandas del fixture. No se incorpora a los archivos compartidos de escenario ni se considera aprobado para operación.
 - Pendiente para cierre conjunto: Emilia integra tools, territorio, incidentes y reanudación; Noel conecta aclaraciones y errores. Acordar parámetros/activación de política del escenario. La regresión de repetición de quejas cubre cálculo e invariancia de factores; el recorrido real de duplicados/consolidación sigue siendo prueba de integración del equipo. No se declara cerrada V2 del sistema.
+
+## D005 Reducir espera inicial del solver mínimo
+
+- Fecha: 16 de octubre de 2026, 22:20 (UTC−05:00).
+- Origen: el usuario trasladó una revisión de solve_routes_minimo que detectó salida a 06:00 y espera innecesaria hasta 08:00 cuando el turno comienza dos horas antes.
+- Decisión: primero minimizar los finales de todos los vehículos y después maximizar sus inicios. No maximizar solo las salidas, porque pospondría el recorrido hacia el final del turno. El ajuste afecta al solver V1, no a validate_need ni score_needs de V2.
+- Evidencia: prueba añadida reproduce el fallo antes del cambio; después pasan 17 pruebas del solver. Caso temprano: salida 07:50, primera descarga 08:00, retorno 09:00. Demo base: mismas rutas y horas 08:00–09:10. Regresión completa: 206 pruebas y 57 subpruebas aprobadas.
+- Alcance V3 conservado: selección de cobertura parcial por criticidad/prioridad y diagnóstico por punto. La demanda de cada punto sigue indivisible; si excede toda cisterna disponible debe quedar pendiente con motivo demanda_supera_vehiculo. No autoriza dividir esa demanda entre camiones ni introducir recargas.
