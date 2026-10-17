@@ -296,3 +296,14 @@ en backend. Lint y build con configLoader native aprobaron tras el cambio.
 El usuario proporcionó un nuevo logo en dos imágenes. Su descarga falló en esta
 sesión y NO se incorporó; la gota provisional sigue presente. No reconstruir el
 logo ni afirmar que se revisó visualmente hasta disponer de sus bytes.
+
+## Refinamiento posterior del diseño
+
+El usuario solicitó diferenciar las pantallas y reducir la repetición de tarjetas.
+Se incorporó `src/editorial.css`: Reportes como bandeja, Necesidades como ranking y
+Aprobación como expediente. Los títulos editoriales usan Georgia y los controles
+conservan Inter. La paleta A se mantiene. Los resúmenes nuevos derivan de datos
+cargados correctamente; no presentan métricas ficticias. El código actual usa
+H2Oeste como marca, y se conservó ese cambio existente. Lint y compilación aprobados;
+la revisión visual continúa pendiente. Las tres imágenes adjuntas de esta iteración
+no pudieron descargarse y no se integraron.

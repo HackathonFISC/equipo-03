@@ -6,6 +6,7 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from postgrest.exceptions import APIError
 
+from api.auth import usuario_autenticado
 from api.dependencias import obtener_db
 from api.errores_http import ErrorApi
 from api.esquemas import EjecucionPanel
@@ -20,12 +21,14 @@ router = APIRouter(prefix="/ejecuciones", tags=["ejecuciones"])
 @router.get(
     "/{ejecucion_id}",
     response_model=EjecucionPanel,
+    dependencies=[Depends(usuario_autenticado)],
     responses={
+        403: {"model": ErrorDominio, "description": "Falta una sesión válida."},
         404: {"description": "No existe una ejecución con ese ID."},
         422: {"model": ErrorDominio, "description": "El ID no es un UUID válido."},
         503: {"model": ErrorDominio, "description": "Base de datos no disponible."},
     },
-    summary="Consultar el progreso de una ejecución y su traza",
+    summary="Consultar el progreso de una ejecución y su traza (requiere sesión)",
 )
 def consultar(ejecucion_id: UUID, db=Depends(obtener_db)):
     try:

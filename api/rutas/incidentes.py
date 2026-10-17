@@ -1,6 +1,6 @@
 """Ruta de consulta de incidentes para la página Necesidades (V2).
 
-La corrección de agrupaciones (separar un reporte) llega después, con la sesión del coordinador.
+Requiere sesión válida. La corrección de agrupaciones (separar un reporte) llega después, con la sesión del coordinador.
 """
 import logging
 
@@ -8,6 +8,7 @@ import httpx
 from fastapi import APIRouter, Depends
 from postgrest.exceptions import APIError
 
+from api.auth import usuario_autenticado
 from api.dependencias import obtener_db
 from api.errores_http import ErrorApi
 from api.esquemas import IncidentePanel
@@ -22,8 +23,12 @@ router = APIRouter(prefix="/incidentes", tags=["incidentes"])
 @router.get(
     "",
     response_model=list[IncidentePanel],
-    responses={503: {"model": ErrorDominio, "description": "Base de datos no disponible."}},
-    summary="Listar incidentes con su necesidad o sus pendientes",
+    dependencies=[Depends(usuario_autenticado)],
+    responses={
+        403: {"model": ErrorDominio, "description": "Falta una sesión válida."},
+        503: {"model": ErrorDominio, "description": "Base de datos no disponible."},
+    },
+    summary="Listar incidentes con su necesidad o sus pendientes (requiere sesión)",
 )
 def listar(db=Depends(obtener_db)):
     try:

@@ -1,0 +1,118 @@
+/* Identidades de pantalla: bandeja ciudadana, prioridad territorial y expediente. */
+:root {
+  --titulo-editorial: Georgia, 'Times New Roman', serif;
+  --azul-claro: #e8f2f8;
+  --azul-linea: #b7d4e5;
+}
+.seccion-etiqueta { display: block; margin-bottom: 12px; color: var(--acento); font-size: 11px; font-weight: 700; letter-spacing: 1.7px; }
+.app-main :is(.reportes, .necesidades, .plan-pagina, .aprob) { padding-top: 40px; }
+.app-main :is(.reportes-cabecera h1, .plan-pagina-cabecera h1) { font-family: var(--titulo-editorial); font-size: clamp(32px, 3.5vw, 48px); line-height: 1.08; font-weight: 400; letter-spacing: -1.4px; }
+.app-main :is(.reportes-cabecera p, .plan-pagina-cabecera p) { font-size: 15px; line-height: 1.7; }
+.sidebar { background: #102a43; border-right: 1px solid #234e6d; }
+.nav-enlace { border-radius: 4px; padding-block: 15px; }
+.nav-enlace[aria-current='page'] { border-color: transparent; background: #20445f; box-shadow: inset 3px 0 #75c5de; }
+.nav-numero { font-family: ui-monospace, Consolas, monospace; letter-spacing: -.5px; opacity: .85; }
+.workspace-header { background: var(--fondo); border-bottom-color: var(--borde); }
+.workspace-footer { font-size: 11px; letter-spacing: .4px; }
+
+/* Reportes: filas de una bandeja, sin una tarjeta flotante por mensaje. */
+.app-main .reportes-cabecera { padding-bottom: 24px; border-bottom: 1px solid var(--azul-linea); }
+.bandeja-resumen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0 0 32px; padding: 24px 0; border-bottom: 1px solid var(--borde); }
+.bandeja-resumen > div { display: flex; flex-direction: column-reverse; gap: 5px; padding: 0 24px; border-right: 1px solid var(--borde); }
+.bandeja-resumen > div:first-child { padding-left: 0; }
+.bandeja-resumen > div:last-child { border-right: 0; }
+.bandeja-resumen dt { font-size: 13px; color: var(--tinta-suave); }
+.bandeja-resumen dd { margin: 0; color: var(--agua); font-size: 36px; line-height: 1; letter-spacing: -1px; }
+.bandeja-resumen .resumen-atencion dd { color: var(--ambar); }
+.app-main .reportes .filtros { gap: 4px 16px; border-bottom: 1px solid var(--borde); margin-bottom: 0; }
+.app-main .reportes .filtro { border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--tinta-suave); border-radius: 0; padding: 12px 2px; font-size: 13px; }
+.app-main .reportes .filtro[aria-pressed='true'] { border-bottom-color: var(--agua); color: var(--agua); font-weight: 600; }
+.app-main .reportes .filtro-conteo { border-radius: 4px; background: var(--azul-claro); color: var(--agua); padding: 2px 7px; font-size: 11px; }
+.app-main .reportes .lista { gap: 0; border: 1px solid var(--borde); border-top: 0; background: white; }
+.app-main .reportes .reporte { border: 0; border-bottom: 1px solid var(--borde); border-radius: 0; box-shadow: none; overflow: visible; }
+.app-main .reportes .reporte:last-child { border-bottom: 0; }
+.app-main .reportes .reporte summary { position: relative; padding: 24px 24px 24px 44px; gap: 20px; }
+.app-main .reportes .reporte summary::before { content: '+'; position: absolute; top: 24px; left: 16px; color: var(--agua); font-size: 18px; line-height: 1.4; }
+.app-main .reportes details[open] > summary::before { content: '−'; }
+.app-main .reportes details[open] > summary { background: #edf5fa; }
+.app-main .reportes .reporte-texto { font-weight: 500; font-size: 16px; line-height: 1.65; max-width: 75ch; }
+.app-main .reportes .reporte-meta { font-size: 12px; }
+.app-main .reportes .sello { background: var(--azul-claro); color: var(--agua); border-radius: 3px; font-size: 11px; letter-spacing: .2px; }
+.app-main .reportes [data-estado='aclaracion'] .sello { background: var(--ambar-fondo); color: var(--ambar); }
+.app-main .reportes [data-estado='fuera_de_alcance'] .sello { background: var(--error-fondo); color: var(--ladrillo); }
+.app-main .reportes [data-estado='sin_interpretar'] .sello { background: #eef1f5; color: var(--gris); }
+.app-main .reportes .reporte .ficha { padding: 24px 32px 32px 44px; border-top: 0; background: #f8fbfd; }
+.app-main .reportes .evidencia blockquote { font-family: var(--titulo-editorial); font-size: 18px; font-style: italic; border-color: var(--azul-linea); padding: 8px 20px; }
+
+/* Necesidades: lectura por rango; cálculo y evidencia con pesos visuales distintos. */
+.app-main .necesidades-cabecera { border-bottom: 3px solid var(--agua); padding-bottom: 20px; }
+.app-main .necesidades-cabecera h1 { font-weight: 700; font-size: clamp(30px, 3vw, 40px); letter-spacing: -1.3px; }
+.necesidades-balance { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; padding: 20px 24px; background: var(--agua-profunda); color: white; margin-bottom: 32px; }
+.necesidades-balance p { display: flex; align-items: center; gap: 12px; margin: 0; }
+.necesidades-balance strong { font-size: 32px; font-weight: 500; }
+.necesidades-balance p span { max-width: 14ch; font-size: 12px; color: #d9e9f2; }
+.balance-nota { flex: 1; min-width: 150px; text-align: right; color: #c3d9e8; font-size: 12px; }
+.app-main .necesidades .grupo-titulo { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; margin-top: 32px; margin-bottom: 16px; }
+.app-main .necesidades .lista-necesidades { gap: 28px; }
+.app-main .necesidades .necesidad { border: 1px solid var(--borde); border-top: 3px solid var(--color-clase); border-radius: 2px; box-shadow: none; padding: 24px; }
+.app-main .necesidades .posicion { width: 44px; height: 44px; background: transparent; color: var(--color-clase); border-radius: 0; border-right: 1px solid var(--borde); font-family: var(--titulo-editorial); font-size: 32px; font-weight: 400; }
+.app-main .necesidades .necesidad-titulo h2 { font-size: 22px; letter-spacing: -.5px; }
+.app-main .necesidades .bloques { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 0; border-top: 1px solid var(--borde); padding-top: 20px; }
+.app-main .necesidades .bloque { border: 0; background: transparent; padding: 0; border-radius: 0; min-width: 0; }
+.app-main .necesidades .bloque[aria-label='Urgencia'] { padding-right: 24px; }
+.app-main .necesidades .bloque[aria-label='Confianza'] { padding-left: 24px; border-left: 1px solid var(--borde); }
+.app-main .necesidades .bloque h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.3px; }
+.app-main .necesidades .puntaje-valor { font-size: 42px; font-weight: 600; color: var(--agua); }
+.app-main .necesidades .confianza .puntaje-valor { font-size: 26px; font-weight: 500; color: var(--tinta-suave); }
+.app-main .necesidades .aportes li { grid-template-columns: minmax(110px, 1fr) minmax(24px, .65fr) auto; }
+.app-main .necesidades .aporte-barra { height: 4px; border-radius: 0; background: #e3edf4; }
+.app-main .necesidades .aporte-barra span { border-radius: 0; background: var(--acento); }
+.app-main .necesidades .aportes li:nth-child(2) .aporte-barra span { background: #075985; }
+.app-main .necesidades .aportes li:nth-child(3) .aporte-barra span { background: #526477; }
+.app-main .necesidades .aporte-valor { font-size: 11px; }
+.app-main .necesidades .dato { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; padding-block: 8px; border-bottom: 1px solid #edf1f5; }
+.app-main .necesidades .dato dd { font-size: 13px; font-weight: 500; }
+
+/* Aprobación: expediente y firma, con serif reservada para la decisión. */
+.app-main .aprob-cabecera { border-bottom: 2px solid var(--agua-profunda); }
+.app-main .aprob-cabecera h2 { font-family: var(--titulo-editorial); font-size: 36px; font-weight: 400; letter-spacing: -1px; }
+.app-main .aprob-plan { position: relative; border-radius: 0; border-top-width: 1px; padding: 32px; box-shadow: 0 4px 16px rgb(16 42 67 / 4%); }
+.app-main .aprob-plan > header { padding-bottom: 12px; }
+.app-main .aprob-plan > header h3 { font-family: var(--titulo-editorial); font-weight: 400; font-size: 26px; }
+.app-main .aprob-plan .aprob-meta { background: var(--fondo); margin-inline: -32px; padding: 20px 32px; border-top: 0; }
+.app-main .aprob-plan .aprob-meta dt { text-transform: uppercase; letter-spacing: .8px; font-size: 10px; }
+.app-main .aprob-plan .aprob-meta dd { font-size: 13px; }
+.app-main .aprob-plan .aprob-ruta { border: 0; border-radius: 0; padding: 16px 0; }
+.app-main .aprob-decision { background: #edf5fa; border: 1px solid var(--azul-linea); border-left: 3px solid var(--agua); border-radius: 0; padding: 24px; }
+.app-main .aprob-decision h4 { font-family: var(--titulo-editorial); font-size: 24px; font-weight: 400; }
+.app-main .aprob-decision textarea { background: white; border-color: #8293a5; }
+.app-main .aprob-botones button { border-radius: 4px; }
+.app-main .plan-pagina .plan { border-radius: 4px; padding: 28px; box-shadow: none; }
+.app-main .plan-pagina .resumen > div { background: transparent; border: 0; border-left: 2px solid var(--azul-linea); border-radius: 0; }
+.app-main .plan-pagina .resumen dd { color: var(--agua); }
+.app-main .plan-pagina .ruta { background: #f7fafc; border: 0; border-top: 3px solid var(--agua); border-radius: 0; }
+.app-main .plan-pagina .ruta:nth-child(even) { border-top-color: #635c95; }
+@media (max-width: 1200px) {
+  .app-main .necesidades .bloques { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .app-main .necesidades .bloque[aria-label='Urgencia'] { padding-right: 0; }
+  .app-main .necesidades .bloque[aria-label='Confianza'] { padding: 20px 0 0; border-left: 0; border-top: 1px solid var(--borde); }
+}
+@media (max-width: 600px) {
+  .app-main :is(.reportes, .necesidades, .plan-pagina, .aprob) { padding-top: 24px; }
+  .bandeja-resumen { gap: 12px; padding-block: 16px; }
+  .bandeja-resumen > div { padding-inline: 8px; }
+  .bandeja-resumen dd { font-size: 28px; }
+  .bandeja-resumen dt { font-size: 11px; }
+  .app-main .reportes .reporte summary { padding: 20px 16px 20px 36px; }
+  .app-main .reportes .reporte summary::before { left: 12px; top: 20px; }
+  .app-main .reportes .reporte .ficha { padding: 20px 16px; }
+  .app-main .reportes .reporte-texto { font-size: 15px; }
+  .app-main .necesidades .necesidad { padding: 16px; }
+  .app-main .necesidades .aportes li { grid-template-columns: minmax(0, 1fr) auto; }
+  .app-main .necesidades .aporte-barra { grid-column: 1 / -1; order: 3; }
+  .balance-nota { text-align: left; }
+  .app-main :is(.aprob-plan, .plan-pagina .plan) { padding: 20px; }
+  .app-main .aprob-plan .aprob-meta { margin-inline: -20px; padding: 16px 20px; }
+  .app-main .aprob-decision { padding: 16px; }
+  .app-main .aprob-cabecera h2 { font-size: 30px; }
+}

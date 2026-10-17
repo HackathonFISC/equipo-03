@@ -327,3 +327,72 @@ class DestinoPanel(BaseModel):
     referencia: str
     autorizado: bool
     habilitado_ensayo: bool | None = None  # None: la migración 0012 aún no está aplicada
+
+
+# --- Priorización de incidentes (V2): el coordinador revisa y el servidor arma el lote ---
+
+
+class VentanaRevisada(Peticion):
+    inicio: AwareDatetime
+    fin: AwareDatetime
+
+
+class DemandaRevisada(Peticion):
+    """Demanda de agua que el coordinador confirma. La confirmación (quién y cuándo) la pone el servidor."""
+
+    metodo: Literal["directa", "formula"]
+    fuente: Annotated[str, Field(min_length=1, max_length=500)]
+    litros_declarados: Annotated[float, Field(ge=0, allow_inf_nan=False, strict=True)] | None = None
+    personas_atendidas: Annotated[int, Field(ge=0, strict=True)] | None = None
+    dotacion_litros_persona_dia: Annotated[float, Field(gt=0, allow_inf_nan=False, strict=True)] | None = None
+    dias_cobertura: Annotated[float, Field(gt=0, allow_inf_nan=False, strict=True)] | None = None
+    reserva_utilizable_litros: Annotated[float, Field(ge=0, allow_inf_nan=False, strict=True)] | None = None
+
+    @model_validator(mode="after")
+    def campos_del_metodo(self):
+        de_formula = (self.personas_atendidas, self.dotacion_litros_persona_dia, self.dias_cobertura, self.reserva_utilizable_litros)
+        if self.metodo == "directa" and any(v is not None for v in de_formula):
+            raise ValueError("La demanda directa no lleva campos de fórmula")
+        if self.metodo == "formula" and self.litros_declarados is not None:
+            raise ValueError("La demanda por fórmula no lleva litros declarados")
+        return self
+
+
+class RevisionIncidente(Peticion):
+    """Lo que el coordinador confirma de un incidente. Lo que no se envía queda pendiente, nunca se inventa."""
+
+    incidente_id: UUID
+    version_incidente: Annotated[int, Field(gt=0)]
+    demanda: DemandaRevisada | None = None
+    clase_prioridad: Literal["critico", "general"] | None = None
+    ventana_atencion: VentanaRevisada | None = None
+    vulnerabilidad: Literal["sin_condicion_identificada", "moderada", "alta"] | None = None
+    horas_sin_agua: Annotated[float, Field(ge=0, allow_inf_nan=False, strict=True)] | None = None
+    personas_atendidas: Annotated[int, Field(ge=0, strict=True)] | None = None
+    ultima_atencion_confirmada_en: AwareDatetime | None = None
+
+    @model_validator(mode="after")
+    def critico_con_ventana(self):
+        if self.clase_prioridad == "critico" and self.ventana_atencion is None:
+            raise ValueError("Un punto crítico necesita ventana de atención")
+        if self.ventana_atencion is not None and self.ventana_atencion.fin <= self.ventana_atencion.inicio:
+            raise ValueError("La ventana debe terminar después de empezar")
+        return self
+
+
+class PrepararPriorizacion(Peticion):
+    """Quién revisa sale del token. La política se elige de forma explícita: nunca se toma "la más reciente"."""
+
+    politica_version: Annotated[str, Field(min_length=1, max_length=200)]
+    motivo: Annotated[str, Field(min_length=1, max_length=2000)]
+    revisiones: Annotated[list[RevisionIncidente], Field(max_length=200)] = Field(default_factory=list)
+
+
+class ResultadoPriorizacion(BaseModel):
+    ejecucion_id: UUID
+    estado: str
+    etapa: str
+    repetido: bool = False
+    datos_version: str
+    incidentes: int
+    sin_revisar: int

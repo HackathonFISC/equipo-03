@@ -12,6 +12,7 @@ import pytest
 from fastapi.testclient import TestClient
 from postgrest.exceptions import APIError
 
+from api.auth import obtener_verificador
 from api.dependencias import obtener_db
 from api.main import app
 
@@ -19,6 +20,14 @@ EJEMPLOS = Path(__file__).resolve().parents[2] / "contratos" / "ejemplos"
 EVALUACION = json.loads((EJEMPLOS / "evaluacion_necesidades.json").read_text(encoding="utf-8"))
 PUNTO = EVALUACION["punto_atencion_id"]
 SECTOR = str(uuid4())
+
+TOKEN = "aaa.bbb.ccc"
+AUTH = {"Authorization": f"Bearer {TOKEN}"}
+
+
+class VerificadorFalso:
+    def usuario_id(self, token):
+        return uuid4()
 
 
 class Respuesta:
@@ -134,13 +143,14 @@ def db():
         }
     ]
     app.dependency_overrides[obtener_db] = lambda: base
+    app.dependency_overrides[obtener_verificador] = lambda: VerificadorFalso()
     yield base
     app.dependency_overrides.clear()
 
 
 @pytest.fixture
 def cliente(db):
-    return TestClient(app)
+    return TestClient(app, headers=AUTH)
 
 
 def test_sin_incidentes_responde_lista_vacia(cliente, db):
@@ -272,3 +282,18 @@ def test_fallo_de_la_base_responde_503(cliente, db):
     assert cuerpo["codigo"] == "proveedor_no_disponible"
     assert cuerpo["recuperable"] is True
     assert "caida" not in json.dumps(cuerpo)
+
+
+def test_sin_sesion_es_403_y_no_toca_la_base(db):
+    respuesta = TestClient(app).get("/incidentes")
+
+    assert respuesta.status_code == 403
+    assert respuesta.json()["codigo"] == "sin_permiso"
+    assert db.llamadas == []
+
+
+def test_encabezado_que_no_es_bearer_es_403(db):
+    respuesta = TestClient(app).get("/incidentes", headers={"Authorization": "Basic abc"})
+
+    assert respuesta.status_code == 403
+    assert db.llamadas == []

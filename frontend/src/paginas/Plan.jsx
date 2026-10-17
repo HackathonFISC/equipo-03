@@ -331,6 +331,7 @@ export default function Plan() {
   return (
     <section className="plan-pagina" aria-labelledby="titulo-plan">
       <header className="plan-pagina-cabecera">
+        <span className="seccion-etiqueta">DISTRIBUCIÓN / PROPUESTA</span>
         <div className="plan-pagina-titulo">
           <h1 id="titulo-plan">Plan</h1>
           <button type="button" className="actualizar" onClick={reintentar} disabled={cargando}>
