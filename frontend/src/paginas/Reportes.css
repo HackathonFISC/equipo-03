@@ -179,6 +179,65 @@
   color: var(--tinta-suave);
 }
 
+/* Seguimiento y traza de agentes */
+.seguimiento {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--borde);
+}
+
+.seguimiento h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+}
+
+.seguimiento-estado,
+.traza-nota {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.traza-nota {
+  color: var(--tinta-suave);
+}
+
+.traza {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 1rem;
+  border-left: 2px solid var(--agua);
+  display: grid;
+  gap: 0.6rem;
+}
+
+.traza p {
+  margin: 0;
+}
+
+.traza-resultado {
+  font-size: 0.9rem;
+}
+
+.traza-meta {
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+.enlace {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--agua);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.enlace:focus-visible {
+  outline: 3px solid var(--agua);
+  outline-offset: 2px;
+}
+
 /* Mensajes */
 .mensaje {
   padding: 1rem;

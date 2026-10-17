@@ -1,4 +1,8 @@
 .barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
   padding: 0.9rem 1rem;
   background: var(--agua);
   color: #fff;
@@ -7,4 +11,32 @@
 .barra strong {
   font-size: 1.1rem;
   letter-spacing: -0.01em;
+}
+
+.barra nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.barra-enlace {
+  padding-bottom: 0.15rem;
+  border-bottom: 2px solid transparent;
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.barra-enlace:hover {
+  opacity: 1;
+}
+
+.barra-enlace[aria-current='page'] {
+  border-bottom-color: #fff;
+  font-weight: 600;
+  opacity: 1;
+}
+
+.barra-enlace:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
 }

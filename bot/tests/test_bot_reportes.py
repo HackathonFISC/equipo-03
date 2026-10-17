@@ -10,6 +10,9 @@ import pytest
 
 from bot.bot import (
     MAX_TEXTO,
+    MENSAJE_AYUDA,
+    iniciar_envio,
+    mostrar_ayuda,
     MENSAJE_FALLO,
     MENSAJE_LARGO,
     leer_chats_autorizados,
@@ -72,13 +75,13 @@ def test_texto_nuevo_se_envia_a_la_api_y_se_confirma():
     assert json.loads(llamadas[0].content) == {
         "usuario_telegram_id": 111, "chat_id": -1001, "message_id": 7, "texto": TEXTO,
     }
-    respuestas.assert_awaited_once_with("Recibimos tu reporte. Código: 2be33e79.")
+    respuestas.assert_awaited_once_with("Recibimos tu mensaje. Código: 2be33e79.")
 
 
 def test_mensaje_ya_registrado_responde_distinto():
     update, contexto, _, respuestas = armar(lambda p: json_de(200))
     ejecutar(update, contexto)
-    respuestas.assert_awaited_once_with("Ya habíamos registrado este mensaje. Código: 2be33e79.")
+    respuestas.assert_awaited_once_with("Ya habíamos recibido este mensaje. Código: 2be33e79.")
 
 
 def test_chat_no_autorizado_no_llama_a_la_api_ni_responde():
@@ -138,3 +141,41 @@ def test_leer_chats_autorizados():
     assert leer_chats_autorizados("") == set()
     with pytest.raises(ValueError):
         leer_chats_autorizados("123,abc")
+
+
+# --- Ayuda (/start, /ayuda, /help) ---
+
+def test_ayuda_muestra_los_botones_sin_llamar_a_la_api():
+    update, contexto, llamadas, respuestas = armar(lambda p: json_de(201), texto="/ayuda")
+    asyncio.run(mostrar_ayuda(update, contexto))
+    assert llamadas == []
+    teclado = respuestas.await_args.kwargs["reply_markup"].inline_keyboard
+    assert [b.callback_data for fila in teclado for b in fila] == ["reportar", "instrucciones"]
+    for dato in ("Dónde", "Desde cuándo", "Cuántas personas", "Responder"):
+        assert dato in MENSAJE_AYUDA
+
+
+def test_ayuda_en_un_chat_no_autorizado_no_responde():
+    update, contexto, llamadas, respuestas = armar(lambda p: json_de(201), texto="/start", chat_id=-999)
+    asyncio.run(mostrar_ayuda(update, contexto))
+    assert llamadas == [] and respuestas.await_count == 0
+
+
+def test_el_menu_de_comandos_publica_ayuda():
+    from types import SimpleNamespace as N
+    from unittest.mock import AsyncMock as A
+
+    bot = N(set_my_commands=A())
+    asyncio.run(iniciar_envio(N(bot=bot, bot_data={"cliente_api": None, "trabajador_id": "bot:1"})))
+    comandos = bot.set_my_commands.await_args.args[0]
+    assert [c.command for c in comandos] == ["ayuda"]
+
+
+def test_si_falla_el_menu_el_bot_sigue():
+    from types import SimpleNamespace as N
+    from unittest.mock import AsyncMock as A
+
+    from telegram.error import NetworkError
+
+    bot = N(set_my_commands=A(side_effect=NetworkError("sin red")))
+    asyncio.run(iniciar_envio(N(bot=bot, bot_data={"cliente_api": None, "trabajador_id": "bot:1"})))
