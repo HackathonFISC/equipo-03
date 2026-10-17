@@ -107,6 +107,20 @@ con Emilia.
 
 ## Circuito de aclaración (V2, decisiones D006 y D008)
 
+**Responder sin pulsar «Responder».** La API enlaza la respuesta con la pregunta por el id del mensaje del bot, así que un
+mensaje suelto se tomaba como reporte nuevo y la aclaración quedaba sin contestar. Ahora el bot recuerda la última
+pregunta que envió a cada persona en cada chat (`adaptador.recordar_pregunta`, en memoria, 30 minutos) y toma su siguiente
+texto o pin como respuesta, en chat privado y en grupos. Para saber a quién va la pregunta, guarda quién envió cada
+mensaje de reporte (`recordar_autor`). Una pregunta se contesta una vez; lo siguiente es un reporte nuevo. Un reply
+explícito manda sobre lo recordado. En un grupo, los mensajes de otras personas o sin pregunta abierta siguen
+ignorándose y sin registrarse. Si el bot se reinicia, se pierde lo recordado y vuelve a valer solo el reply. La API y la
+base no cambian: el autor y el estado los sigue validando la RPC.
+
+**Grupos y modo privacidad:** con el modo privacidad de BotFather activo (`/setprivacy` → Enable), Telegram solo entrega
+al bot los comandos, las menciones y los replies a sus mensajes. Por eso en un grupo la respuesta sin «Responder» solo
+llega si el modo privacidad está desactivado (Disable). Desactivarlo hace que el bot reciba todo el grupo, aunque descarte
+lo que no sea una respuesta a su pregunta; es una decisión de seguridad, no solo de comodidad.
+
 `adaptador.py`, si `ACLARACIONES_ACTIVAS` es `True`:
 
 1. Cada 7 segundos pide a la API la siguiente pregunta pendiente (hasta 10 por ciclo).
