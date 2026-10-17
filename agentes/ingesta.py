@@ -15,8 +15,11 @@ from pydantic import ValidationError
 from contratos.errores import CodigoError, ErrorDominio
 from contratos.estados import EstadoEjecucion
 from contratos.modelos import Evidencia, EventoTraza, ExtraccionReporteLLM, ReporteInterpretado, ReporteRegistrado
-from .gemini import ConfiguracionGemini, ErrorIngesta, ExtractorGemini
+from .gemini import ConfiguracionGemini, ErrorConfiguracionGemini, ErrorIngesta, ExtractorGemini
 from .trazas import traza_ingesta
+from .evidencia_textual import fragmento_original, cantidades_explicitas
+
+MAX_REINTENTOS_INGESTA = 2
 
 
 class Extractor(Protocol):
@@ -44,21 +47,30 @@ def interpretar_reporte(reporte: ReporteRegistrado, extractor: Extractor, *, int
         salida = ExtraccionReporteLLM.model_validate(propuesta.model_dump(mode='json'))
     except (ValidationError, AttributeError, TypeError):
         raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Extracción incompatible con el contrato.') from None
-    if any(not any(fragmento in fuente for fuente in fuentes) for fragmento in salida.evidencia_textual):
+    citas = [fragmento_original(fragmento, fuentes) for fragmento in salida.evidencia_textual]
+    if any(cita is None for cita in citas):
         raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'La evidencia citada no pertenece al texto original.')
-    for valor in (salida.ubicacion_declarada, salida.campos.institucion_declarada, salida.campos.vulnerabilidad_declarada):
-        if valor is not None and not any(valor in fuente for fuente in fuentes):
-            raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Se declaró un dato textual que no está en el reporte.')
-    # Guardia V1 para cantidades expresadas con dígitos. Se admiten horas y días;
-    # expresiones no comprobables aquí deben quedar desconocidas, no adivinarse.
-    horas = [float(n.replace(',', '.')) * (24 if unidad.casefold().startswith(('dia', 'día')) else 1)
-             for n, unidad in re.findall(r'(?<![\d-])(\d+(?:[.,]\d+)?)\s*(horas?|h\b|d[ií]as?)', texto, re.I)]
-    personas = [int(n) for n in re.findall(r'(?<![\d-])(\d+)\s*(?:personas?|habitantes?|residentes?|vecinos?|afectad[oa]s?)\b', texto, re.I)]
-    personas += [int(n) for n in re.findall(r'\bsomos\s+(\d+)\b', texto, re.I)]
-    if salida.campos.horas_sin_agua is not None and not any(math.isclose(salida.campos.horas_sin_agua, h) for h in horas):
-        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'La duración extraída no tiene respaldo numérico comprobable en el texto.')
-    if salida.campos.personas_afectadas is not None and salida.campos.personas_afectadas not in personas:
-        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'La población extraída no tiene respaldo numérico comprobable en el texto.')
+    datos = salida.model_dump(mode='json')
+    datos['evidencia_textual'] = citas
+    for contenedor, campo in [(datos, 'ubicacion_declarada'), (datos['campos'], 'institucion_declarada'),
+                              (datos['campos'], 'vulnerabilidad_declarada')]:
+        valor = contenedor[campo]
+        if valor is not None:
+            original = fragmento_original(valor, fuentes)
+            if original is None:
+                raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Se declaró un dato textual que no está en el reporte.')
+            contenedor[campo] = original
+    horas, personas = cantidades_explicitas(fuentes)
+    respaldos = {'horas_sin_agua': horas, 'personas_afectadas': personas}
+    for campo, valores in respaldos.items():
+        valor = datos['campos'][campo]
+        coincide = any(math.isclose(valor, v, rel_tol=0, abs_tol=1e-9) for v in valores) if valor is not None else True
+        if not coincide:
+            datos['campos'][campo] = None
+            if not datos['fuera_de_alcance']:
+                datos['faltantes'] = list(dict.fromkeys([*datos['faltantes'], campo]))
+                datos['requiere_aclaracion'] = True
+    salida = ExtraccionReporteLLM.model_validate(datos)
     if salida.fuera_de_alcance and salida.requiere_aclaracion:
         raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Una entrada fuera de alcance no debe pedir aclaración de agua.')
     if not salida.fuera_de_alcance and not salida.evidencia_textual:
@@ -66,7 +78,7 @@ def interpretar_reporte(reporte: ReporteRegistrado, extractor: Extractor, *, int
     evidencia = Evidencia(
         evidencia_id=uuid5(reporte.reporte_id, 'texto_original'), reporte_id=reporte.reporte_id,
         tipo='texto', referencia=f'reportes/{reporte.reporte_id}/texto',
-        descripcion='Texto original persistido; las citas de la extracción se cotejaron literalmente.',
+        descripcion='Texto original persistido; las citas se cotejaron ignorando solo acentos, mayúsculas y espacios, conservando el fragmento original.',
         campos_respaldados=['entrada.texto'],
     )
     evidencias = [evidencia]
@@ -130,8 +142,8 @@ def reconstruir_reporte(filas: dict) -> ReporteRegistrado:
     })
 
 
-def procesar_ejecucion(ejecucion_id: UUID, persistencia: PersistenciaIngesta, extractor: Extractor) -> dict:
-    trabajador_id = f'ingesta:{uuid4()}'
+def procesar_ejecucion(ejecucion_id: UUID, persistencia: PersistenciaIngesta, extractor: Extractor, *, trabajador_id=None) -> dict:
+    trabajador_id = trabajador_id or f'ingesta:{uuid4()}'
     filas = persistencia.tomar(ejecucion_id, trabajador_id)
     if filas is None:
         return {'estado': 'no_tomada', 'ejecucion_id': str(ejecucion_id)}
@@ -145,11 +157,20 @@ def procesar_ejecucion(ejecucion_id: UUID, persistencia: PersistenciaIngesta, ex
         resultado = interpretar_reporte(reporte, extractor, intento_ref=trabajador_id, aclaraciones=filas.get('aclaraciones', []))
     except (ErrorIngesta, ValidationError) as error:
         fallo = error if isinstance(error, ErrorIngesta) else ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Reporte persistido incompatible con el contrato.')
-        detalle = ErrorDominio(**contexto, codigo=fallo.codigo, mensaje=str(fallo), recuperable=fallo.recuperable, campos=[])
+        detalle = ErrorDominio(**contexto, codigo=fallo.codigo, mensaje=str(fallo), recuperable=fallo.recuperable, campos=fallo.campos)
+        if fallo.recuperable:
+            estado_error = ('espera_revision' if isinstance(fallo, ErrorConfiguracionGemini)
+                            or filas['ejecucion'].get('reintentos_ingesta', 0) >= MAX_REINTENTOS_INGESTA
+                            else 'espera_validacion')
+        else:
+            estado_error = 'fallida'
+        decision = ('Esperar reintento acotado del proveedor.' if estado_error == 'espera_validacion'
+                    else 'Dejar Ingesta en revisión.' if estado_error == 'espera_revision'
+                    else 'Detener Ingesta y registrar error controlado.')
         evento = EventoTraza(**contexto, evento_id=uuid5(ejecucion_id, f'ingesta:{trabajador_id}'),
-                            agente='ingesta', decision='Detener Ingesta y registrar error controlado.',
+                            agente='ingesta', decision=decision,
                             herramienta='gemini.generateContent', entrada_ids=[r['reporte_id']], salida_ids=[],
-                            resultado=str(fallo), duracion_ms=round((time.monotonic()-inicio)*1000), siguiente_estado='fallida')
+                            resultado=str(fallo), duracion_ms=round((time.monotonic()-inicio)*1000), siguiente_estado=estado_error)
         return persistencia.finalizar(ejecucion_id=ejecucion_id, trabajador_id=trabajador_id,
                                      snapshot=r, evento=evento, error=detalle)
     # Un fallo de persistencia no se convierte en error del LLM ni se reintenta
@@ -169,6 +190,7 @@ def main():
         parser.error('--salida solo se permite con --reporte-json')
     try:
         extractor = ExtractorGemini(ConfiguracionGemini.cargar())
+        extractor.verificar_modelo()
         if args.reporte_json:
             reporte = ReporteRegistrado.model_validate_json(args.reporte_json.read_text())
             resultado = interpretar_reporte(reporte, extractor)

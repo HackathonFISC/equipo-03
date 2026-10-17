@@ -2,6 +2,8 @@
 import asyncio
 from contextlib import asynccontextmanager
 import errno
+import json
+from datetime import datetime
 import logging
 import os
 from pathlib import Path
@@ -35,6 +37,7 @@ class ServicioAgentes:
         self.bloqueo = None
         self.temporal = None
         self.parada = None
+        self.archivo_salud = None
         self.estado = 'detenido'
 
     def _reservar(self):
@@ -70,11 +73,13 @@ class ServicioAgentes:
         try:
             self.temporal = tempfile.TemporaryDirectory(prefix='h2oeste-agentes-')
             self.parada = Path(self.temporal.name)/'detener'
+            self.archivo_salud = Path(self.temporal.name)/'salud.json'
             opciones = dict(cwd=str(self.raiz), stdin=subprocess.DEVNULL)
             if os.name == 'nt':
                 opciones['creationflags'] = subprocess.CREATE_NO_WINDOW
             self.proceso = subprocess.Popen([sys.executable, '-u', '-m',
-                'orquestador.trabajador', '--archivo-parada', str(self.parada)], **opciones)
+                'orquestador.trabajador', '--archivo-parada', str(self.parada),
+                '--archivo-salud', str(self.archivo_salud)], **opciones)
             self.estado = 'iniciado'
             logger.info('Trabajador de agentes iniciado automáticamente con la API.')
         except Exception:
@@ -85,6 +90,17 @@ class ServicioAgentes:
         if self.proceso is not None and self.proceso.poll() is not None:
             self.estado = 'fallido' if self.proceso.returncode else 'finalizado'
         return self.estado
+
+    def ultima_vuelta_exitosa(self):
+        """None hasta que el hijo confirme una vuelta; no acredita servicios externos."""
+        if self.archivo_salud is None:
+            return None
+        try:
+            valor = json.loads(self.archivo_salud.read_text())['ultima_vuelta_exitosa']
+            fecha = datetime.fromisoformat(valor)
+            return valor if fecha.tzinfo is not None else None
+        except (OSError, ValueError, TypeError, KeyError):
+            return None
 
     def cerrar(self):
         try:

@@ -203,3 +203,12 @@ Referencia de la versión recibida de main: D005. Se registra como D008 para con
 - Códigos: 0 aprueba controles locales; 1 falla; 2 indica control pendiente. Ninguno acredita cierre integrado V4/V5/V6. Fuentes cambiadas durante la ejecución y bitácoras consolidadas desactualizadas impiden éxito local completo.
 - Evidencia de preparación: 715 pruebas Python y 66 subpruebas aprobadas (781 en JUnit), cuatro advertencias conocidas; dependencias, demos V1/V2/V3, comparación V5 y cuatro pruebas Node aprobadas en copia sin .env. El informe conserva las huellas exactas de esa ejecución anterior al cierre documental de esta decisión, no afirma corresponder a un commit final ya publicado.
 - Pendientes conjuntos: instalación nueva, migraciones/permisos y concurrencia comprobados, casos V5 reales, tres recorridos consecutivos con uno adverso, revisión de acceso, ensayo y comprobante de entrega. El equipo valida estos hechos; José no los da por ejecutados ni crea tag/commit/push. Guía: docs/ENTREGA_V6.md.
+
+## D018 Robustez de Ingesta y recuperación acotada
+
+- Fecha: 17 de octubre de 2026, 06:50 America/Panama. Usuario encarga el punto 3 mientras aplica 0014 y su smoke en Supabase.
+- Alternativas: rechazar diferencias tipográficas o cotejar con normalización conservando el fragmento original; fallar definitivamente, reintentar sin límite o conservar dos reintentos persistidos.
+- Decisión técnica: ignorar solo acentos, mayúsculas y espacios; ampliar unidades explícitas y convertir cantidades sin respaldo a null con aclaración. No convertir familias a personas. Dos reintentos adicionales de extracción, separados por cinco y diez segundos, luego revisión. Configuración inválida no consume ese presupuesto.
+- Motivo: conservar hechos respaldados y recuperar disponibilidad transitoria sin duplicar cierres ni volver a llamar al modelo tras un resultado incierto de persistencia. El límite es de recuperación técnica, no una política de prioridad o reparto.
+- Efecto: nueva 0015 posterior a 0014; contador/fecha en ejecuciones, cierre idempotente y mantenimiento. Contratos y cuatro herramientas sin cambios; reportes fallidos históricos no se reactivan. El preflight de Gemini/columnas ocurre antes de reservar.
+- Evidencia: 773 pruebas y 66 subpruebas aprobadas en el candidato, cuatro advertencias conocidas; SQL 0015 y regresiones de aclaraciones/reservas en PostgreSQL temporal PGlite. Metadatos reales del modelo predeterminado: HTTP 200, generateContent disponible. Sin generación real corregida, SQL remoto ni Telegram. Ver docs/INGESTA_A4.md.

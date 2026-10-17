@@ -181,3 +181,36 @@ resolución. No modifica ni reenvía preguntas existentes. Probar el smoke
 `../tests/0013_feedback_aclaraciones_smoke.sql` completo, con Territorial y
 catálogo instalados; termina en ROLLBACK. Sin cambios en API/bot de Noel.
 No aplicada a Supabase real por Codex. Ver [V2](../../docs/V2_EMILIA.md).
+
+## 0014 Recuperación del trabajador y Comunicación
+
+Nueva migración posterior a 0012; no modifica archivos históricos. Añade
+Comunicación al vencimiento conservador de reservas de `ra_mantenimiento_v2` y
+`ra_marcar_error_trabajador(uuid,text)` para revisión condicionada al propietario.
+No cambia aprobación, bandeja, destinos ni política. RPC SECURITY INVOKER con
+permisos exclusivos de service_role y recarga de esquema PostgREST.
+
+Ejecutar `0014_recuperacion_trabajador.sql` una sola vez en cada entorno, después
+`supabase/tests/0014_recuperacion_trabajador_smoke.sql` completo en entorno aislado.
+El smoke usa mantenimiento global dentro de una transacción y termina ROLLBACK;
+prueba caducidad, reserva vigente, propietario distinto, cierre confirmado,
+idempotencia y permisos. Preparado pero aún no ejecutado en esta revisión.
+
+## 0015 Ingesta recuperable A4
+
+Aplicar completo una vez **después de 0014**, antes de arrancar el código A4.
+Añade `reintentos_ingesta` (0–2), `proximo_intento_ingesta` e índice de esperas.
+Sustituye las implementaciones vigentes de toma/cierre y mantenimiento, conservando
+las firmas, snapshots, aclaraciones, caducidad de Comunicación y permisos exclusivos
+de service_role. Los archivos históricos no se modifican; NOTIFY recarga PostgREST.
+
+Un error recuperable confirmado programa espera de cinco/diez segundos y libera
+reserva. Mantenimiento reanuda al vencer, sin reactivar resultados inciertos o
+fallos históricos. El presupuesto agotado o error de configuración queda en revisión.
+El cierre idéntico repetido no aumenta el contador ni duplica eventos.
+
+Ejecutar `../tests/0015_ingesta_recuperable_smoke.sql` completo en entorno aislado:
+usa mantenimiento global, datos sintéticos y ROLLBACK. Probado en PostgreSQL temporal
+PGlite, junto a regresiones 0006/0013/0014; pendiente de aplicación y roles reales en
+Supabase. El smoke 0005 es histórico y espera el comportamiento anterior de error
+recuperable terminal; para el comportamiento nuevo usar 0015. Guía: `../../docs/INGESTA_A4.md`.

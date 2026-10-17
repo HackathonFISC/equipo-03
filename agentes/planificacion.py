@@ -56,7 +56,10 @@ def planificar(solicitud, herramientas=None, decisor=None):
     datos = solicitud.model_dump(mode='json') if isinstance(solicitud, BaseModel) else solicitud
     s = SolicitudResolverRutas.model_validate(datos)
     if s.origen != 'sintetico':
-        raise ValueError('V3 integrada en esta entrega solo admite ensayos sintéticos separados')
+        return ResultadoPlanificacion(estado='espera_revision', propuesta=None, informe=None,
+            trazas=[dict(agente='planificacion', decision='Origen no habilitado para planificación; revisar sin convertir su procedencia.',
+                         herramienta=None, codigo='origen_planificacion_no_habilitado', origen=s.origen.value,
+                         duracion_ms=0, siguiente_estado='espera_revision')])
     original = s.model_dump(mode='json')
     herramientas = herramientas or HerramientasPlanificacion()
     decisor = decisor or DecisorReglas()
