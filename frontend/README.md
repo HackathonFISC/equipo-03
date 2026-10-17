@@ -162,6 +162,7 @@ La barra superior cambia de página; la página activa queda en la dirección
 | `src/api/planes.js`, `VITE_USAR_EJEMPLOS_PLANES` | Sin definir (actual): lee `GET /planes` con sesión. `true`: usa los ejemplos sin API. |
 | `VITE_API_URL` (en `frontend/.env`) | Opcional. Por defecto `http://localhost:8000`. |
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (en `frontend/.env`) | Necesarias para iniciar sesión en Aprobación. Clave pública; nunca la clave de servicio. Reiniciar `npm run dev` al cambiarlas. |
+| `VITE_GOOGLE_MAPS_API_KEY` (en `frontend/.env`) | Opcional. Clave de Google Maps (Maps Embed API) para ver el lugar en el mapa al validarlo. Sin ella el panel funciona: muestra coordenadas y un enlace a Google Maps. Es pública en el navegador: restringirla por dirección web y por API; no usar la clave de Gemini ni la del servidor. |
 
 Con datos de ejemplo, la página muestra un aviso amarillo para que no se confundan con datos reales.
 

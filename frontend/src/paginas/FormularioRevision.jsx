@@ -3,6 +3,7 @@ import { consultarEtapa, listarPoliticas, prepararPriorizacion } from '../api/pr
 import { lugaresDelAmbito, razonDeLugar, SIN_LUGAR } from './lugares.js'
 import './FormularioRevision.css'
 import { useBorrador } from '../useBorrador.js'
+import { lugarPorValidar } from '../lugar.js'
 
 // Estados en los que la RPC acepta un lote (ra_preparar_priorizacion_v2).
 const ESTADOS_ACEPTADOS = ['pendiente', 'ejecutando', 'espera_validacion', 'espera_revision']
@@ -154,7 +155,7 @@ function PuntoRevision({ item, valor, incluir, alCambiar, alIncluir, problemaLug
           <input type="checkbox" checked={incluir} onChange={(e) => alIncluir(id, e.target.checked)} />
           <span>
             <strong>{item.punto?.nombre ?? 'Lugar sin identificar'}</strong>
-            <small>{lugar || 'Sin ubicación'} · Reporte {id.slice(0, 8)}</small>
+            <small>{lugar || 'Sin ubicación'} · Reporte {id.slice(0, 8)}{lugarPorValidar(item) ? ' · Lugar por validar' : ''}</small>
           </span>
         </label>
         <EstadoPunto incluir={incluir} faltan={faltan} problemas={problemas} lugar={problemaLugar} />
@@ -305,6 +306,7 @@ export default function FormularioRevision({ items, calculo, alEnviar, alActuali
   const conProblemas = incluidos.filter((i) => problemasDe(filaDe(i.incidente_id)).length > 0)
   const incompletos = incluidos.filter((i) => faltantesDe(filaDe(i.incidente_id)).length > 0)
 
+  const lugaresPorValidar = items.filter(lugarPorValidar).length
   const lugares = useMemo(() => lugaresDelAmbito(items), [items])
   const razonLugar = razonDeLugar(lugares)
 
@@ -409,6 +411,12 @@ export default function FormularioRevision({ items, calculo, alEnviar, alActuali
               {incompletos.length > 0 ? `; ${incompletos.length} con datos pendientes` : incluidos.length > 0 ? '; todos completos' : ''}.
               {' '}Todos los puntos del ámbito viajan en el envío; los que no revisas quedan pendientes.
             </p>
+            {lugaresPorValidar > 0 && (
+              <p className="rev-aviso-lugar-pendiente" role="note">
+                {lugaresPorValidar} {lugaresPorValidar === 1 ? 'punto tiene' : 'puntos tienen'} el lugar por validar. Valídalo{lugaresPorValidar === 1 ? '' : 's'} en la
+                tarjeta de cada incidente: mientras no conste esa validación, el cálculo automático de lotes se mantiene en revisión humana.
+              </p>
+            )}
             {envio.estado === 'error' && (
               <div className="mensaje mensaje-error" role="alert">
                 <p>{MENSAJE_ERROR[envio.codigo] ?? 'No se pudo enviar la revisión.'}</p>

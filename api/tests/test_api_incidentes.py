@@ -178,6 +178,11 @@ def test_incidente_pendiente_con_punto_y_conteos(cliente, db):
         "nombre": "Escuela El Coco",
         "distrito": "La Chorrera",
         "corregimiento": "El Coco",
+        # El catálogo de este caso no trae coordenadas: no se inventan.
+        "latitud": None,
+        "longitud": None,
+        "precision_metros": None,
+        "fuente_ubicacion": None,
     }
     # Vínculos activos (3) y remitentes distintos (2) son cifras distintas.
     assert dato["reportes_vinculados"] == 3
@@ -297,3 +302,18 @@ def test_encabezado_que_no_es_bearer_es_403(db):
 
     assert respuesta.status_code == 403
     assert db.llamadas == []
+
+
+def test_el_punto_trae_las_coordenadas_del_catalogo_y_no_la_ubicacion_del_incidente(cliente, db):
+    db.rpcs["ra_catalogo_v2"][0].update(latitud=8.86672, longitud=-79.81024, precision_metros=50, fuente_ubicacion="catalogo")
+    db.rpcs["ra_incidentes_snapshot_v2"] = [incidente()]
+    [dato] = cliente.get("/incidentes").json()
+    assert dato["punto"]["latitud"] == 8.86672 and dato["punto"]["longitud"] == -79.81024
+    assert dato["punto"]["precision_metros"] == 50 and dato["punto"]["fuente_ubicacion"] == "catalogo"
+    assert "ubicacion" not in dato
+
+
+def test_un_punto_sin_coordenadas_no_las_inventa(cliente, db):
+    db.rpcs["ra_incidentes_snapshot_v2"] = [incidente()]
+    [dato] = cliente.get("/incidentes").json()
+    assert dato["punto"]["latitud"] is None and dato["punto"]["longitud"] is None

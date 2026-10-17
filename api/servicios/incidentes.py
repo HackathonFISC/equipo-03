@@ -22,6 +22,28 @@ def _lista(datos) -> list[dict]:
     return datos if isinstance(datos, list) else []
 
 
+def _coordenadas(p: dict) -> dict:
+    """Latitud y longitud del catálogo si ambas son válidas; si no, ninguna (nunca se inventan)."""
+    if p.get("latitud") is None or p.get("longitud") is None:
+        return {}
+    try:
+        PuntoPanel(
+            punto_atencion_id=p["punto_atencion_id"],
+            nombre=p["nombre"],
+            latitud=p["latitud"],
+            longitud=p["longitud"],
+            precision_metros=p.get("precision_metros"),
+        )
+    except (KeyError, TypeError, ValueError, ValidationError):
+        return {}
+    return {
+        "latitud": p["latitud"],
+        "longitud": p["longitud"],
+        "precision_metros": p.get("precision_metros"),
+        "fuente_ubicacion": p.get("fuente_ubicacion"),
+    }
+
+
 def _puntos(db) -> dict[str, PuntoPanel]:
     catalogo = _lista(db.rpc(RPC_CATALOGO, {}).execute().data)
     return {
@@ -30,6 +52,7 @@ def _puntos(db) -> dict[str, PuntoPanel]:
             nombre=p["nombre"],
             distrito=p.get("distrito"),
             corregimiento=p.get("corregimiento"),
+            **_coordenadas(p),
         )
         for p in catalogo
     }

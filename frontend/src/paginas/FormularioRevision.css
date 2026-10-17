@@ -88,3 +88,5 @@
 .rev-calculo-aviso { color: var(--ambar); font-weight: 600; }
 
 .rev-aviso-lugar { margin: 0 0 12px; padding: 10px 14px; background: var(--error-fondo); border-left: 4px solid var(--ladrillo); border-radius: 8px; color: var(--ladrillo); font-size: 14px; }
+
+.rev-aviso-lugar-pendiente { margin: 0 0 12px; padding: 10px 14px; background: #fff4dc; border-left: 4px solid #d99a00; border-radius: 8px; color: #6b4600; font-size: 14px; }
