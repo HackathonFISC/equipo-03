@@ -1,0 +1,67 @@
+{
+  "estado": "ok",
+  "fecha": "2026-10-16T21:07:13.970473-05:00",
+  "modelo": "gemini-3.8-flash",
+  "origen": "sintetico",
+  "modo": "sin_bd",
+  "reporte": {
+    "esquema_version": "1.0",
+    "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+    "creado_en": "2026-10-17T02:07:13.967613Z",
+    "origen": "sintetico",
+    "reporte_id": "bc815641-f5cc-5c37-aaf5-e85bf7d84f23",
+    "modalidad": "texto",
+    "interpretacion": {
+      "resumen": "Corte de agua durante 48 horas afectando a 120 personas en P1.",
+      "ubicacion_declarada": "P1",
+      "campos": {
+        "horas_sin_agua": 48.0,
+        "personas_afectadas": 120,
+        "vulnerabilidad_declarada": null,
+        "institucion_declarada": null,
+        "tipo_problema": "sin_suministro"
+      },
+      "evidencia_textual": [
+        "En P1",
+        "48 horas sin agua",
+        "120 personas afectadas"
+      ],
+      "faltantes": [],
+      "requiere_aclaracion": false,
+      "fuera_de_alcance": false
+    },
+    "evidencias": [
+      {
+        "evidencia_id": "8e3e0aca-0a7d-58bc-a4b9-82b30a352b9e",
+        "reporte_id": "bc815641-f5cc-5c37-aaf5-e85bf7d84f23",
+        "tipo": "texto",
+        "referencia": "reportes/bc815641-f5cc-5c37-aaf5-e85bf7d84f23/texto",
+        "descripcion": "Texto original persistido; las citas de la extracción se cotejaron literalmente.",
+        "campos_respaldados": [
+          "entrada.texto"
+        ]
+      }
+    ],
+    "ubicacion_compartida": null
+  },
+  "evento": {
+    "esquema_version": "1.0",
+    "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+    "creado_en": "2026-10-17T02:07:13.967784Z",
+    "origen": "sintetico",
+    "evento_id": "05f5b901-69f9-5a62-8961-e4c8e3619a67",
+    "agente": "ingesta",
+    "decision": "Entregar interpretación a Territorial.",
+    "herramienta": "gemini.generateContent",
+    "entrada_ids": [
+      "bc815641-f5cc-5c37-aaf5-e85bf7d84f23"
+    ],
+    "salida_ids": [
+      "bc815641-f5cc-5c37-aaf5-e85bf7d84f23"
+    ],
+    "resultado": "Extracción validada y citas cotejadas; no se autorizó distribución.",
+    "duracion_ms": 4622,
+    "siguiente_estado": "pendiente"
+  },
+  "siguiente_etapa": "territorial"
+}
