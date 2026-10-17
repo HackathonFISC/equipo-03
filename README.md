@@ -51,9 +51,19 @@ Para probar selección parcial y verificación independiente de V3:
 .\.venv\Scripts\python.exe -m pytest calculo/tests/test_plan_v3.py -q
 ```
 
-Consultar [solver y verificador V3](calculo/PLAN_V3.md). Se prueban seis puntos con dos cisternas, retiro de una cisterna y déficit crítico; siguen pendientes la conexión a persistencia/panel y aprobación del equipo. Las propuestas conservan bloqueos de publicación.
+Consultar [solver y verificador V3](calculo/PLAN_V3.md). Se prueban seis puntos con dos cisternas, retiro de una cisterna y déficit crítico. La integración de Planificación de Emilia añade persistencia comprobada en PostgreSQL temporal; aplicación de 0009 en Supabase, API/panel y recorrido conjunto siguen pendientes según la evidencia del repositorio. Las propuestas conservan bloqueos de publicación.
 
 ## Evals
+
+Para reunir la regresión del equipo y las comprobaciones preparatorias de V4:
+
+```powershell
+.\.venv\Scripts\python.exe -m evals.ejecutar --salida ../tmp/evaluacion_v4_01
+```
+
+La carpeta debe ser nueva. El código de salida 2 indica integración pendiente;
+los resultados locales no acreditan aprobación ni envío real. Consultar
+[alcance, pruebas y coordinación de V4](evals/V4.md).
 
 Para probar demanda y prioridad de V2 sin servicios externos:
 
