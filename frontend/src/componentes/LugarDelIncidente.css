@@ -1,0 +1,35 @@
+.lugar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 12px 0 4px; padding: 10px 12px; border: 1px solid var(--borde, #cbd5e1); border-radius: var(--radio, 8px); background: var(--fondo, #f8fafc); }
+.lugar-chip { font-size: 12.5px; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 1px solid transparent; }
+.lugar-chip[data-tono='ok'] { background: #e6f4ea; color: #1e6b3a; border-color: #b7dfc3; }
+.lugar-chip[data-tono='aviso'] { background: #fff4dc; color: #8a5a00; border-color: #f0d9a0; }
+.lugar-chip[data-tono='error'] { background: #fdeaea; color: var(--ladrillo, #9b2c2c); border-color: #f2c1c1; }
+.lugar-nombre { font-size: 14px; color: var(--tinta-suave, #475569); flex: 1 1 140px; min-width: 0; overflow-wrap: anywhere; }
+.lugar-boton { background: var(--agua, #075985); color: #fff; border: 0; border-radius: var(--radio, 8px); padding: 7px 14px; font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+.lugar-boton:disabled { opacity: 0.5; cursor: not-allowed; }
+.lugar-boton:focus-visible, .lugar-cancelar:focus-visible, .lugar-confirmar:focus-visible { outline: 3px solid var(--agua, #075985); outline-offset: 2px; }
+
+.lugar-dialogo { width: min(640px, calc(100vw - 24px)); max-height: calc(100vh - 32px); overflow-y: auto; border: 0; border-radius: 14px; padding: 22px; background: var(--papel, #fff); color: var(--tinta, #102a43); box-shadow: 0 20px 50px rgb(16 42 67 / 30%); }
+.lugar-dialogo::backdrop { background: rgb(16 42 67 / 55%); }
+.lugar-dialogo h2 { margin: 0 0 6px; font-size: 19px; }
+.lugar-punto { margin: 0 0 10px; font-size: 14.5px; }
+.lugar-mapa { display: block; width: 100%; height: 320px; border: 1px solid var(--borde, #cbd5e1); border-radius: 10px; background: #e5edf3; }
+.lugar-sin-mapa { margin: 0; padding: 14px; border: 1px dashed var(--borde, #cbd5e1); border-radius: 10px; font-size: 14px; background: var(--fondo, #f1f5f9); }
+.lugar-sin-mapa p { margin: 0; }
+.lugar-datos { margin: 8px 0 12px; font-size: 13px; color: var(--tinta-suave, #475569); }
+.lugar-datos a { color: var(--agua, #075985); font-weight: 600; }
+.lugar-aviso { margin: 0 0 12px; padding: 10px 12px; border-left: 4px solid var(--agua, #075985); background: var(--fondo, #f1f5f9); border-radius: 6px; font-size: 14px; line-height: 1.5; }
+.lugar-campo { display: grid; gap: 2px; margin-bottom: 6px; font-size: 14px; }
+.lugar-campo small { color: var(--tinta-suave, #475569); font-size: 12.5px; }
+.lugar-dialogo textarea { width: 100%; box-sizing: border-box; font: inherit; font-size: 14.5px; padding: 8px 10px; border: 1px solid var(--borde, #cbd5e1); border-radius: 8px; resize: vertical; }
+.lugar-contador { margin: 4px 0 10px; font-size: 12.5px; color: var(--tinta-suave, #475569); }
+.lugar-confirmo { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; margin-bottom: 8px; }
+.lugar-error { margin: 8px 0; padding: 10px 12px; background: #fdeaea; border-left: 4px solid var(--ladrillo, #9b2c2c); border-radius: 6px; color: var(--ladrillo, #9b2c2c); font-size: 14px; }
+.lugar-error p { margin: 0 0 4px; }
+.lugar-detalle { font-size: 12.5px; opacity: 0.85; }
+.lugar-acciones { display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; }
+.lugar-cancelar, .lugar-confirmar { font: inherit; font-size: 14px; padding: 9px 16px; border-radius: var(--radio, 8px); cursor: pointer; }
+.lugar-cancelar { background: transparent; border: 1px solid var(--borde, #cbd5e1); color: var(--tinta, #102a43); }
+.lugar-confirmar { background: var(--agua, #075985); border: 1px solid var(--agua, #075985); color: #fff; font-weight: 600; }
+.lugar-confirmar:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media (max-width: 520px) { .lugar-mapa { height: 240px; } .lugar-dialogo { padding: 16px; } }

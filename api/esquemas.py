@@ -187,6 +187,12 @@ class PuntoPanel(BaseModel):
     nombre: str
     distrito: str | None = None
     corregimiento: str | None = None
+    # Coordenadas del catálogo (dato público del punto), para dibujarlo en el mapa al validar el lugar.
+    # Nunca la ubicación que compartió una persona.
+    latitud: Annotated[float, Field(ge=-90, le=90, allow_inf_nan=False)] | None = None
+    longitud: Annotated[float, Field(ge=-180, le=180, allow_inf_nan=False)] | None = None
+    precision_metros: Annotated[float, Field(ge=0, allow_inf_nan=False)] | None = None
+    fuente_ubicacion: str | None = None
 
 
 class IncidentePanel(BaseModel):
@@ -398,6 +404,20 @@ class RevisionIncidente(Peticion):
         if self.ventana_atencion is not None and self.ventana_atencion.fin <= self.ventana_atencion.inicio:
             raise ValueError("La ventana debe terminar después de empezar")
         return self
+
+
+class ValidarLugar(Peticion):
+    """El coordinador confirma el lugar de una versión concreta del incidente y deja su evidencia."""
+
+    version_incidente: Annotated[int, Field(strict=True, gt=0)]
+    evidencia: Annotated[str, Field(min_length=10, max_length=2000)]
+
+
+class ResultadoLugar(BaseModel):
+    incidente_id: UUID
+    version: int
+    estado_validacion: Literal["validada"]
+    faltantes: list[str]
 
 
 class PrepararPriorizacion(Peticion):

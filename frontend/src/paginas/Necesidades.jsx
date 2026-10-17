@@ -5,6 +5,7 @@ import FormularioRevision from './FormularioRevision.jsx'
 import './Necesidades.css'
 import { useQuitados } from '../useQuitados.js'
 import { BarraQuitados, BotonQuitar } from '../componentes/Quitar.jsx'
+import LugarDelIncidente from '../componentes/LugarDelIncidente.jsx'
 
 // Urgencia y confianza se muestran por separado (documento de versiones, V2):
 // la urgencia sale del puntaje de prioridad; la confianza, de la consolidación del incidente.
@@ -186,7 +187,7 @@ function Confianza({ incidente }) {
   )
 }
 
-function TarjetaNecesidad({ item, alQuitar }) {
+function TarjetaNecesidad({ item, alQuitar, conSesion, alActualizar }) {
   const { punto } = item
   const evaluacion = item.evaluacion_necesidad
   const recalculo = requiereRecalculo(item)
@@ -249,6 +250,7 @@ function TarjetaNecesidad({ item, alQuitar }) {
       {evaluacion?.supuestos.length > 0 && (
         <p className="supuestos">Supuestos: {evaluacion.supuestos.join(' ')}</p>
       )}
+      <LugarDelIncidente item={item} conSesion={conSesion} alActualizar={alActualizar} />
       <details className="detalle-tecnico">
         <summary>Detalles técnicos</summary>
         <p className="pie">
@@ -408,7 +410,7 @@ export default function Necesidades({ conSesion }) {
           <h2 className="grupo-titulo">Orden de atención</h2>
           <ol className="lista-necesidades">
             {enOrden.map((item) => (
-              <TarjetaNecesidad key={item.incidente_id} item={item} alQuitar={() => quitar(item.incidente_id)} />
+              <TarjetaNecesidad key={item.incidente_id} item={item} alQuitar={() => quitar(item.incidente_id)} conSesion={conSesion} alActualizar={recargarSinOcultar} />
             ))}
           </ol>
         </>
@@ -424,7 +426,7 @@ export default function Necesidades({ conSesion }) {
           {conSesion && <a className="cuenta-cta" href="#revision" onClick={(e) => { e.preventDefault(); document.getElementById('revision')?.scrollIntoView({ behavior: 'smooth' }) }}>Confirmar estos datos</a>}
           <ul className="lista-necesidades">
             {pendientes.map((item) => (
-              <TarjetaNecesidad key={item.incidente_id} item={item} alQuitar={() => quitar(item.incidente_id)} />
+              <TarjetaNecesidad key={item.incidente_id} item={item} alQuitar={() => quitar(item.incidente_id)} conSesion={conSesion} alActualizar={recargarSinOcultar} />
             ))}
           </ul>
         </>
