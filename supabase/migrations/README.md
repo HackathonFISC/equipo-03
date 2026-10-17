@@ -11,3 +11,11 @@ con canal y deduplicación Telegram independiente del remitente. Requiere 0001;
 Coordinar el orden/registro con Noel antes de usar un ejecutor de migraciones.
 Ver `../IDENTIDAD_REPORTES.md` y `../tests/0004_identidad_reportes_smoke.sql`.
 0004 probada localmente; Emilia confirmó su aplicación y smoke correctos en Supabase desde el SQL Editor. No volver a aplicar si ya está instalada.
+
+
+Emilia mantiene `0005_ingesta_transaccional.sql` para V1. Crea las RPC
+`ra_tomar_ingesta` y `ra_finalizar_ingesta`; solo service_role puede ejecutarlas.
+Requiere 0001; no sustituye 0002/0003 de Noel. El cierre guarda interpretación,
+evidencias, traza y transición atómicamente y comprueba reserva/snapshot.
+Probar con `../tests/0005_ingesta_smoke.sql`. Probada en PostgreSQL temporal;
+no aplicada a Supabase real por Codex. Ver `../../agentes/INGESTA_V1.md`.

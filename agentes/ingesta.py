@@ -1,0 +1,179 @@
+"""Ingesta V1 manual: contratos puros y adaptador de persistencia transaccional."""
+import argparse
+import json
+import math
+import re
+import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Protocol
+from uuid import UUID, uuid4, uuid5
+
+from pydantic import ValidationError
+
+from contratos.errores import CodigoError, ErrorDominio
+from contratos.estados import EstadoEjecucion
+from contratos.modelos import Evidencia, EventoTraza, ExtraccionReporteLLM, ReporteInterpretado, ReporteRegistrado
+from .gemini import ConfiguracionGemini, ErrorIngesta, ExtractorGemini
+from .trazas import traza_ingesta
+
+
+class Extractor(Protocol):
+    def extraer(self, texto: str) -> ExtraccionReporteLLM: ...
+
+
+@dataclass(frozen=True)
+class ResultadoIngesta:
+    reporte: ReporteInterpretado
+    evento: EventoTraza
+    siguiente_etapa: str
+
+
+def interpretar_reporte(reporte: ReporteRegistrado, extractor: Extractor, *, intento_ref: str = 'manual') -> ResultadoIngesta:
+    """No persiste ni envía mensajes. Solo V1 texto; IDs y origen del backend."""
+    reporte = ReporteRegistrado.model_validate(reporte.model_dump(mode='json'))
+    if reporte.entrada.modalidad != 'texto':
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Ingesta V1 admite solo reportes de texto.')
+    texto = reporte.entrada.texto
+    inicio = time.monotonic()
+    try:
+        propuesta = extractor.extraer(texto)
+        salida = ExtraccionReporteLLM.model_validate(propuesta.model_dump(mode='json'))
+    except (ValidationError, AttributeError, TypeError):
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Extracción incompatible con el contrato.') from None
+    if any(fragmento not in texto for fragmento in salida.evidencia_textual):
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'La evidencia citada no pertenece al texto original.')
+    for valor in (salida.ubicacion_declarada, salida.campos.institucion_declarada, salida.campos.vulnerabilidad_declarada):
+        if valor is not None and valor not in texto:
+            raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Se declaró un dato textual que no está en el reporte.')
+    # Guardia V1 para cantidades expresadas con dígitos. Se admiten horas y días;
+    # expresiones no comprobables aquí deben quedar desconocidas, no adivinarse.
+    horas = [float(n.replace(',', '.')) * (24 if unidad.casefold().startswith(('dia', 'día')) else 1)
+             for n, unidad in re.findall(r'(?<![\d-])(\d+(?:[.,]\d+)?)\s*(horas?|h\b|d[ií]as?)', texto, re.I)]
+    personas = [int(n) for n in re.findall(r'(?<![\d-])(\d+)\s*(?:personas?|habitantes?|residentes?|vecinos?|afectad[oa]s?)\b', texto, re.I)]
+    personas += [int(n) for n in re.findall(r'\bsomos\s+(\d+)\b', texto, re.I)]
+    if salida.campos.horas_sin_agua is not None and not any(math.isclose(salida.campos.horas_sin_agua, h) for h in horas):
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'La duración extraída no tiene respaldo numérico comprobable en el texto.')
+    if salida.campos.personas_afectadas is not None and salida.campos.personas_afectadas not in personas:
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'La población extraída no tiene respaldo numérico comprobable en el texto.')
+    if salida.fuera_de_alcance and salida.requiere_aclaracion:
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Una entrada fuera de alcance no debe pedir aclaración de agua.')
+    if not salida.fuera_de_alcance and not salida.evidencia_textual:
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Un reporte interpretado de agua requiere evidencia textual.')
+    evidencia = Evidencia(
+        evidencia_id=uuid5(reporte.reporte_id, 'texto_original'), reporte_id=reporte.reporte_id,
+        tipo='texto', referencia=f'reportes/{reporte.reporte_id}/texto',
+        descripcion='Texto original persistido; las citas de la extracción se cotejaron literalmente.',
+        campos_respaldados=['entrada.texto'],
+    )
+    interpretado = ReporteInterpretado(
+        esquema_version=reporte.esquema_version, ejecucion_id=reporte.ejecucion_id,
+        creado_en=datetime.now(timezone.utc), origen=reporte.origen, reporte_id=reporte.reporte_id,
+        modalidad='texto', interpretacion=salida, evidencias=[evidencia],
+        ubicacion_compartida=reporte.entrada.ubicacion_compartida,
+    )
+    if salida.fuera_de_alcance:
+        estado, etapa, decision = EstadoEjecucion.COMPLETADA, 'terminada', 'Cerrar entrada fuera del alcance de agua.'
+    elif salida.requiere_aclaracion:
+        estado, etapa, decision = EstadoEjecucion.ESPERA_ACLARACION, 'ingesta', 'Pausar para aclarar datos del reporte.'
+    else:
+        estado, etapa, decision = EstadoEjecucion.PENDIENTE, 'territorial', 'Entregar interpretación a Territorial.'
+    evento = traza_ingesta(reporte, intento_ref=intento_ref, siguiente_estado=estado,
+                          duracion_ms=round((time.monotonic()-inicio)*1000), decision=decision,
+                          resultado='Extracción validada y citas cotejadas; no se autorizó distribución.')
+    return ResultadoIngesta(interpretado, evento, etapa)
+
+
+class PersistenciaIngesta:
+    def __init__(self, db):
+        self.db = db
+
+    def tomar(self, ejecucion_id: UUID, trabajador_id: str):
+        return self.db.rpc('ra_tomar_ingesta', {'p_ejecucion_id': str(ejecucion_id),
+                                             'p_trabajador_id': trabajador_id}).execute().data
+
+    def finalizar(self, *, ejecucion_id, trabajador_id, snapshot, resultado=None, evento=None, error=None):
+        return self.db.rpc('ra_finalizar_ingesta', {
+            'p_ejecucion_id': str(ejecucion_id), 'p_trabajador_id': trabajador_id,
+            'p_reporte_snapshot': snapshot,
+            'p_resultado': resultado.model_dump(mode='json') if resultado else None,
+            'p_evento': evento.model_dump(mode='json'),
+            'p_error': error.model_dump(mode='json') if error else None,
+        }).execute().data
+
+
+def reconstruir_reporte(filas: dict) -> ReporteRegistrado:
+    e, r = filas['ejecucion'], filas['reporte']
+    if e['reporte_id'] != r['reporte_id'] or e['origen'] != r['origen']:
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Reporte y ejecución no comparten referencia y origen.')
+    return ReporteRegistrado.model_validate({
+        'esquema_version': r['esquema_version'], 'ejecucion_id': e['ejecucion_id'],
+        'creado_en': r['creado_en'], 'origen': r['origen'], 'reporte_id': r['reporte_id'],
+        'entrada': {k: r.get(k) for k in ('canal', 'mensaje_externo_id', 'remitente_ref', 'modalidad', 'texto', 'ubicacion_compartida')},
+    })
+
+
+def procesar_ejecucion(ejecucion_id: UUID, persistencia: PersistenciaIngesta, extractor: Extractor) -> dict:
+    trabajador_id = f'ingesta:{uuid4()}'
+    filas = persistencia.tomar(ejecucion_id, trabajador_id)
+    if filas is None:
+        return {'estado': 'no_tomada', 'ejecucion_id': str(ejecucion_id)}
+    inicio = time.monotonic()
+    r = filas['reporte']
+    # Este contexto permite registrar un error de entrada aunque falle su contrato.
+    contexto = dict(esquema_version='1.0', ejecucion_id=ejecucion_id,
+                    creado_en=datetime.now(timezone.utc), origen=r['origen'])
+    try:
+        reporte = reconstruir_reporte(filas)
+        resultado = interpretar_reporte(reporte, extractor, intento_ref=trabajador_id)
+    except (ErrorIngesta, ValidationError) as error:
+        fallo = error if isinstance(error, ErrorIngesta) else ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Reporte persistido incompatible con el contrato.')
+        detalle = ErrorDominio(**contexto, codigo=fallo.codigo, mensaje=str(fallo), recuperable=fallo.recuperable, campos=[])
+        evento = EventoTraza(**contexto, evento_id=uuid5(ejecucion_id, f'ingesta:{trabajador_id}'),
+                            agente='ingesta', decision='Detener Ingesta y registrar error controlado.',
+                            herramienta='gemini.generateContent', entrada_ids=[r['reporte_id']], salida_ids=[],
+                            resultado=str(fallo), duracion_ms=round((time.monotonic()-inicio)*1000), siguiente_estado='fallida')
+        return persistencia.finalizar(ejecucion_id=ejecucion_id, trabajador_id=trabajador_id,
+                                     snapshot=r, evento=evento, error=detalle)
+    # Un fallo de persistencia no se convierte en error del LLM ni se reintenta
+    # ciegamente: la RPC pudo haber confirmado antes de perderse la respuesta.
+    return persistencia.finalizar(ejecucion_id=ejecucion_id, trabajador_id=trabajador_id,
+                                 snapshot=r, resultado=resultado.reporte, evento=resultado.evento)
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Ejecutar Ingesta V1 para un reporte de texto.')
+    grupo = parser.add_mutually_exclusive_group(required=True)
+    grupo.add_argument('--ejecucion-id', type=UUID, help='Procesar y persistir una ejecución pendiente concreta.')
+    grupo.add_argument('--reporte-json', type=Path, help='ReporteRegistrado local: llama a Gemini sin usar BD.')
+    parser.add_argument('--salida', type=Path, help='Guardar resultado local, sin claves; solo con --reporte-json.')
+    args = parser.parse_args()
+    if args.salida and not args.reporte_json:
+        parser.error('--salida solo se permite con --reporte-json')
+    try:
+        extractor = ExtractorGemini(ConfiguracionGemini.cargar())
+        if args.reporte_json:
+            reporte = ReporteRegistrado.model_validate_json(args.reporte_json.read_text())
+            resultado = interpretar_reporte(reporte, extractor)
+            if args.salida:
+                args.salida.write_text(json.dumps({'reporte': resultado.reporte.model_dump(mode='json'),
+                                                 'evento': resultado.evento.model_dump(mode='json'),
+                                                 'siguiente_etapa': resultado.siguiente_etapa}, ensure_ascii=False, indent=2)+'\n')
+            print(json.dumps({'estado': 'ok', 'modo': 'sin_bd', 'siguiente_estado': resultado.evento.siguiente_estado.value,
+                              'siguiente_etapa': resultado.siguiente_etapa}, ensure_ascii=False))
+            return 0
+        from comun.db import get_supabase
+        resultado = procesar_ejecucion(args.ejecucion_id, PersistenciaIngesta(get_supabase()), extractor)
+        print(json.dumps(resultado, ensure_ascii=False))
+        return 1 if resultado.get('estado') == 'fallida' else 0
+    except ErrorIngesta as error:
+        print(json.dumps({'estado': 'error', 'codigo': error.codigo.value, 'mensaje': str(error)}, ensure_ascii=False))
+    except Exception:
+        # No imprimir excepciones crudas del SDK, URLs, entrada ni claves.
+        print(json.dumps({'estado': 'error', 'mensaje': 'No se completó Ingesta. Revisa configuración, migración 0005, entrada y estado de ejecución; no reintentes un cierre sin comprobar su resultado.'}, ensure_ascii=False))
+    return 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
