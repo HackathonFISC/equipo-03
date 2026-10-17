@@ -1,0 +1,261 @@
+.necesidades {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+.necesidades-cabecera h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.necesidades-cabecera p {
+  margin: 0 0 1.25rem;
+  color: var(--tinta-suave);
+}
+
+.grupo-titulo {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.15rem;
+}
+
+.grupo-nota {
+  margin: 0 0 0.75rem;
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+.lista-necesidades {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.necesidad {
+  --color-clase: var(--gris);
+  padding: 1rem;
+  border: 1px solid var(--borde);
+  border-left: 6px solid var(--color-clase);
+  border-radius: 4px;
+  background: var(--papel);
+}
+
+.necesidad[data-clase='critico'] { --color-clase: var(--ladrillo); }
+.necesidad[data-clase='general'] { --color-clase: var(--agua); }
+
+.necesidad-cabecera {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.posicion {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--color-clase);
+  color: #fff;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.necesidad-titulo {
+  flex: 1;
+  min-width: 0;
+}
+
+.necesidad-titulo h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.necesidad-demanda {
+  margin: 0.15rem 0 0;
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+.sellos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.sello-clase,
+.sello-urgente {
+  padding: 0.1rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sello-clase {
+  background: var(--color-clase);
+  color: #fff;
+}
+
+.sello-urgente {
+  border: 1px solid var(--ambar);
+  background: var(--ambar-fondo);
+  color: var(--tinta);
+}
+
+.sello-urgente::before {
+  content: '! ';
+  font-weight: 700;
+}
+
+/* Urgencia y confianza, lado a lado y separadas */
+.bloques {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.9rem;
+}
+
+.bloque {
+  padding: 0.75rem;
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+}
+
+.bloque h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+}
+
+.puntaje,
+.confianza {
+  margin: 0 0 0.6rem;
+}
+
+.puntaje-valor {
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.puntaje-escala {
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+.sin-puntaje {
+  margin: 0 0 0.6rem;
+  color: var(--tinta-suave);
+  font-style: italic;
+}
+
+.aportes {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+}
+
+.aportes li {
+  display: grid;
+  grid-template-columns: 9rem 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.aporte-barra {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--fondo);
+  overflow: hidden;
+}
+
+.aporte-barra span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--agua);
+}
+
+.aporte-valor {
+  font-variant-numeric: tabular-nums;
+  color: var(--tinta-suave);
+}
+
+.datos {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.dato dt {
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+.dato dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.dato-vacio {
+  color: var(--tinta-suave);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.lista-corta h4,
+.pendientes h3 {
+  margin: 0.6rem 0 0.25rem;
+  font-size: 0.85rem;
+}
+
+.lista-corta ul,
+.pendientes ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.pendientes {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border-left: 4px solid var(--ambar);
+  background: var(--ambar-fondo);
+}
+
+.pendientes h3 {
+  margin-top: 0;
+}
+
+.supuestos,
+.pie {
+  margin: 0.6rem 0 0;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+@media (min-width: 44rem) {
+  .bloques {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 30rem) {
+  .aportes li {
+    grid-template-columns: 1fr auto;
+  }
+
+  .aporte-barra {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+}

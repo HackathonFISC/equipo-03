@@ -23,10 +23,21 @@ UNICAS = {
     "reportes": ("canal", "mensaje_externo_id"),
     "ejecuciones": ("clave_idempotencia",),
 }
+# Valores por defecto que pone la base en 0001_esquema.sql.
+DEFECTOS = {
+    "ejecuciones": {
+        "estado": "pendiente",
+        "etapa": "ingesta",
+        "intentos": 0,
+        "ultimo_error": None,
+        "actualizado_en": "2026-10-16T18:00:00-05:00",
+    },
+}
 COLUMNA_ID = {
     "remitentes": "remitente_ref",
     "reportes": "reporte_id",
     "ejecuciones": "ejecucion_id",
+    "eventos": "evento_id",
 }
 
 
@@ -76,6 +87,7 @@ class Consulta:
                 ):
                     raise APIError({"message": "duplicado", "code": "23505"})
             nueva = {
+                **DEFECTOS.get(self.tabla, {}),
                 **self.fila,
                 COLUMNA_ID[self.tabla]: str(uuid4()),
                 "creado_en": f"2026-10-16T18:{len(filas):02d}:00-05:00",
@@ -88,7 +100,7 @@ class Consulta:
         if self.tabla == "reportes" and "ejecuciones(" in self.columnas:
             for f in resultado:
                 f["ejecuciones"] = [
-                    {"ejecucion_id": e["ejecucion_id"]}
+                    {k: e[k] for k in ("ejecucion_id", "estado", "etapa")}
                     for e in self.db.tablas["ejecuciones"]
                     if e["reporte_id"] == f["reporte_id"]
                 ]
@@ -98,7 +110,7 @@ class Consulta:
 
 class BaseFalsa:
     def __init__(self):
-        self.tablas = {"remitentes": [], "reportes": [], "ejecuciones": []}
+        self.tablas = {"remitentes": [], "reportes": [], "ejecuciones": [], "eventos": []}
         self.error_proximo = None
         self.duplicado_proximo = None
         self.fila_oculta = None
@@ -308,3 +320,86 @@ def test_la_lista_no_exige_secreto(cliente):
 
 def test_salud_sigue_respondiendo(cliente):
     assert cliente.get("/salud").json() == {"estado": "ok"}
+
+
+def test_lista_incluye_estado_y_etapa_de_la_ejecucion(cliente, db):
+    cliente.post("/reportes", json=CUERPO, headers=CABECERA)
+    item = cliente.get("/reportes").json()[0]
+    assert item["seguimiento"] == {"estado": "pendiente", "etapa": "ingesta"}
+    db.tablas["ejecuciones"][0].update(estado="pendiente", etapa="territorial")
+    assert cliente.get("/reportes").json()[0]["seguimiento"]["etapa"] == "territorial"
+
+
+# --- GET /ejecuciones/{id} ---
+
+EVENTO_INGESTA = {
+    "agente": "ingesta",
+    "actor_tipo": "agente",
+    "decision": "Entregar interpretación a Territorial.",
+    "herramienta": "gemini.generateContent",
+    "resultado": "Extracción validada y citas cotejadas; no se autorizó distribución.",
+    "duracion_ms": 2300,
+    "siguiente_estado": "pendiente",
+    "detalles": {"ingesta_cierre_hash": "abc"},
+    "entrada_ids": ["interno"],
+}
+
+
+def test_ejecucion_con_su_traza(cliente, db):
+    reporte = cliente.post("/reportes", json=CUERPO, headers=CABECERA).json()
+    ejecucion_id = reporte["ejecucion_id"]
+    db.tablas["ejecuciones"][0].update(etapa="territorial")
+    db.tablas["eventos"].append({
+        **EVENTO_INGESTA, "evento_id": str(uuid4()), "ejecucion_id": ejecucion_id,
+        "creado_en": "2026-10-16T18:05:00-05:00",
+    })
+    r = cliente.get(f"/ejecuciones/{ejecucion_id}")
+    assert r.status_code == 200
+    datos = r.json()
+    assert datos["estado"] == "pendiente" and datos["etapa"] == "territorial"
+    assert datos["reporte_id"] == reporte["reporte_id"]
+    assert len(datos["eventos"]) == 1
+    evento = datos["eventos"][0]
+    assert evento["agente"] == "ingesta" and evento["duracion_ms"] == 2300
+    crudo = json.dumps(datos)
+    for interno in ("detalles", "ingesta_cierre_hash", "entrada_ids", "clave_idempotencia"):
+        assert interno not in crudo
+
+
+def test_eventos_ordenados_del_mas_antiguo(cliente, db):
+    reporte = cliente.post("/reportes", json=CUERPO, headers=CABECERA).json()
+    for minuto, decision in (("09", "Segunda"), ("05", "Primera")):
+        db.tablas["eventos"].append({
+            **EVENTO_INGESTA, "decision": decision, "evento_id": str(uuid4()),
+            "ejecucion_id": reporte["ejecucion_id"], "creado_en": f"2026-10-16T18:{minuto}:00-05:00",
+        })
+    datos = cliente.get(f"/ejecuciones/{reporte['ejecucion_id']}").json()
+    assert [e["decision"] for e in datos["eventos"]] == ["Primera", "Segunda"]
+
+
+def test_error_de_la_ejecucion_solo_expone_el_codigo(cliente, db):
+    reporte = cliente.post("/reportes", json=CUERPO, headers=CABECERA).json()
+    db.tablas["ejecuciones"][0].update(
+        estado="fallida",
+        ultimo_error={"codigo": "proveedor_no_disponible", "mensaje": "detalle interno"},
+    )
+    datos = cliente.get(f"/ejecuciones/{reporte['ejecucion_id']}").json()
+    assert datos["estado"] == "fallida"
+    assert datos["error_codigo"] == "proveedor_no_disponible"
+    assert "detalle interno" not in json.dumps(datos)
+
+
+def test_ejecucion_inexistente_responde_404(cliente, db):
+    assert cliente.get(f"/ejecuciones/{uuid4()}").status_code == 404
+
+
+def test_id_invalido_responde_422(cliente, db):
+    r = cliente.get("/ejecuciones/no-es-un-uuid")
+    assert r.status_code == 422
+    assert r.json()["campos"] == ["ejecucion_id"]
+
+
+def test_ejecucion_con_base_caida_responde_503(cliente, db):
+    db.error_proximo = APIError({"message": "caída", "code": "XX000"})
+    r = cliente.get(f"/ejecuciones/{uuid4()}")
+    assert r.status_code == 503 and r.json()["codigo"] == "proveedor_no_disponible"

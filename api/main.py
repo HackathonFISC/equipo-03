@@ -4,7 +4,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.errores_http import ErrorApi, respuesta_error
-from api.rutas import reportes
+from api.rutas import ejecuciones, reportes
 from contratos.errores import CodigoError
 
 app = FastAPI(title="RutaAgua Oeste API", version="0.0.1")
@@ -47,6 +47,7 @@ async def manejar_validacion(request: Request, error: RequestValidationError):
 
 
 app.include_router(reportes.router)
+app.include_router(ejecuciones.router)
 
 
 @app.get("/salud")

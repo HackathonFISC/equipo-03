@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { obtenerReportes, USAR_EJEMPLOS } from '../api/reportes.js'
+import { obtenerEjecucion, obtenerReportes, USAR_EJEMPLOS } from '../api/reportes.js'
 import './Reportes.css'
 
 // Estado que ve la persona operadora. Se deriva de la interpretación;
@@ -21,6 +21,38 @@ const TIPOS_PROBLEMA = {
   otro: 'Otro',
   desconocido: 'Desconocido',
 }
+
+const ESTADOS_EJECUCION = {
+  pendiente: 'pendiente',
+  ejecutando: 'en proceso',
+  espera_aclaracion: 'esperando aclaración',
+  espera_validacion: 'esperando validación',
+  espera_revision: 'esperando revisión',
+  completada: 'completada',
+  fallida: 'falló',
+}
+
+const ETAPAS = {
+  ingesta: 'Ingesta',
+  territorial: 'Territorial',
+  priorizacion: 'Priorización',
+  planificacion: 'Planificación',
+  comunicacion: 'Comunicación',
+  terminada: 'Terminada',
+}
+
+const AGENTES = {
+  ingesta: 'Ingesta',
+  territorial: 'Territorial',
+  priorizacion: 'Priorización',
+  planificacion: 'Planificación',
+  comunicacion: 'Comunicación',
+}
+
+const formatoHora = new Intl.DateTimeFormat('es-PA', {
+  timeStyle: 'medium',
+  timeZone: 'America/Panama',
+})
 
 const formatoFecha = new Intl.DateTimeFormat('es-PA', {
   dateStyle: 'medium',
@@ -52,15 +84,78 @@ function Campo({ nombre, valor }) {
   )
 }
 
+function segundos(ms) {
+  return `${(ms / 1000).toLocaleString('es-PA', { maximumFractionDigits: 1 })} s`
+}
+
+// Traza de la ejecución: se pide a la API la primera vez que se abre la fila.
+function Seguimiento({ ejecucionId, seguimiento, traza, onReintentar }) {
+  return (
+    <div className="seguimiento">
+      <h3>Seguimiento</h3>
+      {seguimiento && (
+        <p className="seguimiento-estado">
+          Etapa actual: <strong>{ETAPAS[seguimiento.etapa] ?? seguimiento.etapa}</strong> (
+          {ESTADOS_EJECUCION[seguimiento.estado] ?? seguimiento.estado}).
+        </p>
+      )}
+      {traza.estado === 'cargando' && <p className="traza-nota">Cargando decisiones de los agentes…</p>}
+      {traza.estado === 'error' && (
+        <p className="traza-nota">
+          No se pudo cargar la traza. {traza.error}{' '}
+          <button type="button" className="enlace" onClick={onReintentar}>
+            Reintentar
+          </button>
+        </p>
+      )}
+      {traza.estado === 'listo' && traza.datos.eventos.length === 0 && (
+        <p className="traza-nota">Ningún agente ha procesado este reporte todavía.</p>
+      )}
+      {traza.estado === 'listo' && traza.datos.eventos.length > 0 && (
+        <ol className="traza" aria-label={`Decisiones de la ejecución ${ejecucionId}`}>
+          {traza.datos.eventos.map((e) => (
+            <li key={e.evento_id}>
+              <p className="traza-decision">
+                <strong>{AGENTES[e.agente] ?? e.actor_tipo}</strong>: {e.decision}
+              </p>
+              <p className="traza-resultado">{e.resultado}</p>
+              <p className="traza-meta">
+                <time dateTime={e.creado_en}>{formatoHora.format(new Date(e.creado_en))}</time>, en{' '}
+                {segundos(e.duracion_ms)}
+                {e.herramienta ? `, con ${e.herramienta}` : ''}.
+              </p>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  )
+}
+
 function FilaReporte({ item }) {
-  const { registrado, interpretado } = item
+  const { registrado, interpretado, seguimiento } = item
   const estado = estadoDe(item)
   const interpretacion = interpretado?.interpretacion ?? null
   const campos = interpretacion?.campos
+  const ejecucionId = registrado.ejecucion_id
+  const [traza, setTraza] = useState({ estado: 'inactivo' })
+
+  function cargarTraza() {
+    setTraza({ estado: 'cargando' })
+    obtenerEjecucion(ejecucionId)
+      .then((datos) => setTraza({ estado: 'listo', datos }))
+      .catch((e) => setTraza({ estado: 'error', error: e.message }))
+  }
+
+  function alAbrir(evento) {
+    if (evento.currentTarget.open && traza.estado === 'inactivo' && ejecucionId && !USAR_EJEMPLOS) {
+      cargarTraza()
+    }
+  }
 
   return (
     <li className="reporte" data-estado={estado}>
-      <details>
+      <details onToggle={alAbrir}>
         <summary>
           <span className="reporte-texto">{registrado.entrada.texto}</span>
           <span className="reporte-meta">
@@ -106,6 +201,14 @@ function FilaReporte({ item }) {
             </>
           ) : (
             <p className="ficha-resumen">{ESTADOS[estado].ayuda}. Este reporte ya quedó guardado.</p>
+          )}
+          {ejecucionId && !USAR_EJEMPLOS && (
+            <Seguimiento
+              ejecucionId={ejecucionId}
+              seguimiento={seguimiento}
+              traza={traza}
+              onReintentar={cargarTraza}
+            />
           )}
           <p className="ficha-pie">
             Canal {registrado.entrada.canal}. Origen: {ORIGENES[registrado.origen] ?? registrado.origen}.

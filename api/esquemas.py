@@ -4,6 +4,7 @@ from uuid import UUID
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator
 
+from contratos.estados import Agente, EstadoEjecucion
 from contratos.modelos import ExtraccionReporteLLM
 
 IdPositivo = Annotated[int, Field(strict=True, gt=0)]
@@ -48,6 +49,43 @@ class InterpretadoPanel(BaseModel):
     interpretacion: ExtraccionReporteLLM
 
 
+Etapa = Literal["ingesta", "territorial", "priorizacion", "planificacion", "comunicacion", "terminada"]
+
+
+class SeguimientoPanel(BaseModel):
+    """Dónde va la ejecución del reporte. Lo cambian los agentes, nunca la API."""
+
+    estado: EstadoEjecucion
+    etapa: Etapa
+
+
 class ReporteListado(BaseModel):
     registrado: RegistradoPanel
     interpretado: InterpretadoPanel | None
+    seguimiento: SeguimientoPanel | None
+
+
+class EventoPanel(BaseModel):
+    """Traza de una decisión. Sin detalles internos, prompts ni texto de personas."""
+
+    evento_id: UUID
+    agente: Agente | None
+    actor_tipo: Literal["agente", "coordinador", "conductor", "sistema"]
+    decision: str
+    herramienta: str | None
+    resultado: str
+    duracion_ms: int
+    siguiente_estado: EstadoEjecucion | None
+    creado_en: AwareDatetime
+
+
+class EjecucionPanel(BaseModel):
+    ejecucion_id: UUID
+    reporte_id: UUID | None
+    estado: EstadoEjecucion
+    etapa: Etapa
+    intentos: int
+    error_codigo: str | None
+    creado_en: AwareDatetime
+    actualizado_en: AwareDatetime
+    eventos: list[EventoPanel]

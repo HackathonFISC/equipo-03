@@ -17,6 +17,7 @@ from api.esquemas import (
     NuevoReporteTelegram,
     RegistradoPanel,
     ReporteListado,
+    SeguimientoPanel,
 )
 from contratos.errores import CodigoError
 from contratos.modelos import EntradaReporte, ExtraccionReporteLLM, ReporteRegistrado
@@ -155,7 +156,7 @@ def listar_reportes(db, limite: int) -> list[ReporteListado]:
     """Reportes más recientes primero, sin identificadores del remitente."""
     filas = (
         db.table("reportes")
-        .select("reporte_id,canal,modalidad,texto,interpretacion,origen,creado_en,ejecuciones(ejecucion_id)")
+        .select("reporte_id,canal,modalidad,texto,interpretacion,origen,creado_en,ejecuciones(ejecucion_id,estado,etapa)")
         .order("creado_en", desc=True)
         .limit(limite)
         .execute()
@@ -164,12 +165,13 @@ def listar_reportes(db, limite: int) -> list[ReporteListado]:
     resultado = []
     for fila in filas:
         ejecuciones = fila.get("ejecuciones") or []
+        ejecucion = ejecuciones[0] if ejecuciones else None
         interpretacion = _leer_interpretacion(fila.get("interpretacion"))
         resultado.append(
             ReporteListado(
                 registrado=RegistradoPanel(
                     reporte_id=fila["reporte_id"],
-                    ejecucion_id=ejecuciones[0]["ejecucion_id"] if ejecuciones else None,
+                    ejecucion_id=ejecucion["ejecucion_id"] if ejecucion else None,
                     creado_en=fila["creado_en"],
                     origen=fila["origen"],
                     entrada=EntradaPanel(
@@ -178,6 +180,9 @@ def listar_reportes(db, limite: int) -> list[ReporteListado]:
                 ),
                 interpretado=InterpretadoPanel(interpretacion=interpretacion)
                 if interpretacion
+                else None,
+                seguimiento=SeguimientoPanel(estado=ejecucion["estado"], etapa=ejecucion["etapa"])
+                if ejecucion
                 else None,
             )
         )

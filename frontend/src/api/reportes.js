@@ -22,3 +22,17 @@ export async function obtenerReportes() {
   }
   return respuesta.json()
 }
+
+// Estado, etapa y traza de los agentes de una ejecución (GET /ejecuciones/{id}).
+export async function obtenerEjecucion(ejecucionId) {
+  let respuesta
+  try {
+    respuesta = await fetch(`${URL_API}/ejecuciones/${encodeURIComponent(ejecucionId)}`)
+  } catch {
+    throw new Error('No se pudo conectar con la API.')
+  }
+  if (!respuesta.ok) {
+    throw new Error(`La API respondió con el código ${respuesta.status}.`)
+  }
+  return respuesta.json()
+}
