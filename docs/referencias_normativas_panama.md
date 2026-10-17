@@ -1,4 +1,4 @@
-# Referencias panameñas para estudiar uso operativo de RutaAgua
+# Referencias panameñas para estudiar uso operativo de H2Oeste
 
 Consulta: 17 de octubre de 2026. Investigación documental; no activa políticas ni acredita conformidad de vehículos, agua, instalaciones o planes. Los textos identificados requieren confirmar vigencia consolidada y alcance con IDAAN/ASEP/MINSA antes de una operación real. No se localizó una fórmula oficial nacional de prioridad 50/30/20 ni una dotación única de emergencia aplicable automáticamente a los seis puntos.
 

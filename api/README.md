@@ -2,7 +2,7 @@
 
 **Dueño:** Noel
 
-API de RutaAgua Oeste con FastAPI. Recibe los reportes del bot, los guarda en
+API de H2Oeste con FastAPI. Recibe los reportes del bot, los guarda en
 Supabase, los muestra al panel, conecta el bot con las RPC de aclaración de Emilia y
 entrega al panel los incidentes con su necesidad.
 Es el único componente con la clave de servicio de Supabase: ni el bot ni el panel la tienen.
@@ -70,6 +70,8 @@ de reportes; no equivale a una prueba de conectividad externa. Ver
 | `GET /planes` | Panel | Token | Las 20 versiones de plan más recientes con rutas y paradas (nombre del punto del catálogo), `datos_version`, `politica_version` y bloqueos. Lectura de tablas; no expone la solicitud ni quién creó el plan. |
 | `POST /planes/{plan_id}/versiones/{version}/aprobar` | Panel | Token + coordinador | Cuerpo: `datos_version`, `politica_version`, `motivo`, `bloqueos_reconocidos`. 200 con `aprobacion_id`; repetir lo mismo da `repetido: true`. 403 / 409 (`version_obsoleta`, `politica_no_activa`, `plan_no_verificado`, `cobertura_critica_pendiente`) / 422 (`bloqueos_reconocidos` incompleto) / 503. |
 | `POST /planes/{plan_id}/versiones/{version}/rechazar` | Panel | Token + coordinador | Cuerpo: `motivo`. Deja el plan `rechazado` y la ejecución en revisión. Un plan ya resuelto da 409 `version_obsoleta`. |
+| `GET /sectores` | Panel | Token | Catálogo de sectores (id, nombre, distrito, corregimiento, origen) para elegirlos en el panel. No expone fuente ni quién los creó. |
+| `GET /destinos` | Panel | Token + coordinador | Destinos de Telegram con `autorizado` y `habilitado_ensayo` (`null` si la migración 0012 no está aplicada). El identificador del chat sale truncado: `terminado en 7387`. |
 | `GET /sectores/{sector_id}/estado` | Panel o bot | Token o `X-Secreto-Bot` | `EstadoSector` (contrato de Emilia): plan vigente y estado de cada punto. Sector inexistente: 422; forma inesperada de la RPC: 503, nunca "sin plan". |
 | `POST /sectores/{sector_id}/plan-vigente` | Panel | Token + coordinador | Cuerpo: `plan_id`, `version`, `motivo`. Elige el plan aprobado que Comunicación usará en ese sector. 403 / 409 (`version_obsoleta`: sin aprobación vigente o entradas cambiadas) / 422 (sector ajeno al plan). |
 | `PUT /destinos/{destino_id}/ensayo` | Panel | Token + coordinador | Cuerpo: `habilitado`, `motivo`. Habilita o deshabilita un destino de Telegram autorizado para recibir planes sintéticos. 403 si el destino no está autorizado. |
@@ -240,6 +242,8 @@ Usan una base de datos y RPC simuladas: no necesitan red, claves ni Supabase.
   traducción de cada error de la RPC, acceso solo de coordinador activo y respuestas inesperadas.
 - `tests/test_api_sectores.py`: estado con sesión y con secreto del bot, rechazo sin credencial, forma inesperada de la RPC,
   selección de plan y destino de ensayo con usuario tomado del token, cuerpo inválido, cada error de la RPC y solo coordinador.
+- `tests/test_api_sectores_listas.py`: listas de sectores y destinos con tablas simuladas: columnas pedidas, identificador
+  truncado, tabla de 0012 ausente (`null`) frente a otros fallos (503), acceso solo de coordinador.
 - `tests/test_api_avisos.py`: reserva, forma inesperada de la RPC, campos que no se exponen,
   registro de envío coherente, reserva ajena, secreto y errores de la base.
 

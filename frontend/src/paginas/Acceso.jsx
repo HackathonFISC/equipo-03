@@ -26,7 +26,7 @@ export default function Acceso({ aviso, alEntrar, conSesion, alSalir }) {
   return (
     <section className="acceso cuenta-pagina" aria-labelledby="acceso-titulo">
       <aside className="acceso-lema" aria-hidden="true">
-        <p className="acceso-marca">RutaAgua Oeste</p>
+        <p className="acceso-marca">H2Oeste</p>
         <p className="acceso-frase">Ningún aviso sale a la comunidad sin la firma de un coordinador.</p>
       </aside>
       <div className="acceso-lado">

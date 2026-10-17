@@ -1,4 +1,4 @@
-"""Punto de entrada de la API de RutaAgua Oeste."""
+"""Punto de entrada de la API de H2Oeste."""
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +8,7 @@ from api.rutas import aclaraciones, avisos, ejecuciones, incidentes, planes, rep
 from contratos.errores import CodigoError
 from orquestador.servicio import ciclo_vida_agentes
 
-app = FastAPI(title="RutaAgua Oeste API", version="0.0.1", lifespan=ciclo_vida_agentes)
+app = FastAPI(title="H2Oeste API", version="0.0.1", lifespan=ciclo_vida_agentes)
 
 # Permite que el panel React (servidor de desarrollo de Vite) llame a la API.
 app.add_middleware(

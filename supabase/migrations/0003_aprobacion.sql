@@ -5,11 +5,13 @@
 -- nunca uno enviado por el navegador. Los errores empiezan por el código de dominio de D003.
 -- La vigencia posterior (invalidar un plan aprobado si cambian sus entradas) la da 0012 de Emilia; 0003 serializa la
 -- aprobación con su bloqueo común si 0012 está instalada, y con un bloqueo de tablas si no.
+-- Se puede aplicar sobre una 0003 anterior: CREATE OR REPLACE conserva la firma de las dos RPC. Esta versión ya no crea
+-- un disparador propio de invalidación; si la 0003 anterior dejó uno, hay que quitarlo aparte (ver README, «Actualizar»).
 BEGIN;
 
 -- Aprobar un plan. Una sola transacción: coordinador activo, versión vigente, política activa,
 -- entradas sin cambios desde el cálculo, verificación válida y bloqueos reconocidos por la persona.
-CREATE FUNCTION public.ra_aprobar_plan(
+CREATE OR REPLACE FUNCTION public.ra_aprobar_plan(
   p_usuario_id uuid, p_plan_id uuid, p_version integer, p_datos_version text, p_politica_version text,
   p_motivo text, p_bloqueos_reconocidos text[])
 RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path='' AS $$
@@ -139,7 +141,7 @@ BEGIN
 END $$;
 
 -- Rechazar un plan pendiente. No crea aprobación ni avisos y deja la ejecución en revisión.
-CREATE FUNCTION public.ra_rechazar_plan(p_usuario_id uuid, p_plan_id uuid, p_version integer, p_motivo text)
+CREATE OR REPLACE FUNCTION public.ra_rechazar_plan(p_usuario_id uuid, p_plan_id uuid, p_version integer, p_motivo text)
 RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path='' AS $$
 DECLARE pl public.planes%ROWTYPE; ej public.ejecuciones%ROWTYPE;
 BEGIN

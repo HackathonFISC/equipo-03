@@ -1,4 +1,4 @@
-# RutaAgua Oeste — Contexto del producto y diseño UI/UX aprobado
+# H2Oeste — Contexto del producto y diseño UI/UX aprobado
 
 Fecha: 17 de octubre de 2026, hora de Panamá.
 Destinatario: otra IA, diseñador o desarrollador que continúe la interfaz.
@@ -36,7 +36,7 @@ La paleta alternativa B, Territorio cercano, se presentó pero NO fue elegida. N
 
 ## 3. Problema, propuesta y usuarios
 
-RutaAgua Oeste es un prototipo de coordinación de distribución de agua mediante cisternas, con referencia territorial en Panamá Oeste y un escenario acotado en Arraiján.
+H2Oeste es un prototipo de coordinación de distribución de agua mediante cisternas, con referencia territorial en Panamá Oeste y un escenario acotado en Arraiján.
 
 Transforma reportes ciudadanos en incidentes consolidados, necesidades justificadas y una propuesta verificable de distribución. El coordinador revisa una versión concreta y autoriza la comunicación. El residente puede reportar, aclarar datos y consultar un estado autorizado.
 
@@ -282,7 +282,7 @@ No se validaron con estos cambios una aprobación real, publicación ni entrega 
 
 ## 12. Instrucción de relevo para otra IA
 
-Continúa RutaAgua Oeste sobre este repositorio. Conserva la identidad Agua institucional ya aprobada y el alcance del plan maestro. Antes de editar, inspecciona el estado actual y los contratos de las pantallas afectadas. No inventes datos ni conviertas el diseño objetivo en una afirmación de implementación. Preserva prioridades calculadas, evidencia, déficit, versiones, autorización y separación entre aprobación, comunicación y entrega. Trabaja por componentes sobre React + Vite y CSS existente. Informa qué cambiaste, qué verificaste y qué sigue pendiente. No cambies la paleta ni agregues funciones fuera del MVP sin una razón acordada con el usuario.
+Continúa H2Oeste sobre este repositorio. Conserva la identidad Agua institucional ya aprobada y el alcance del plan maestro. Antes de editar, inspecciona el estado actual y los contratos de las pantallas afectadas. No inventes datos ni conviertas el diseño objetivo en una afirmación de implementación. Preserva prioridades calculadas, evidencia, déficit, versiones, autorización y separación entre aprobación, comunicación y entrega. Trabaja por componentes sobre React + Vite y CSS existente. Informa qué cambiaste, qué verificaste y qué sigue pendiente. No cambies la paleta ni agregues funciones fuera del MVP sin una razón acordada con el usuario.
 
 ## Actualización: acceso separado de Aprobación
 

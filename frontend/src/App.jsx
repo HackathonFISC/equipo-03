@@ -43,7 +43,7 @@ function App() {
   const { Componente, nombre } = activa === 'acceso'
     ? { Componente: Acceso, nombre: 'Mi cuenta' }
     : PAGINAS.find((p) => p.id === activa)
-  useEffect(() => { document.title = `${nombre} · RutaAgua Oeste` }, [nombre])
+  useEffect(() => { document.title = `${nombre} · H2Oeste` }, [nombre])
 
   function cerrarConEscape(evento) {
     if (evento.key === 'Escape' && menuAbierto) {
@@ -55,9 +55,9 @@ function App() {
     <div className="app-shell" onKeyDown={cerrarConEscape}>
       <a className="saltar-contenido" href="#contenido" onClick={(e) => { e.preventDefault(); contenido.current?.focus() }}>Saltar al contenido</a>
       <aside className="sidebar">
-        <a className="marca" href="#reportes" aria-label="RutaAgua Oeste, reportes">
+        <a className="marca" href="#reportes" aria-label="H2Oeste, reportes">
           <span className="marca-simbolo"><svg width="24" height="28" viewBox="0 0 24 28" fill="none" aria-hidden="true"><path d="M12 2S3 12 3 17a9 9 0 0 0 18 0C21 12 12 2 12 2Z" stroke="currentColor" strokeWidth="1.7"/><path d="M7 18a5 5 0 0 0 5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg></span>
-          <span>RutaAgua <strong>Oeste</strong><small>Coordinación de distribución</small></span>
+          <span>H2<strong>Oeste</strong><small>Coordinación de distribución</small></span>
         </a>
         <button ref={menuBoton} className="menu-boton" aria-expanded={menuAbierto} aria-controls="navegacion" onClick={() => setMenuAbierto(!menuAbierto)}>{menuAbierto ? 'Cerrar' : 'Menú'}<span aria-hidden="true">{menuAbierto ? '×' : '☰'}</span></button>
         <nav id="navegacion" className={`navegacion ${menuAbierto ? 'navegacion-abierta' : ''}`} aria-label="Secciones del panel">
@@ -73,7 +73,7 @@ function App() {
       <div className="app-workspace">
         <header className="workspace-header"><span>{activa === 'acceso' ? 'Cuenta' : 'Operaciones'} <span aria-hidden="true">/</span> <strong>{nombre}</strong></span><a className="cuenta-enlace" href="#acceso" aria-current={activa === 'acceso' ? 'page' : undefined}><span className="cuenta-avatar" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="12" cy="8" r="3.5"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg></span>{conSesion ? 'Mi cuenta' : 'Iniciar sesión'}</a></header>
         <main id="contenido" ref={contenido} tabIndex={-1} className="app-main"><Componente conSesion={conSesion} alExpirar={alExpirar} alSalir={salir} alEntrar={() => { setConSesion(true); window.location.hash = 'reportes' }} /></main>
-        <footer className="workspace-footer"><span>RutaAgua Oeste</span><span>Propuesta · Revisión humana · Comunicación</span></footer>
+        <footer className="workspace-footer"><span>H2Oeste</span><span>Propuesta · Revisión humana · Comunicación</span></footer>
       </div>
     </div>
   )
