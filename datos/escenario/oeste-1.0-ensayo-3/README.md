@@ -1,5 +1,12 @@
 # Ensayo 3: demanda, recepción y prioridad sintéticas calculadas
 
+> Alcance: este documento describe la preparación y los archivos de este escenario,
+> no el estado completo del repositorio. Los bloques 4/5 ya tienen
+> [solver y verificador](../../../calculo/PLAN_V3.md). La integración local del
+> fixture separado está en [V3 de Emilia](../../../docs/V3_EMILIA.md); aplicación
+> en Supabase, panel y cierre integral deben comprobarse por separado.
+
+
 Este escenario permite continuar V3 sin esperar datos de campo. Modelo doméstico de emergencia con grupos vecinales ficticios asociados a los seis UUID del catálogo de Emilia. No describe la población, tanques, usuarios, funcionamiento o desabastecimiento actuales de esas instalaciones; tampoco estima su demanda institucional. No es un modelo calibrado con mediciones de Panamá Oeste.
 
 ## Referencias y decisiones del ensayo

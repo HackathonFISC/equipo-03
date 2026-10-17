@@ -43,8 +43,10 @@ El sector inicial usa el nombre del corregimiento como zona de referencia para
 la demo; no es un polígono ni una delimitación oficial de reparto. Una mención
 amplia debe pedir precisión, aunque hoy exista un solo punto en ese sector.
 
-La estructura funciona con los contratos vigentes. Falta implementar el resolvedor
-Territorial de V2: estos CSV no hacen reconocimiento automático por sí solos.
+La estructura funciona con los contratos vigentes. El resolvedor Territorial y
+la consolidación de V2 ya están implementados; ver [geografía](../../geografia/README.md)
+y [flujo V2](../../docs/V2_EMILIA.md). Los CSV son sus datos de referencia; por sí
+solos no ejecutan reconocimiento ni validan el lugar para una entrega.
 
 ## Cargar y comprobar
 
@@ -71,9 +73,10 @@ vacíos no son una forma de ocultar datos conocidos.
 
 ## Entrega a José y Noel
 
-José debe preparar la siguiente versión de escenario con estos seis UUID,
-depósito acordado, matriz de siete nodos, demanda y ventanas documentadas,
-y repetir solver/verificador. Los fixtures `escenario-1.0` continúan siendo
+José ya preparó los [ensayos 1–3](../escenario/README.md) con estos UUID;
+[solver y verificador V3](../../calculo/PLAN_V3.md) están implementados y tienen
+pruebas locales. Los depósitos, matrices, demandas y ventanas de esos ensayos
+conservan su carácter sintético; no son una validación operativa de los lugares. Los fixtures `escenario-1.0` continúan siendo
 sintéticos y no se modifican ni se convierten en datos reales al cargar esta
 semilla. No hay equivalencia automática entre P1–P6 y estas instalaciones.
 

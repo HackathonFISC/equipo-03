@@ -54,3 +54,7 @@ No sobrescribe un archivo de evidencia existente. Usar otro nombre para guardar 
 Las pruebas cubren carga, servicio y ventanas, retorno, espera, unicidad y cantidades completas, capacidades distintas, flota no disponible, matriz reordenada/asimétrica/bloqueada, política propuesta, datos pendientes, origen no sintético y traducción de estados del motor. El timeout se comprueba con un resultado del motor simulado, no como evidencia de timeout real.
 
 Referencias de implementación: [OR-Tools capacidad](https://developers.google.com/optimization/routing/cvrp) y [OR-Tools ventanas](https://developers.google.com/optimization/routing/vrptw). No se usan rutas viales reales.
+
+Integración posterior de las herramientas: el agente y trabajador de Emilia ya
+invocan solver/verificador en el fixture separado; ver [guía V3](../docs/V3_EMILIA.md).
+Las evidencias locales no acreditan por sí solas despliegue, panel ni cierre conjunto.
