@@ -10,6 +10,7 @@ from uuid import UUID
 from agentes.gemini import ConfiguracionGemini, ErrorConfiguracionGemini, ErrorIngesta, ExtractorGemini
 from comun.db import get_supabase
 from .flujo import avanzar
+from agentes.puente_necesidades import preparar_puentes
 
 logger = logging.getLogger('rutaagua.agentes')
 
@@ -24,6 +25,7 @@ def una_vuelta(db, extractor, herramientas=None, limite=20, *, planificacion_id=
         return []
     if planificacion_id is None:
         db.rpc('ra_mantenimiento_v2', {}).execute()
+        preparar_puentes(db, limite)
     else:
         db.rpc('ra_mantenimiento_planificacion_v3', {'p_ejecucion_id': str(planificacion_id)}).execute()
     consulta = db.table('ejecuciones').select('ejecucion_id,etapa').eq('estado', 'pendiente').in_(
@@ -107,8 +109,9 @@ def main():
                 # Fallar antes de reservar si PostgREST aún no conoce 0015.
                 try:
                     db.table('ejecuciones').select('reintentos_ingesta,proximo_intento_ingesta').limit(0).execute()
+                    db.table('puentes_necesidades_v3').select('ejecucion_id').limit(0).execute()
                 except Exception:
-                    logger.error('No se pudieron consultar columnas de 0015; revisar migración, PostgREST y conexión BD.')
+                    logger.error('No se pudieron consultar columnas de 0015/0016; revisar migración, PostgREST y conexión BD.')
                     raise
                 verificado = True
             return una_vuelta(db, extractor, planificacion_id=args.planificacion_id, detener=detener)

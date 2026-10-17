@@ -88,3 +88,24 @@ persistida. Dos reintentos adicionales como máximo, después revisión humana.
 Las reservas inciertas siguen el tratamiento conservador de 0014. Una espera
 programada no bloquea el proceso ni ocupa uno de los veinte pendientes seleccionados.
 Ver `docs/INGESTA_A4.md`; no reactivar fallos históricos automáticamente.
+
+## Puente A1 de necesidades a planificación
+
+Con el código A1 instalar 0016 después de 0015 y reiniciar. Cada vuelta global
+procesa `puentes_necesidades_v3` antes de seleccionar etapas. La cola se crea en
+la transacción que cierra Priorización con necesidades persistidas, por lo que
+un reinicio entre ambas etapas no pierde el enlace. Registrar dos veces el mismo
+puente no duplica incidentes, necesidades, escenario o eventos.
+
+`agentes/puente_necesidades.py` conserva procedencia, cantidades, faltantes y
+versiones desde BD. Usa solo infraestructura del ensayo 3 aprobado; recursos
+existentes no se sobrescriben ni se reactiva una cisterna retirada. El escenario
+es sintético y queda en modo ensayo, mientras reporte y ejecución conservan su
+origen. Solver/verificador, revisión humana y comunicación a destino autorizado
+siguen después. No se crean demandas del fixture para completar puntos faltantes.
+
+La consulta de ámbito sigue completa dentro del origen de la ejecución y ensayo.
+Conflictos por punto y datos incompatibles quedan en revisión; errores transitorios
+no borran la cola. El preflight comprueba tabla de cola y columnas de 0015/0016.
+`--planificacion-id` continúa aislado, sin recorrer puentes globales.
+Guía y límites: `docs/A1_PUENTE_NECESIDADES.md`; relevo: `docs/HANDOFF_NOEL_A1.md`.

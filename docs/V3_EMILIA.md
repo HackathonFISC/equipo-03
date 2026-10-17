@@ -1,5 +1,11 @@
 # V3 de Emilia: Planificación integrada, ensayo separado
 
+Actualización A1 del 17/10: ver [puente de necesidades persistidas](A1_PUENTE_NECESIDADES.md)
+y [relevo a Noel](HANDOFF_NOEL_A1.md). La nueva 0016 conserva la procedencia del
+reporte y conecta la misma ejecución con un escenario de ensayo usando recursos
+ficticios. El cuerpo histórico siguiente describe la entrega anterior; no acredita
+aplicación remota ni resuelve los ajustes de captura/recepción de Noel.
+
 V3 añade Planificación al trabajador sin cambiar los módulos de cálculo de José ni API, bot o frontend de Noel. Recibe `SolicitudResolverRutas`, decide si calcular o solicitar revisión, ejecuta `solve_routes`, ejecuta siempre `verify_plan` independiente y conserva propuesta/informe/traza. Un informe adjunto al solver no se acepta como verificación. No se crea un sexto agente: verificación es una herramienta independiente del agente Planificación.
 
 ## Alcance y límites

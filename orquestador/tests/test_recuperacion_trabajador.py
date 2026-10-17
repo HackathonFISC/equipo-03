@@ -51,6 +51,7 @@ def test_una_sola_vuelta_fallida_no_reintenta():
 
 def test_error_etapa_marca_solo_reserva_del_mismo_trabajador(caplog):
     db = Mock()
+    db.rpc.return_value.execute.return_value.data=[]
     db.table.return_value.select.return_value.eq.return_value.in_.return_value.order.return_value.limit.return_value.execute.return_value.data = [dict(ejecucion_id='a', etapa='ingesta')]
     with patch('orquestador.trabajador.avanzar', side_effect=RuntimeError('SECRETO')) as avanzar:
         assert trabajador.una_vuelta(db, None) == [dict(estado='requiere_revision', ejecucion_id='a')]

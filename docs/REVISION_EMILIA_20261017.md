@@ -1,5 +1,11 @@
 # Revisión de Emilia del 17 de octubre
 
+Actualización A1 del 17/10: ver [puente de necesidades persistidas](A1_PUENTE_NECESIDADES.md)
+y [relevo a Noel](HANDOFF_NOEL_A1.md). La nueva 0016 conserva la procedencia del
+reporte y conecta la misma ejecución con un escenario de ensayo usando recursos
+ficticios. El cuerpo histórico siguiente describe la entrega anterior; no acredita
+aplicación remota ni resuelve los ajustes de captura/recepción de Noel.
+
 Base inspeccionada: rama `Emilia`, commit `1875234`, árbol limpio. Hora inicial confirmada por el usuario: 06:14 de Panamá. Cierre de funciones previsto: 11:30; entrega interna: 12:30. Los Word son referencias del plan del 16 de octubre; las decisiones posteriores del repositorio precisan su alcance. Este documento no activa políticas ni valida supuestos operativos.
 
 ## Respuestas documentadas sobre el escenario
