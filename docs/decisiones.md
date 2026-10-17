@@ -62,3 +62,16 @@ Límites: aceptar el contrato no activa la política `demo-1.0`, no confirma los
 - Decisión: primero minimizar los finales de todos los vehículos y después maximizar sus inicios. No maximizar solo las salidas, porque pospondría el recorrido hacia el final del turno. El ajuste afecta al solver V1, no a validate_need ni score_needs de V2.
 - Evidencia: prueba añadida reproduce el fallo antes del cambio; después pasan 17 pruebas del solver. Caso temprano: salida 07:50, primera descarga 08:00, retorno 09:00. Demo base: mismas rutas y horas 08:00–09:10. Regresión completa: 206 pruebas y 57 subpruebas aprobadas.
 - Alcance V3 conservado: selección de cobertura parcial por criticidad/prioridad y diagnóstico por punto. La demanda de cada punto sigue indivisible; si excede toda cisterna disponible debe quedar pendiente con motivo demanda_supera_vehiculo. No autoriza dividir esa demanda entre camiones ni introducir recargas.
+
+## D006 Circuito de aclaración de V2 (Noel y Emilia)
+
+Referencia del acuerdo recibido: D004. Se registra como D006 para no duplicar el identificador D004 ya utilizado en este archivo.
+
+- Fecha: 16 de octubre de 2026, 22:35 (UTC−05:00). Acordado entre Noel y Emilia.
+- Creación: el orquestador de Emilia crea la aclaración (plantilla según faltantes) y pasa la ejecución a `espera_aclaracion` en una sola operación. Máximo una aclaración activa por ejecución.
+- Destino: el `POST /reportes` de Noel registra el chat de origen en `destinos` y lo guarda en `reportes.destino_origen_id` (columna en la migración de Emilia). Las aclaraciones solo van al chat de origen y no requieren autorización de coordinador; los avisos de V4 sí.
+- Envío: el bot consulta cada 5–10 s; la API de Noel reserva la aclaración y registra `enviado`, `fallido` o `incierto` mediante RPC de Emilia. Sin reenvío automático de envíos inciertos ni de reservas vencidas: pasan a revisión. El bot no tiene acceso a Supabase.
+- Respuesta: solo un reply a la pregunta, en el mismo chat, del mismo remitente del reporte original, también en grupos. Deduplicada por el identificador externo del reply. Texto o ubicación estática (contrato `Ubicacion`, fuente `"compartida"`, sin validar punto de entrega).
+- Reanudación: una RPC de Emilia, llamada por la API, valida, guarda la respuesta, cierra la aclaración, registra la traza y devuelve la ejecución a `pendiente/ingesta` de forma atómica. Un reply repetido no sobrescribe ni reactiva.
+- Caducidad: 30 minutos desde `enviado_en`, configurable. Al vencer, la ejecución pasa a `espera_revision`. Una respuesta tardía se rechaza con el resultado `"vencida"`.
+- Resultados de la RPC de respuesta: `aceptada`, `repetida`, `ya_respondida`, `autor_distinto`, `no_encontrada`, `vencida`.
