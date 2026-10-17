@@ -4,6 +4,15 @@
 
 demanda, prioridad, matriz, solver, verificador, orden_llegada
 
+## Tools de necesidad V2
+
+Disponibles `calculo.demanda.validate_need` y `calculo.prioridad.score_needs` con los contratos compartidos. Consultar [reglas y límites de V2](NECESIDADES_V2.md).
+
+```powershell
+.\.venv\Scripts\python.exe -m calculo.demo_v2
+.\.venv\Scripts\python.exe -m pytest calculo/tests/test_necesidades_v2.py -q
+```
+
 ## Solver mínimo V1
 
 Desde la raíz del repositorio, con el entorno V0 instalado:
@@ -20,6 +29,8 @@ El ensayo exige cobertura completa. OR-Tools calcula rutas con capacidad, dispon
 Si no puede cubrir el conjunto completo, V1 devuelve todas las necesidades como pendientes con motivo y sin rutas; no distribuye una fracción ni afirma inviabilidad del problema de reparto parcial. Un timeout sin solución se distingue del fallo genérico. Son estados del ensayo completo, no resultados de optimización de cobertura. La selección por criticidad/ranking, casos pendientes/cero del flujo operativo y diagnóstico individual de déficit corresponden al solver completo de V3.
 
 Todas las salidas están pendientes de revisión, sin aprobación ni informe de verificación y con publicación bloqueada. Las aserciones de las pruebas comprueban físicamente rutas calculadas, pero no implementan `verify_plan` ni sustituyen el verificador independiente de V3. No registrar esta función como `solve_routes` operativa antes de completar esa versión.
+
+Los finalizadores fijan primero retornos tempranos para todos los vehículos y después maximizan sus salidas sin retrasar esos retornos. Así se evita la espera inicial innecesaria cuando el turno empieza antes que las ventanas. No se promete eliminar esperas intermedias impuestas por ventanas diferentes ni optimizar globalmente todas las rutas. La regresión con turno desde 06:00 sale a 07:50, inicia servicio a 08:00 y retorna a 09:00; la demo base sigue 08:00–09:10. Son ahora 17 pruebas V1, incluidas las dos de esta corrección; el XML de V1 conserva la ejecución histórica original de 15 pruebas de cálculo más contratos.
 
 ## Evidencia reproducible
 

@@ -1,0 +1,1687 @@
+{
+  "version": "v2-necesidades",
+  "registrado_en": "2026-10-17T02:54:23.616745+00:00",
+  "origen": "sintetico",
+  "traza": {
+    "herramientas": [
+      "validate_need",
+      "score_needs"
+    ],
+    "duracion_ms": 5.307
+  },
+  "esperado": "Demanda validada o pendiente; criticidad antes de puntaje; desconocidos fuera del ranking.",
+  "validaciones": [
+    {
+      "caso": "solicitud_validar_directa.json",
+      "esperado": "validada",
+      "entrada": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+        "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+        "datos_version": "escenario-1.0",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 2500.0,
+          "fuente": "Escenario sintético",
+          "confirmacion": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          }
+        },
+        "capacidad_recepcion_litros": 3000.0,
+        "supuestos": []
+      },
+      "obtenido": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+        "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+        "datos_version": "escenario-1.0",
+        "metodo": "directa",
+        "estado": "validada",
+        "demanda_litros": 2500.0,
+        "fuente": "Escenario sintético",
+        "confirmacion": {
+          "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+          "confirmado_en": "2026-10-16T18:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+        },
+        "faltantes": [],
+        "motivos": [],
+        "supuestos": []
+      }
+    },
+    {
+      "caso": "solicitud_validar_formula.json",
+      "esperado": "validada",
+      "entrada": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+        "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+        "datos_version": "escenario-1.0",
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 100,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": 500.0,
+          "fuente": "Parámetros sintéticos, no dotación oficial",
+          "confirmacion": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          }
+        },
+        "capacidad_recepcion_litros": 3000.0,
+        "supuestos": [
+          "Dotación de 20 usada solo para probar aritmética, no recomendación operativa."
+        ]
+      },
+      "obtenido": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+        "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+        "datos_version": "escenario-1.0",
+        "metodo": "formula",
+        "estado": "validada",
+        "demanda_litros": 1500.0,
+        "fuente": "Parámetros sintéticos, no dotación oficial",
+        "confirmacion": {
+          "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+          "confirmado_en": "2026-10-16T18:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+        },
+        "faltantes": [],
+        "motivos": [],
+        "supuestos": [
+          "Dotación de 20 usada solo para probar aritmética, no recomendación operativa."
+        ]
+      }
+    },
+    {
+      "caso": "solicitud_validar_formula_pendiente.json",
+      "esperado": "pendiente",
+      "entrada": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+        "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+        "datos_version": "escenario-1.0",
+        "demanda": {
+          "metodo": "formula",
+          "personas_atendidas": 100,
+          "dotacion_litros_persona_dia": 20.0,
+          "dias_cobertura": 1.0,
+          "reserva_utilizable_litros": null,
+          "fuente": "Parámetros sintéticos, no dotación oficial",
+          "confirmacion": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          }
+        },
+        "capacidad_recepcion_litros": 3000.0,
+        "supuestos": [
+          "Dotación de 20 usada solo para probar aritmética, no recomendación operativa."
+        ]
+      },
+      "obtenido": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+        "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+        "datos_version": "escenario-1.0",
+        "metodo": "formula",
+        "estado": "pendiente",
+        "demanda_litros": null,
+        "fuente": "Parámetros sintéticos, no dotación oficial",
+        "confirmacion": {
+          "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+          "confirmado_en": "2026-10-16T18:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+        },
+        "faltantes": [
+          "demanda.reserva_utilizable_litros"
+        ],
+        "motivos": [
+          "Falta información o confirmación: demanda.reserva_utilizable_litros."
+        ],
+        "supuestos": [
+          "Dotación de 20 usada solo para probar aritmética, no recomendación operativa."
+        ]
+      }
+    }
+  ],
+  "solicitudes_escenario": [
+    {
+      "entrada": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+        "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+        "datos_version": "escenario-1.0",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 2500.0,
+          "fuente": "Escenario sintético",
+          "confirmacion": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          }
+        },
+        "capacidad_recepcion_litros": 5000.0,
+        "supuestos": [
+          "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+        ]
+      },
+      "obtenido": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+        "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+        "datos_version": "escenario-1.0",
+        "metodo": "directa",
+        "estado": "validada",
+        "demanda_litros": 2500.0,
+        "fuente": "Escenario sintético",
+        "confirmacion": {
+          "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+          "confirmado_en": "2026-10-16T18:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+        },
+        "faltantes": [],
+        "motivos": [],
+        "supuestos": [
+          "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+        ]
+      }
+    },
+    {
+      "entrada": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+        "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+        "datos_version": "escenario-1.0",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 3000.0,
+          "fuente": "Escenario sintético",
+          "confirmacion": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          }
+        },
+        "capacidad_recepcion_litros": 5000.0,
+        "supuestos": [
+          "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+        ]
+      },
+      "obtenido": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+        "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+        "datos_version": "escenario-1.0",
+        "metodo": "directa",
+        "estado": "validada",
+        "demanda_litros": 3000.0,
+        "fuente": "Escenario sintético",
+        "confirmacion": {
+          "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+          "confirmado_en": "2026-10-16T18:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+        },
+        "faltantes": [],
+        "motivos": [],
+        "supuestos": [
+          "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+        ]
+      }
+    },
+    {
+      "entrada": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "b4e16617-eecc-5fb1-ba85-f60e51412545",
+        "punto_atencion_id": "01b0918b-4d9d-5dc7-af69-b652621df104",
+        "datos_version": "escenario-1.0",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 3500.0,
+          "fuente": "Escenario sintético",
+          "confirmacion": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          }
+        },
+        "capacidad_recepcion_litros": 5000.0,
+        "supuestos": [
+          "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+        ]
+      },
+      "obtenido": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "b4e16617-eecc-5fb1-ba85-f60e51412545",
+        "punto_atencion_id": "01b0918b-4d9d-5dc7-af69-b652621df104",
+        "datos_version": "escenario-1.0",
+        "metodo": "directa",
+        "estado": "validada",
+        "demanda_litros": 3500.0,
+        "fuente": "Escenario sintético",
+        "confirmacion": {
+          "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+          "confirmado_en": "2026-10-16T18:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+        },
+        "faltantes": [],
+        "motivos": [],
+        "supuestos": [
+          "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+        ]
+      }
+    },
+    {
+      "entrada": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "efd26685-0f5c-5ac8-afb0-c90371eeb8ab",
+        "punto_atencion_id": "9da59967-8d01-56df-b087-969033099193",
+        "datos_version": "escenario-1.0",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 2500.0,
+          "fuente": "Escenario sintético",
+          "confirmacion": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          }
+        },
+        "capacidad_recepcion_litros": 5000.0,
+        "supuestos": [
+          "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+        ]
+      },
+      "obtenido": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "efd26685-0f5c-5ac8-afb0-c90371eeb8ab",
+        "punto_atencion_id": "9da59967-8d01-56df-b087-969033099193",
+        "datos_version": "escenario-1.0",
+        "metodo": "directa",
+        "estado": "validada",
+        "demanda_litros": 2500.0,
+        "fuente": "Escenario sintético",
+        "confirmacion": {
+          "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+          "confirmado_en": "2026-10-16T18:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+        },
+        "faltantes": [],
+        "motivos": [],
+        "supuestos": [
+          "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+        ]
+      }
+    },
+    {
+      "entrada": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "10ba5cd9-55ed-5420-8806-29a0fe789983",
+        "punto_atencion_id": "f5cc6900-9694-5bb7-9dc9-13d568635dcf",
+        "datos_version": "escenario-1.0",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 3000.0,
+          "fuente": "Escenario sintético",
+          "confirmacion": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          }
+        },
+        "capacidad_recepcion_litros": 5000.0,
+        "supuestos": [
+          "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+        ]
+      },
+      "obtenido": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "10ba5cd9-55ed-5420-8806-29a0fe789983",
+        "punto_atencion_id": "f5cc6900-9694-5bb7-9dc9-13d568635dcf",
+        "datos_version": "escenario-1.0",
+        "metodo": "directa",
+        "estado": "validada",
+        "demanda_litros": 3000.0,
+        "fuente": "Escenario sintético",
+        "confirmacion": {
+          "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+          "confirmado_en": "2026-10-16T18:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+        },
+        "faltantes": [],
+        "motivos": [],
+        "supuestos": [
+          "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+        ]
+      }
+    },
+    {
+      "entrada": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "f21766cc-bd03-50d6-87bf-112631451f25",
+        "punto_atencion_id": "1833d60c-30f3-5c23-9e0a-a2a0ad523c42",
+        "datos_version": "escenario-1.0",
+        "demanda": {
+          "metodo": "directa",
+          "litros_declarados": 3500.0,
+          "fuente": "Escenario sintético",
+          "confirmacion": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          }
+        },
+        "capacidad_recepcion_litros": 5000.0,
+        "supuestos": [
+          "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+        ]
+      },
+      "obtenido": {
+        "esquema_version": "1.0",
+        "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+        "creado_en": "2026-10-16T18:00:00-05:00",
+        "origen": "sintetico",
+        "incidente_id": "f21766cc-bd03-50d6-87bf-112631451f25",
+        "punto_atencion_id": "1833d60c-30f3-5c23-9e0a-a2a0ad523c42",
+        "datos_version": "escenario-1.0",
+        "metodo": "directa",
+        "estado": "validada",
+        "demanda_litros": 3500.0,
+        "fuente": "Escenario sintético",
+        "confirmacion": {
+          "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+          "confirmado_en": "2026-10-16T18:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+        },
+        "faltantes": [],
+        "motivos": [],
+        "supuestos": [
+          "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+        ]
+      }
+    }
+  ],
+  "priorizacion": {
+    "entrada": {
+      "esquema_version": "1.0",
+      "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+      "creado_en": "2026-10-16T18:00:00-05:00",
+      "origen": "sintetico",
+      "datos_version": "escenario-1.0",
+      "politica": {
+        "politica_version": "demo-1.0",
+        "estado": "activa",
+        "origen": "sintetico",
+        "peso_duracion": 0.5,
+        "peso_vulnerabilidad": 0.3,
+        "peso_poblacion": 0.2,
+        "tope_horas": 168.0,
+        "tope_personas": 500,
+        "vulnerabilidad_moderada": 0.5,
+        "fundamento": "Heurística de demo: espera y vulnerabilidad predominan; población tiene menor peso. No es una norma OMS/Sphere ni una política operativa oficial.",
+        "confirmacion_activacion": {
+          "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+          "confirmado_en": "2026-10-16T18:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+        },
+        "criticos_obligatorios": true,
+        "faltantes_fuera_ranking": true,
+        "orden_desempate": "ultima_atencion_luego_incidente_luego_id"
+      },
+      "necesidades": [
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+          "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "validada",
+          "demanda_litros": 2500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "clase_prioridad": "critico",
+          "confirmacion_clase": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T09:00:00-05:00"
+          },
+          "horas_sin_agua": 72.0,
+          "personas_atendidas": 130,
+          "vulnerabilidad": "alta",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Cálculo de prioridad todavía no ejecutado."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+          "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "validada",
+          "demanda_litros": 3000.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "clase_prioridad": "general",
+          "confirmacion_clase": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 66.0,
+          "personas_atendidas": 140,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Cálculo de prioridad todavía no ejecutado."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "b4e16617-eecc-5fb1-ba85-f60e51412545",
+          "punto_atencion_id": "01b0918b-4d9d-5dc7-af69-b652621df104",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "validada",
+          "demanda_litros": 3500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "clase_prioridad": "general",
+          "confirmacion_clase": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 60.0,
+          "personas_atendidas": 150,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Cálculo de prioridad todavía no ejecutado."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "efd26685-0f5c-5ac8-afb0-c90371eeb8ab",
+          "punto_atencion_id": "9da59967-8d01-56df-b087-969033099193",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "validada",
+          "demanda_litros": 2500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "clase_prioridad": "general",
+          "confirmacion_clase": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 54.0,
+          "personas_atendidas": 160,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Cálculo de prioridad todavía no ejecutado."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "10ba5cd9-55ed-5420-8806-29a0fe789983",
+          "punto_atencion_id": "f5cc6900-9694-5bb7-9dc9-13d568635dcf",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "validada",
+          "demanda_litros": 3000.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "clase_prioridad": "general",
+          "confirmacion_clase": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 48.0,
+          "personas_atendidas": 170,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Cálculo de prioridad todavía no ejecutado."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "f21766cc-bd03-50d6-87bf-112631451f25",
+          "punto_atencion_id": "1833d60c-30f3-5c23-9e0a-a2a0ad523c42",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "validada",
+          "demanda_litros": 3500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "clase_prioridad": "general",
+          "confirmacion_clase": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 42.0,
+          "personas_atendidas": 180,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Cálculo de prioridad todavía no ejecutado."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+          ],
+          "requiere_revision_urgente": false
+        }
+      ]
+    },
+    "obtenido": {
+      "esquema_version": "1.0",
+      "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+      "creado_en": "2026-10-16T18:00:00-05:00",
+      "origen": "sintetico",
+      "datos_version": "escenario-1.0",
+      "politica_version": "demo-1.0",
+      "evaluaciones": [
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+          "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "validada",
+          "demanda_litros": 2500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "clase_prioridad": "critico",
+          "confirmacion_clase": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T09:00:00-05:00"
+          },
+          "horas_sin_agua": 72.0,
+          "personas_atendidas": 130,
+          "vulnerabilidad": "alta",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "calculada",
+          "puntaje": 56.628571428571426,
+          "componentes": {
+            "duracion_normalizada": 0.42857142857142855,
+            "vulnerabilidad_normalizada": 1.0,
+            "poblacion_normalizada": 0.26,
+            "aporte_duracion": 21.428571428571427,
+            "aporte_vulnerabilidad": 30.0,
+            "aporte_poblacion": 5.2
+          },
+          "posicion": 1,
+          "pendientes": [],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+          "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "validada",
+          "demanda_litros": 3000.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "clase_prioridad": "general",
+          "confirmacion_clase": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 66.0,
+          "personas_atendidas": 140,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "calculada",
+          "puntaje": 40.24285714285714,
+          "componentes": {
+            "duracion_normalizada": 0.39285714285714285,
+            "vulnerabilidad_normalizada": 0.5,
+            "poblacion_normalizada": 0.28,
+            "aporte_duracion": 19.642857142857142,
+            "aporte_vulnerabilidad": 15.0,
+            "aporte_poblacion": 5.6000000000000005
+          },
+          "posicion": 2,
+          "pendientes": [],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "b4e16617-eecc-5fb1-ba85-f60e51412545",
+          "punto_atencion_id": "01b0918b-4d9d-5dc7-af69-b652621df104",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "validada",
+          "demanda_litros": 3500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "clase_prioridad": "general",
+          "confirmacion_clase": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 60.0,
+          "personas_atendidas": 150,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "calculada",
+          "puntaje": 38.85714285714286,
+          "componentes": {
+            "duracion_normalizada": 0.35714285714285715,
+            "vulnerabilidad_normalizada": 0.5,
+            "poblacion_normalizada": 0.3,
+            "aporte_duracion": 17.857142857142858,
+            "aporte_vulnerabilidad": 15.0,
+            "aporte_poblacion": 6.0
+          },
+          "posicion": 3,
+          "pendientes": [],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "efd26685-0f5c-5ac8-afb0-c90371eeb8ab",
+          "punto_atencion_id": "9da59967-8d01-56df-b087-969033099193",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "validada",
+          "demanda_litros": 2500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "clase_prioridad": "general",
+          "confirmacion_clase": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 54.0,
+          "personas_atendidas": 160,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "calculada",
+          "puntaje": 37.471428571428575,
+          "componentes": {
+            "duracion_normalizada": 0.32142857142857145,
+            "vulnerabilidad_normalizada": 0.5,
+            "poblacion_normalizada": 0.32,
+            "aporte_duracion": 16.071428571428573,
+            "aporte_vulnerabilidad": 15.0,
+            "aporte_poblacion": 6.4
+          },
+          "posicion": 4,
+          "pendientes": [],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "10ba5cd9-55ed-5420-8806-29a0fe789983",
+          "punto_atencion_id": "f5cc6900-9694-5bb7-9dc9-13d568635dcf",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "validada",
+          "demanda_litros": 3000.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "clase_prioridad": "general",
+          "confirmacion_clase": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 48.0,
+          "personas_atendidas": 170,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "calculada",
+          "puntaje": 36.08571428571429,
+          "componentes": {
+            "duracion_normalizada": 0.2857142857142857,
+            "vulnerabilidad_normalizada": 0.5,
+            "poblacion_normalizada": 0.34,
+            "aporte_duracion": 14.285714285714285,
+            "aporte_vulnerabilidad": 15.0,
+            "aporte_poblacion": 6.800000000000001
+          },
+          "posicion": 5,
+          "pendientes": [],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "f21766cc-bd03-50d6-87bf-112631451f25",
+          "punto_atencion_id": "1833d60c-30f3-5c23-9e0a-a2a0ad523c42",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "validada",
+          "demanda_litros": 3500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "clase_prioridad": "general",
+          "confirmacion_clase": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 42.0,
+          "personas_atendidas": 180,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": {
+            "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+            "confirmado_en": "2026-10-16T18:00:00-05:00",
+            "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+          },
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "calculada",
+          "puntaje": 34.7,
+          "componentes": {
+            "duracion_normalizada": 0.25,
+            "vulnerabilidad_normalizada": 0.5,
+            "poblacion_normalizada": 0.36,
+            "aporte_duracion": 12.5,
+            "aporte_vulnerabilidad": 15.0,
+            "aporte_poblacion": 7.199999999999999
+          },
+          "posicion": 6,
+          "pendientes": [],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Recepción de 5000 L propuesta exclusivamente para este ensayo sintético V2."
+          ],
+          "requiere_revision_urgente": false
+        }
+      ],
+      "alertas_revision": []
+    }
+  },
+  "escenario_v0": {
+    "entrada": {
+      "esquema_version": "1.0",
+      "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+      "creado_en": "2026-10-16T18:00:00-05:00",
+      "origen": "sintetico",
+      "datos_version": "escenario-1.0",
+      "politica": {
+        "politica_version": "demo-1.0",
+        "estado": "activa",
+        "origen": "sintetico",
+        "peso_duracion": 0.5,
+        "peso_vulnerabilidad": 0.3,
+        "peso_poblacion": 0.2,
+        "tope_horas": 168.0,
+        "tope_personas": 500,
+        "vulnerabilidad_moderada": 0.5,
+        "fundamento": "Heurística de demo: espera y vulnerabilidad predominan; población tiene menor peso. No es una norma OMS/Sphere ni una política operativa oficial.",
+        "confirmacion_activacion": {
+          "usuario_id": "b57c3e03-741d-5ceb-8c43-4a754c0ade31",
+          "confirmado_en": "2026-10-16T18:00:00-05:00",
+          "motivo": "FIXTURE SINTÉTICO; no acredita autorización ni validación real"
+        },
+        "criticos_obligatorios": true,
+        "faltantes_fuera_ranking": true,
+        "orden_desempate": "ultima_atencion_luego_incidente_luego_id"
+      },
+      "necesidades": [
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+          "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 2500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T09:00:00-05:00"
+          },
+          "horas_sin_agua": 72.0,
+          "personas_atendidas": 130,
+          "vulnerabilidad": "alta",
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Confirmar demanda y capacidad de recepción.",
+            "Confirmar clase de prioridad y vulnerabilidad.",
+            "Activar la política de demo antes de calcular el ranking."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Litros y factores conservados como estimaciones sintéticas; clase original no confirmada. Ventana y descarga propuestas para pruebas."
+          ],
+          "requiere_revision_urgente": true
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+          "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 3000.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 66.0,
+          "personas_atendidas": 140,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Confirmar demanda y capacidad de recepción.",
+            "Confirmar clase de prioridad y vulnerabilidad.",
+            "Activar la política de demo antes de calcular el ranking."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Litros y factores conservados como estimaciones sintéticas; clase original no confirmada. Ventana y descarga propuestas para pruebas."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "b4e16617-eecc-5fb1-ba85-f60e51412545",
+          "punto_atencion_id": "01b0918b-4d9d-5dc7-af69-b652621df104",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 3500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 60.0,
+          "personas_atendidas": 150,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Confirmar demanda y capacidad de recepción.",
+            "Confirmar clase de prioridad y vulnerabilidad.",
+            "Activar la política de demo antes de calcular el ranking."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Litros y factores conservados como estimaciones sintéticas; clase original no confirmada. Ventana y descarga propuestas para pruebas."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "efd26685-0f5c-5ac8-afb0-c90371eeb8ab",
+          "punto_atencion_id": "9da59967-8d01-56df-b087-969033099193",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 2500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 54.0,
+          "personas_atendidas": 160,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Confirmar demanda y capacidad de recepción.",
+            "Confirmar clase de prioridad y vulnerabilidad.",
+            "Activar la política de demo antes de calcular el ranking."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Litros y factores conservados como estimaciones sintéticas; clase original no confirmada. Ventana y descarga propuestas para pruebas."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "10ba5cd9-55ed-5420-8806-29a0fe789983",
+          "punto_atencion_id": "f5cc6900-9694-5bb7-9dc9-13d568635dcf",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 3000.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 48.0,
+          "personas_atendidas": 170,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Confirmar demanda y capacidad de recepción.",
+            "Confirmar clase de prioridad y vulnerabilidad.",
+            "Activar la política de demo antes de calcular el ranking."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Litros y factores conservados como estimaciones sintéticas; clase original no confirmada. Ventana y descarga propuestas para pruebas."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "f21766cc-bd03-50d6-87bf-112631451f25",
+          "punto_atencion_id": "1833d60c-30f3-5c23-9e0a-a2a0ad523c42",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 3500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 42.0,
+          "personas_atendidas": 180,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Confirmar demanda y capacidad de recepción.",
+            "Confirmar clase de prioridad y vulnerabilidad.",
+            "Activar la política de demo antes de calcular el ranking."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Litros y factores conservados como estimaciones sintéticas; clase original no confirmada. Ventana y descarga propuestas para pruebas."
+          ],
+          "requiere_revision_urgente": false
+        }
+      ]
+    },
+    "obtenido": {
+      "esquema_version": "1.0",
+      "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+      "creado_en": "2026-10-16T18:00:00-05:00",
+      "origen": "sintetico",
+      "datos_version": "escenario-1.0",
+      "politica_version": "demo-1.0",
+      "evaluaciones": [
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "10ba5cd9-55ed-5420-8806-29a0fe789983",
+          "punto_atencion_id": "f5cc6900-9694-5bb7-9dc9-13d568635dcf",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 3000.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 48.0,
+          "personas_atendidas": 170,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Confirmar demanda y capacidad de recepción.",
+            "Confirmar clase de prioridad y vulnerabilidad.",
+            "Activar la política de demo antes de calcular el ranking.",
+            "La demanda no está validada.",
+            "Falta confirmacion_vulnerabilidad.",
+            "Falta clase_prioridad.",
+            "Falta confirmacion_clase."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Litros y factores conservados como estimaciones sintéticas; clase original no confirmada. Ventana y descarga propuestas para pruebas."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "b4e16617-eecc-5fb1-ba85-f60e51412545",
+          "punto_atencion_id": "01b0918b-4d9d-5dc7-af69-b652621df104",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 3500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 60.0,
+          "personas_atendidas": 150,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Confirmar demanda y capacidad de recepción.",
+            "Confirmar clase de prioridad y vulnerabilidad.",
+            "Activar la política de demo antes de calcular el ranking.",
+            "La demanda no está validada.",
+            "Falta confirmacion_vulnerabilidad.",
+            "Falta clase_prioridad.",
+            "Falta confirmacion_clase."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Litros y factores conservados como estimaciones sintéticas; clase original no confirmada. Ventana y descarga propuestas para pruebas."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "bbb05f27-8cf4-5ab9-80ac-0fab439876e1",
+          "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 2500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T09:00:00-05:00"
+          },
+          "horas_sin_agua": 72.0,
+          "personas_atendidas": 130,
+          "vulnerabilidad": "alta",
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Confirmar demanda y capacidad de recepción.",
+            "Confirmar clase de prioridad y vulnerabilidad.",
+            "Activar la política de demo antes de calcular el ranking.",
+            "La demanda no está validada.",
+            "Falta confirmacion_vulnerabilidad.",
+            "Falta clase_prioridad.",
+            "Falta confirmacion_clase."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Litros y factores conservados como estimaciones sintéticas; clase original no confirmada. Ventana y descarga propuestas para pruebas."
+          ],
+          "requiere_revision_urgente": true
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "efd26685-0f5c-5ac8-afb0-c90371eeb8ab",
+          "punto_atencion_id": "9da59967-8d01-56df-b087-969033099193",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 2500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 54.0,
+          "personas_atendidas": 160,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Confirmar demanda y capacidad de recepción.",
+            "Confirmar clase de prioridad y vulnerabilidad.",
+            "Activar la política de demo antes de calcular el ranking.",
+            "La demanda no está validada.",
+            "Falta confirmacion_vulnerabilidad.",
+            "Falta clase_prioridad.",
+            "Falta confirmacion_clase."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Litros y factores conservados como estimaciones sintéticas; clase original no confirmada. Ventana y descarga propuestas para pruebas."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "f038a9f1-8b6a-5152-b719-f36d02137506",
+          "punto_atencion_id": "8e69dc43-1fdf-50ea-ba2f-0b28c7838e49",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 3000.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 66.0,
+          "personas_atendidas": 140,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Confirmar demanda y capacidad de recepción.",
+            "Confirmar clase de prioridad y vulnerabilidad.",
+            "Activar la política de demo antes de calcular el ranking.",
+            "La demanda no está validada.",
+            "Falta confirmacion_vulnerabilidad.",
+            "Falta clase_prioridad.",
+            "Falta confirmacion_clase."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Litros y factores conservados como estimaciones sintéticas; clase original no confirmada. Ventana y descarga propuestas para pruebas."
+          ],
+          "requiere_revision_urgente": false
+        },
+        {
+          "esquema_version": "1.0",
+          "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+          "creado_en": "2026-10-16T18:00:00-05:00",
+          "origen": "sintetico",
+          "incidente_id": "f21766cc-bd03-50d6-87bf-112631451f25",
+          "punto_atencion_id": "1833d60c-30f3-5c23-9e0a-a2a0ad523c42",
+          "datos_version": "escenario-1.0",
+          "politica_version": "demo-1.0",
+          "estado_demanda": "pendiente",
+          "demanda_litros": 3500.0,
+          "metodo_demanda": "directa",
+          "confirmacion_demanda": null,
+          "clase_prioridad": null,
+          "confirmacion_clase": null,
+          "ventana_atencion": {
+            "inicio": "2026-10-17T08:00:00-05:00",
+            "fin": "2026-10-17T12:00:00-05:00"
+          },
+          "horas_sin_agua": 42.0,
+          "personas_atendidas": 180,
+          "vulnerabilidad": "moderada",
+          "confirmacion_vulnerabilidad": null,
+          "ultima_atencion_confirmada_en": null,
+          "primera_deteccion_en": "2026-10-16T14:00:00-05:00",
+          "estado_prioridad": "pendiente",
+          "puntaje": null,
+          "componentes": null,
+          "posicion": null,
+          "pendientes": [
+            "Confirmar demanda y capacidad de recepción.",
+            "Confirmar clase de prioridad y vulnerabilidad.",
+            "Activar la política de demo antes de calcular el ranking.",
+            "La demanda no está validada.",
+            "Falta confirmacion_vulnerabilidad.",
+            "Falta clase_prioridad.",
+            "Falta confirmacion_clase."
+          ],
+          "supuestos": [
+            "Demanda y factores sintéticos; no se calculó una dotación oficial.",
+            "Litros y factores conservados como estimaciones sintéticas; clase original no confirmada. Ventana y descarga propuestas para pruebas."
+          ],
+          "requiere_revision_urgente": false
+        }
+      ],
+      "alertas_revision": [
+        "e42009e1-0718-57dd-bacf-6c0a8d6a8521: posible urgencia pendiente de revisión."
+      ]
+    }
+  },
+  "metricas": {
+    "necesidades_ensayo": 6,
+    "necesidades_priorizadas": 6,
+    "necesidades_v0": 6,
+    "pendientes_v0": 6
+  }
+}

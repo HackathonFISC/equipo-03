@@ -130,8 +130,13 @@ def solve_routes_minimo(entrada: SolicitudResolverRutas) -> PropuestaDistribucio
             return resultado([], 'error', 'Turno sin intervalo representable en segundos.')
         tiempo.CumulVar(routing.Start(v)).SetRange(inicio, fin)
         tiempo.CumulVar(routing.End(v)).SetRange(inicio, fin)
-        routing.AddVariableMinimizedByFinalizer(tiempo.CumulVar(routing.Start(v)))
+    # Primero fija los retornos tempranos para las rutas elegidas. Después,
+    # retrasa las salidas sin posponer esos retornos y reduce la espera inicial.
+    # Maximizar Start antes de fijar End empujaría las rutas al final del turno.
+    for v in range(len(vehiculos)):
         routing.AddVariableMinimizedByFinalizer(tiempo.CumulVar(routing.End(v)))
+    for v in range(len(vehiculos)):
+        routing.AddVariableMaximizedByFinalizer(tiempo.CumulVar(routing.Start(v)))
     # null es arco bloqueado, también hacia los índices de retorno de cada camión.
     destinos = list(range(routing.Size())) + [routing.End(v) for v in range(len(vehiculos))]
     for a in range(routing.Size()):

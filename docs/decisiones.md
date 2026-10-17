@@ -43,7 +43,41 @@ Límites: aceptar el contrato no activa la política `demo-1.0`, no confirma los
 - Aceptado como propuesta de Noel: todos los reportes de V1 se guardan con origen `"sintetico"`; errores de dominio a HTTP: 422 (`contrato_invalido`, `datos_insuficientes`, `ubicacion_ambigua`, `fuera_de_area`), 403 (`sin_permiso`), 409 (`politica_no_activa`, `version_obsoleta`, `plan_no_verificado`, `cobertura_critica_pendiente`), 503 (`proveedor_no_disponible`), 502 (`envio_incierto`), con el `ErrorDominio` completo como cuerpo.
 - Python: sin impedimento declarado; no se fija una versión obligatoria.
 
-## D004 Alcance de geografía de la demo
+## D004 Implementación local de demanda y prioridad V2
+
+- Fecha: 16 de octubre de 2026, 21:55 (UTC−05:00).
+- Solicitud: el usuario indicó comenzar V2. Se implementa la parte de cálculo de José sobre los contratos existentes, sin modificar agentes, API, esquema ni política compartida.
+- Resultado: `calculo.demanda.validate_need` y `calculo.prioridad.score_needs` disponibles como funciones puras síncronas. Demanda directa y fórmula, recepción, confirmaciones, faltantes, criticidad, puntaje configurable, escalas fijas y desempate según política de demo.
+- Alternativas: rellenar ausencias para producir un ranking completo o conservar las necesidades pendientes. Se conserva la segunda conforme al plan. Los motivos de revisión existentes no se eliminan salvo el marcador técnico del ejemplo compartido que indica cálculo aún no ejecutado; el integrador retira observaciones resueltas de forma explícita.
+- Límites: el formato de una confirmación no verifica permisos humanos. Política no activa produce `ExcepcionContrato`/`politica_no_activa`; Noel adapta el error al HTTP acordado al integrar las tools. Ninguna cifra por encima del tope del puntaje se rechaza automáticamente: solo se satura el componente, se preserva el dato y se alerta para revisión. No se añaden umbrales operativos de rechazo.
+- Origen: el contrato actual solo define políticas sintéticas. Los resultados del ranking se conservan como sintéticos incluso si parte de los factores procede de reportes reales. No se presenta una decisión de demo como validación operativa.
+- Evidencia: 43 pruebas nuevas de V2; regresión de 204 pruebas y 57 subpruebas aprobadas, pip check correcto. Demo: 2500 L directos, 1500 L por fórmula, demanda desconocida sin reserva, seis puntos priorizados con confirmaciones ficticias y seis necesidades originales V0 conservadas pendientes. Entrada/salida y métricas en `evals/resultados/necesidades_v2.json`; ejecución de pruebas en `v2_pruebas.xml`.
+- Supuesto exclusivo del ensayo: recepción sintética de 5000 L por punto para probar las seis demandas del fixture. No se incorpora a los archivos compartidos de escenario ni se considera aprobado para operación.
+- Pendiente para cierre conjunto: Emilia integra tools, territorio, incidentes y reanudación; Noel conecta aclaraciones y errores. Acordar parámetros/activación de política del escenario. La regresión de repetición de quejas cubre cálculo e invariancia de factores; el recorrido real de duplicados/consolidación sigue siendo prueba de integración del equipo. No se declara cerrada V2 del sistema.
+
+## D005 Reducir espera inicial del solver mínimo
+
+- Fecha: 16 de octubre de 2026, 22:20 (UTC−05:00).
+- Origen: el usuario trasladó una revisión de solve_routes_minimo que detectó salida a 06:00 y espera innecesaria hasta 08:00 cuando el turno comienza dos horas antes.
+- Decisión: primero minimizar los finales de todos los vehículos y después maximizar sus inicios. No maximizar solo las salidas, porque pospondría el recorrido hacia el final del turno. El ajuste afecta al solver V1, no a validate_need ni score_needs de V2.
+- Evidencia: prueba añadida reproduce el fallo antes del cambio; después pasan 17 pruebas del solver. Caso temprano: salida 07:50, primera descarga 08:00, retorno 09:00. Demo base: mismas rutas y horas 08:00–09:10. Regresión completa: 206 pruebas y 57 subpruebas aprobadas.
+- Alcance V3 conservado: selección de cobertura parcial por criticidad/prioridad y diagnóstico por punto. La demanda de cada punto sigue indivisible; si excede toda cisterna disponible debe quedar pendiente con motivo demanda_supera_vehiculo. No autoriza dividir esa demanda entre camiones ni introducir recargas.
+
+## D006 Circuito de aclaración de V2 (Noel y Emilia)
+
+Referencia del acuerdo recibido: D004. Se registra como D006 para no duplicar el identificador D004 ya utilizado en este archivo.
+
+- Fecha: 16 de octubre de 2026, 22:35 (UTC−05:00). Acordado entre Noel y Emilia.
+- Creación: el orquestador de Emilia crea la aclaración (plantilla según faltantes) y pasa la ejecución a `espera_aclaracion` en una sola operación. Máximo una aclaración activa por ejecución.
+- Destino: el `POST /reportes` de Noel registra el chat de origen en `destinos` y lo guarda en `reportes.destino_origen_id` (columna en la migración de Emilia). Las aclaraciones solo van al chat de origen y no requieren autorización de coordinador; los avisos de V4 sí.
+- Envío: el bot consulta cada 5–10 s; la API de Noel reserva la aclaración y registra `enviado`, `fallido` o `incierto` mediante RPC de Emilia. Sin reenvío automático de envíos inciertos ni de reservas vencidas: pasan a revisión. El bot no tiene acceso a Supabase.
+- Respuesta: solo un reply a la pregunta, en el mismo chat, del mismo remitente del reporte original, también en grupos. Deduplicada por el identificador externo del reply. Texto o ubicación estática (contrato `Ubicacion`, fuente `"compartida"`, sin validar punto de entrega).
+- Reanudación: una RPC de Emilia, llamada por la API, valida, guarda la respuesta, cierra la aclaración, registra la traza y devuelve la ejecución a `pendiente/ingesta` de forma atómica. Un reply repetido no sobrescribe ni reactiva.
+- Caducidad: 30 minutos desde `enviado_en`, configurable. Al vencer, la ejecución pasa a `espera_revision`. Una respuesta tardía se rechaza con el resultado `"vencida"`.
+- Resultados de la RPC de respuesta: `aceptada`, `repetida`, `ya_respondida`, `autor_distinto`, `no_encontrada`, `vencida`.
+## D007 Alcance de geografía de la demo
+
+Referencia de la versión recibida de main: D004. Se registra como D007 para conservar el identificador local de la implementación V2 sin perder este acuerdo.
 
 - Fecha: 2026-10-16 22:08 EST.
 - Decisión del usuario: confirmó «seis puntos totales, tres por distrito» para
@@ -62,7 +96,9 @@ Límites: aceptar el contrato no activa la política `demo-1.0`, no confirma los
   PostgreSQL temporal, reejecución conservadora, alias y correspondencia CSV/SQL,
   guardas de identidad y conservación de otras filas. No se aplicó SQL a Supabase real.
 
-## D005 Aclaraciones y caducidad de V2
+## D008 Aclaraciones y caducidad de V2
+
+Referencia de la versión recibida de main: D005. Se registra como D008 para conservar el identificador local de la corrección del solver. Complementa el circuito D006; ambos registros del acuerdo se conservan con sus fechas y procedencia.
 
 - Fecha de registro: 2026-10-16T22:47-05:00.
 - Usuario comunicó acuerdo con Noel: aclaración creada por orquestador, máximo una activa por ejecución; bot llama API y API ejecuta RPC con service_role.
