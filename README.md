@@ -35,6 +35,15 @@ python -m venv .venv
 
 Consulta [la guía del entorno V0](docs/entorno_v0.md) para el alcance y las versiones comprobadas. Estas verificaciones no necesitan credenciales. La integración con API, agentes, Supabase y Telegram se prepara por separado; no se arranca con estos comandos. Para esa integración se usa `.env.example` sin publicar claves reales.
 
+Para ejecutar el solver mínimo sintético V1 de José:
+
+```powershell
+.\.venv\Scripts\python.exe -m calculo.demo_v1
+.\.venv\Scripts\python.exe -m pytest calculo/tests contratos/tests -q
+```
+
+Consulta [el alcance del ensayo V1](calculo/README.md). La demo calcula rutas locales con OR-Tools, sin publicar planes ni conectar servicios externos. La salida de referencia y las pruebas ejecutadas están en `evals/resultados/solver_minimo_v1.json` y `evals/resultados/v1_pruebas.xml`.
+
 ## Evals
 
 Al menos 15 casos de prueba, métrica y resultados.
