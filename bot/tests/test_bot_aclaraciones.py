@@ -232,7 +232,7 @@ def test_ubicacion_como_reply_se_entrega_con_coordenadas():
     asyncio.run(recibir_ubicacion(update, contexto))
     assert cuerpo(llamadas[0])["ubicacion"] == {"latitud": 8.9, "longitud": -79.7, "precision_metros": 12.5}
     assert "texto" not in cuerpo(llamadas[0])
-    respuestas.assert_awaited_once_with(MENSAJES_RESULTADO["aceptada"])
+    assert "localizarlo automáticamente" in respuestas.await_args.args[0]
 
 
 def test_ubicacion_sin_reply_pide_texto():
@@ -282,3 +282,27 @@ def test_apagado_no_arranca_la_consulta_periodica(monkeypatch):
                           bot_data={"cliente_api": None, "trabajador_id": "bot:1"})
     asyncio.run(iniciar_envio(app))
     assert "tarea_envio" not in app.bot_data
+
+
+def test_pregunta_geografica_ofrece_pin_fuera_del_catalogo():
+    from bot.adaptador import pregunta_con_ubicacion
+    texto = pregunta_con_ubicacion({**ACLARACION, "campos_solicitados": ["ubicación_declarada"]})
+    assert texto.startswith(ACLARACION["pregunta"])
+    assert "Adjuntar → Ubicación" in texto and "aunque el lugar" in texto
+    assert "solo si estás allí" in texto
+    assert "no crea un punto de distribución" in texto
+
+
+def test_pregunta_mixta_conserva_campos_y_limite_telegram():
+    from bot.adaptador import pregunta_con_ubicacion
+    texto = pregunta_con_ubicacion({**ACLARACION, "campos_solicitados": ["ubicacion", "personas_afectadas"]})
+    assert texto.startswith("¿Cuántas personas son?") and "pin fijo" in texto
+    assert len(pregunta_con_ubicacion({**ACLARACION, "pregunta": "x" * 4000,
+                                    "campos_solicitados": ["ubicacion"]})) <= 4096
+
+
+def test_pin_de_otra_persona_no_confirma_asociacion():
+    update, contexto, llamadas, respuestas = armar(api_resultado("autor_distinto"), texto=None, ubicacion=UBICACION)
+    asyncio.run(recibir_ubicacion(update, contexto))
+    assert rutas(llamadas) == ["/aclaraciones/respuestas"]
+    respuestas.assert_awaited_once_with(MENSAJES_RESULTADO["autor_distinto"])

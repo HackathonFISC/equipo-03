@@ -92,9 +92,10 @@ def interpretar_reporte(reporte: ReporteRegistrado, extractor: Extractor, *, int
         if tipo == 'ubicacion':
             from contratos.modelos import Ubicacion
             ubicacion_compartida = Ubicacion.model_validate(aclaracion['respuesta_ubicacion'])
-    if ubicacion_compartida is not None and salida.requiere_aclaracion and salida.faltantes and all(
-            re.search(r'ubicaci|lugar|direcci|sector|punto', f, re.I) for f in salida.faltantes):
-        salida = salida.model_copy(update={'requiere_aclaracion': False, 'faltantes': []})
+    if ubicacion_compartida is not None and salida.requiere_aclaracion and salida.faltantes:
+        faltantes = [f for f in salida.faltantes
+                     if not re.search(r'ubicaci|lugar|direcci|sector|punto', f, re.I)]
+        salida = salida.model_copy(update={'requiere_aclaracion': bool(faltantes), 'faltantes': faltantes})
     interpretado = ReporteInterpretado(
         esquema_version=reporte.esquema_version, ejecucion_id=reporte.ejecucion_id,
         creado_en=datetime.now(timezone.utc), origen=reporte.origen, reporte_id=reporte.reporte_id,

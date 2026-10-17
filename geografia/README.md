@@ -19,4 +19,6 @@ del estado de implementación del código.
 
 ## Implementación V2
 
-Catálogo, resolve_location y link_reports disponibles. La corrección conserva historial mediante RPC backend (interfaz autorizada en V4); sin geocodificación externa ni asignación automática por cercanía. Ver [V2](../docs/V2_EMILIA.md).
+Catálogo, resolve_location y link_reports disponibles. La corrección conserva historial mediante RPC backend (interfaz autorizada en V4); el catálogo no asigna automáticamente por cercanía. La localización de reportes fuera del catálogo ahora usa pins o Google Maps, de forma independiente de los puntos de distribución. Ver [V2](../docs/V2_EMILIA.md).
+
+Ver [localización automática](../docs/LOCALIZACION_AUTOMATICA.md) para activar Google y aplicar 0018.

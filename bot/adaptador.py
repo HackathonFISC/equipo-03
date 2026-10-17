@@ -8,6 +8,8 @@
 """
 import asyncio
 import logging
+import re
+import unicodedata
 
 import httpx
 from telegram import ForceReply, ReplyParameters
@@ -76,6 +78,23 @@ async def _registrar_envio(cliente, aclaracion_id, trabajador_id, estado, mensaj
                      aclaracion_id, motivo)
 
 
+def pregunta_con_ubicacion(aclaracion):
+    campos = aclaracion.get("campos_solicitados", [])
+    normalizados = unicodedata.normalize("NFD", " ".join(campos).lower())
+    normalizados = "".join(c for c in normalizados if not unicodedata.combining(c))
+    if not re.search(r"ubicaci|lugar|direcci|sector|punto", normalizados):
+        return aclaracion["pregunta"]
+    ayuda = (
+        "\n\nTambién puedes ubicar el problema aunque el lugar no esté en nuestro catálogo: "
+        "pulsa Responder en esta pregunta, abre Adjuntar → Ubicación y selecciona un pin fijo "
+        "del lugar donde falta agua. Usa tu ubicación actual solo si estás allí. "
+        "No compartas ubicación en vivo. El pin localizará tu reporte automáticamente; "
+        "no crea un punto de distribución."
+    )
+    # Telegram limita el texto a 4096 caracteres.
+    return aclaracion["pregunta"][:4096-len(ayuda)] + ayuda
+
+
 async def enviar_una(bot, cliente, trabajador_id: str, aclaracion: dict) -> None:
     """Envía una pregunta reservada y registra enviado, fallido o incierto."""
     original = aclaracion.get("mensaje_original_id")
@@ -86,7 +105,7 @@ async def enviar_una(bot, cliente, trabajador_id: str, aclaracion: dict) -> None
     try:
         enviado = await bot.send_message(
             chat_id=aclaracion["chat_id"],
-            text=aclaracion["pregunta"],
+            text=pregunta_con_ubicacion(aclaracion),
             reply_parameters=respuesta_a,
             # Telegram abre la respuesta ya enlazada a la pregunta: sin esto, quien escribe sin pulsar
             # «Responder» crea un reporte nuevo en lugar de contestar.

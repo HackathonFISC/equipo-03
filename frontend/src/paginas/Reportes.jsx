@@ -162,7 +162,9 @@ function Seguimiento({ ejecucionId, seguimiento, traza, onReintentar }) {
 }
 
 function FilaReporte({ item, alQuitar }) {
-  const { registrado, interpretado, seguimiento } = item
+  const { registrado, interpretado, seguimiento, localizacion_resuelta: localizacion } = item
+  const ubicacion = item.ubicacion_reportada ?? localizacion?.ubicacion
+  const esGoogle = ubicacion?.fuente === 'geocodificada'
   const estado = estadoDe(item)
   const interpretacion = interpretado?.interpretacion ?? null
   const campos = interpretacion?.campos
@@ -205,6 +207,25 @@ function FilaReporte({ item, alQuitar }) {
         </summary>
 
         <div className="ficha">
+          {ubicacion && (
+            <div className="evidencia">
+              <h3>{localizacion ? 'Ubicación resuelta automáticamente' : 'Ubicación recibida por Telegram'}</h3>
+              <p>{ubicacion.latitud.toFixed(6)}, {ubicacion.longitud.toFixed(6)}
+                {ubicacion.precision_metros != null && ` · Precisión informada: ${ubicacion.precision_metros} m`}
+              </p>
+              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${ubicacion.latitud},${ubicacion.longitud}`)}`}
+                target="_blank" rel="noopener noreferrer">Ver ubicación en el mapa</a>
+              {esGoogle && <p translate="no" style={{ fontFamily: 'sans-serif', fontSize: '14px', fontWeight: 400 }}>Google Maps</p>}
+              <p>{localizacion ? 'El reporte ya está localizado; no requiere revisión de ubicación.' : 'El reporte se localizará automáticamente al procesar el pin.'}</p>
+            </div>
+          )}
+          {!ubicacion && localizacion?.place_id && (
+            <div className="evidencia">
+              <h3>Ubicación resuelta automáticamente</h3>
+              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(interpretacion?.ubicacion_declarada ?? 'Ubicación')}&query_place_id=${encodeURIComponent(localizacion.place_id)}`}
+                target="_blank" rel="noopener noreferrer">Ver ubicación en Google Maps</a>
+            </div>
+          )}
           {interpretacion ? (
             <>
               <p className="ficha-resumen">{interpretacion.resumen}</p>
@@ -262,6 +283,7 @@ export default function Reportes() {
   const [recibidos, setReportes] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
+  const [sinSesion, setSinSesion] = useState(false)
   const [filtro, setFiltro] = useBorrador('reportes.filtro', 'todos')
   const [intento, setIntento] = useState(0)
   const [rango, setRango] = useBorrador('reportes.rango', 'todo')
@@ -279,10 +301,13 @@ export default function Reportes() {
       onDatos: (datos) => {
         setAhora(Date.now())
         setReportes(datos)
+        setSinSesion(false)
         setError(null)
         setCargando(false)
       },
       onError: (e) => {
+        setSinSesion(e.codigo === 'sin_permiso')
+        if (e.codigo === 'sin_permiso') setReportes([])
         setError(e.message)
         setCargando(false)
       },
@@ -397,9 +422,11 @@ export default function Reportes() {
       {error && (
         <div className="mensaje mensaje-error" role="alert">
           <p>No se pudieron cargar los reportes. {error}</p>
-          <button type="button" onClick={reintentar}>
-            Reintentar
-          </button>
+          {sinSesion ? (
+            <a className="cuenta-cta" href="#acceso">Ir al inicio de sesión</a>
+          ) : (
+            <button type="button" onClick={reintentar}>Reintentar</button>
+          )}
         </div>
       )}
 

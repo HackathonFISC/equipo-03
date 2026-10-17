@@ -6,3 +6,6 @@ import pytest
 def trabajador_real_desactivado(monkeypatch):
     # Los tests específicos del ciclo de vida activan explícitamente un doble.
     monkeypatch.setenv('TRABAJADOR_AUTOMATICO', 'false')
+    monkeypatch.setenv('GOOGLE_ROUTES_ACTIVAS', 'false')
+    monkeypatch.setenv('GOOGLE_ROUTES_API_KEY', '')
+    monkeypatch.setenv('GOOGLE_MAPS_API_KEY', '')  # Nunca llamar al geocodificador real en tests.

@@ -367,7 +367,7 @@ def test_listar_no_expone_nada_fuera_de_las_columnas_del_plan(cliente_lectura, l
     lectura.tablas = {"planes": [plan_fila(solicitud_snapshot={"secreto": 1}, creado_por=str(uuid4()))]}
     plan = cliente_lectura.get("/planes", headers=AUTH).json()[0]
     assert "solicitud_snapshot" not in plan and "creado_por" not in plan
-    assert "solicitud_snapshot" not in lectura.selects[0][1]
+    assert "solicitud_snapshot" in lectura.selects[0][1]  # Backend: coordenadas congeladas para navegación; no se exponen.
 
 
 def test_listar_plan_con_formato_roto_es_503(cliente_lectura, lectura):
@@ -378,3 +378,21 @@ def test_listar_plan_con_formato_roto_es_503(cliente_lectura, lectura):
 def test_listar_falla_de_base_es_503(cliente_lectura, lectura):
     lectura.error_lectura = error_rpc("boom", "XX000")
     assert cliente_lectura.get("/planes", headers=AUTH).status_code == 503
+
+
+def test_navegacion_usa_coordenadas_del_snapshot(cliente_lectura,lectura):
+    from urllib.parse import parse_qs,urlsplit
+    original={'latitud':8.9,'longitud':-79.7,'fuente':'escenario'}
+    destino={'latitud':8.91,'longitud':-79.71,'fuente':'escenario'}
+    lectura.tablas={'planes':[plan_fila(solicitud_snapshot={'deposito':{'ubicacion':original},
+        'puntos':[{'punto_atencion_id':PUNTO,'ubicacion':destino}]})],
+        'rutas':[{'ruta_id':RUTA,'plan_id':str(PLAN),'version':1,'vehiculo_id':str(uuid4()),
+            'salida_estimada':'2026-10-17T12:00:00+00:00','retorno_estimado':'2026-10-17T16:00:00+00:00'}],
+        'paradas':[{'parada_id':str(uuid4()),'ruta_id':RUTA,'plan_id':str(PLAN),'version':1,'orden':1,
+            'punto_atencion_id':PUNTO,'litros_asignados':1000,'llegada_estimada':'2026-10-17T13:00:00+00:00',
+            'inicio_descarga':'2026-10-17T13:00:00+00:00','fin_descarga':'2026-10-17T13:30:00+00:00','estado':'programada'}]}
+    lectura.catalogo=[{'punto_atencion_id':PUNTO,'nombre':'Nombre cambiado','latitud':9.99,'longitud':-80.0}]
+    ruta=cliente_lectura.get('/planes',headers=AUTH).json()[0]['rutas'][0]
+    parametros=parse_qs(urlsplit(ruta['navegacion_url']).query)
+    assert parametros['waypoints']==['8.91,-79.71']
+    assert parametros['destination']==['8.9,-79.7'] and len(ruta['tramos_navegacion'])==2

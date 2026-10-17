@@ -114,7 +114,7 @@ def test_reservar_devuelve_la_aclaracion(cliente, db, forma):
     assert r.status_code == 200
     assert r.json() == {
         "aclaracion_id": ACLARACION, "pregunta": "¿Cuántas personas son?",
-        "chat_id": -1001, "mensaje_original_id": 7,
+        "chat_id": -1001, "mensaje_original_id": 7, "campos_solicitados": [],
     }
 
 
@@ -241,3 +241,12 @@ def test_error_de_la_base_responde_503(cliente, db):
     db.error = APIError({"message": "caída", "code": "XX000"})
     r = cliente.post("/aclaraciones/reservar", json={"trabajador_id": "bot:1"}, headers=CABECERA)
     assert r.status_code == 503 and r.json()["recuperable"] is True
+
+
+def test_reserva_conserva_campos_geograficos(cliente, db):
+    db.respuestas["ra_reservar_aclaracion"] = {
+        "aclaracion_id": ACLARACION, "pregunta": "¿Dónde?", "chat_id": "-1001",
+        "mensaje_externo_id": "-1001:7", "campos_solicitados": ["ubicacion"],
+    }
+    respuesta = cliente.post("/aclaraciones/reservar", json={"trabajador_id": "bot:1"}, headers=CABECERA)
+    assert respuesta.json()["campos_solicitados"] == ["ubicacion"]

@@ -12,13 +12,15 @@ const python=process.env.RA_PYTHON || path.join(raiz,'.venv',process.platform===
 function py(obj){const r=spawnSync(python,['-m','agentes.tests.soporte_puente_necesidades'],{cwd:raiz,env:{...process.env,PYTHONDONTWRITEBYTECODE:'1'},input:JSON.stringify(obj),encoding:'utf8',maxBuffer:10*1024*1024});if(r.status!==0)throw Error('Python: '+r.stderr);return JSON.parse(r.stdout);}
 function comprobar(c,m){if(!c)throw Error(m);}
 const automatico=process.env.RA_PROBAR_LOTE_AUTOMATICO==='1';
+const vial=process.env.RA_PROBAR_RUTAS_GOOGLE==='1';
 const db=new PGlite();
 async function sql(t,p=[]){return (await db.query(t,p)).rows;}
 async function rpc(n,p={}){const keys=Object.keys(p);return (await sql(`SELECT public.${n}(${keys.map((k,i)=>k+'=> $'+(i+1)).join(',')}) AS dato`,Object.values(p)))[0].dato;}
 try {
  await db.exec('CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS; CREATE SCHEMA auth; CREATE TABLE auth.users(id uuid PRIMARY KEY);');
  const migraciones=['0001_esquema.sql','0004_identidad_reportes.sql','0005_ingesta_transaccional.sql','0006_aclaraciones_v2.sql','0007_territorial_orquestador_v2.sql','0008_idempotencia_lotes.sql','0009_planificacion_v3.sql','0010_ensayos_priorizacion_v2.sql','0011_bandeja_salida.sql','0003_aprobacion.sql','0012_comunicacion_v4.sql','0013_feedback_aclaraciones.sql','0014_recuperacion_trabajador.sql','0015_ingesta_recuperable.sql','0016_puente_necesidades_v3.sql'];
- if(automatico)migraciones.push('0017_lotes_confirmados_automaticos.sql');
+ if(automatico||vial)migraciones.push('0017_lotes_confirmados_automaticos.sql');
+ if(vial)migraciones.push('0018_localizacion_automatica.sql','0019_matriz_vial_planificacion.sql');
  for(const m of migraciones)await db.exec(await fs.readFile(raiz+'/supabase/migrations/'+m,'utf8'));
  await db.exec(await fs.readFile(raiz+'/supabase/seed/01_sectores_puntos.sql','utf8'));
  const uid=(await sql('SELECT gen_random_uuid() AS id'))[0].id;
@@ -82,6 +84,26 @@ try {
  const repetido=await rpc('ra_registrar_puente_v3',{p_ejecucion_id:eid,p_snapshot:snapshot,p_solicitud:solicitud});
  comprobar(repetido.repetido===true,'Puente no idempotente');
  toma=await rpc('ra_tomar_planificacion_v3',{p_ejecucion_id:eid,p_trabajador_id:'fixture-a1'});
+ if(vial){
+  const vieja=toma;
+  const matriz={...toma.solicitud.matriz,origen:'estimado',matriz_version:'google-routes-integracion-local',descripcion:'Google Maps simulado sin red'};
+  for(const cambio of [
+   {p_trabajador_id:'ajeno',p_matriz:matriz},
+   {p_snapshot:{...toma,solicitud:{...toma.solicitud,datos_version:'obsoleta'}},p_matriz:matriz},
+   {p_matriz:{...matriz,nodos_ids:[...matriz.nodos_ids.slice(1),matriz.nodos_ids[1]]}},
+   {p_matriz:{...matriz,minutos:matriz.minutos.map((fila,a)=>fila.map((v,b)=>a===0&&b===0?1:v))}}
+  ]){
+   let rechazado=false;
+   try{await rpc('ra_actualizar_matriz_planificacion',{p_ejecucion_id:eid,p_trabajador_id:'fixture-a1',p_snapshot:toma,p_matriz:matriz,...cambio});}
+   catch(e){rechazado=['55000','40001','22023'].includes(e.code);}
+   comprobar(rechazado,'Aceptó matriz, reserva o snapshot inválidos');
+  }
+  toma=await rpc('ra_actualizar_matriz_planificacion',{p_ejecucion_id:eid,p_trabajador_id:'fixture-a1',p_snapshot:toma,p_matriz:matriz});
+  comprobar(toma.solicitud.matriz.origen==='estimado','No persistió matriz vial');
+  comprobar(isDeepStrictEqual({...toma.solicitud,matriz:vieja.solicitud.matriz},vieja.solicitud),'Cambió otro insumo de planificación');
+  const permisos=await sql("SELECT has_function_privilege('anon','public.ra_actualizar_matriz_planificacion(uuid,text,jsonb,jsonb)','EXECUTE') AS anon,has_function_privilege('authenticated','public.ra_actualizar_matriz_planificacion(uuid,text,jsonb,jsonb)','EXECUTE') AS authenticated");
+  comprobar(!permisos[0].anon&&!permisos[0].authenticated,'RPC vial expuesta');
+ }
  const plan=py({accion:'planificacion',solicitud:toma.solicitud});
  comprobar(plan.estado==='espera_validacion'&&plan.informe.valido,'Solver/verificador rechazaron escenario');
  const cierre=await rpc('ra_finalizar_planificacion_v3',{p_ejecucion_id:eid,p_trabajador_id:'fixture-a1',p_snapshot:toma,p_resultado:plan});
@@ -103,7 +125,7 @@ try {
  await sql("UPDATE public.necesidades SET motivo='FIXTURE: cambio después de aprobación' WHERE ejecucion_id=$1",[eid]);
  comprobar((await sql('SELECT estado FROM public.planes WHERE ejecucion_id=$1',[eid]))[0].estado==='invalidado','Cambio de necesidades no invalidó plan');
  comprobar((await sql("SELECT count(*)::int AS n FROM public.avisos WHERE ejecucion_id=$1 AND estado_envio='cancelado'",[eid]))[0].n===6,'Avisos no se cancelaron por cambio de entradas');
- const evidencia={preparacion_lote_automatica:automatico,fecha:new Date().toISOString(),modo:'integracion_local_controlada',datos_reales_usados:false,origen_probado:'real',origen_escenario:'sintetico',modo_plan:'ensayo',mismo_ejecucion_id:true,necesidades:6,litros_asignados:pl.rutas.flatMap(r=>r.paradas).reduce((a,p)=>a+p.litros_asignados,0),verificacion_valida:plan.informe.valido,agentes,traza_cinco_agentes:true,avisos_creados:avisos.length,telegram_real:false,gemini_real:false,aprobacion_humana:'simulada en fixture',destino_no_habilitado_bloqueado:true,plan_invalidado_tras_cambio_necesidades:true,avisos_cancelados_tras_cambio:6};
+ const evidencia={rutas_google_simuladas:vial,preparacion_lote_automatica:automatico,fecha:new Date().toISOString(),modo:'integracion_local_controlada',datos_reales_usados:false,origen_probado:'real',origen_escenario:'sintetico',modo_plan:'ensayo',mismo_ejecucion_id:true,necesidades:6,litros_asignados:pl.rutas.flatMap(r=>r.paradas).reduce((a,p)=>a+p.litros_asignados,0),verificacion_valida:plan.informe.valido,agentes,traza_cinco_agentes:true,avisos_creados:avisos.length,telegram_real:false,gemini_real:false,aprobacion_humana:'simulada en fixture',destino_no_habilitado_bloqueado:true,plan_invalidado_tras_cambio_necesidades:true,avisos_cancelados_tras_cambio:6};
  await fs.writeFile(process.env.RA_EVIDENCIA || raiz+'/agentes/evidencias/puente_necesidades_v3_local.json',JSON.stringify(evidencia,null,2)+'\n');
  console.log(JSON.stringify(evidencia));
 } catch(e){console.log('FALLO INTEGRACION:',e.message,e.code||'',e.where||'');process.exitCode=1;}
