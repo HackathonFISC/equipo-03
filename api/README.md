@@ -42,6 +42,7 @@ CORS admite solo `http://localhost:5173` (servidor de desarrollo del panel).
 | `rutas/incidentes.py`, `servicios/incidentes.py` | Incidentes consolidados con su necesidad o sus pendientes. |
 | `rutas/priorizacion.py`, `servicios/priorizacion.py` | Prepara el lote revisado de priorización: arma el lote con los incidentes reales y la política elegida, bloquea lo que necesita revisión y llama a `ra_preparar_priorizacion_v2`. |
 | `rutas/avisos.py`, `servicios/bandeja_salida.py` | Bandeja de salida: reservar el siguiente aviso vigente y registrar su envío. |
+| `rutas/politicas.py` | Lista las políticas de prioridad activas para el panel (`GET /politicas`, solo sesión válida). |
 | `rutas/sectores.py`, `servicios/sectores.py` | Estado de un sector, selección del plan que Comunicación usará por sector y habilitación de un destino de ensayo. Llaman a las RPC de la migración 0012 (Emilia) y traducen sus errores. |
 | `rutas/planes.py`, `servicios/planes.py`, `servicios/aprobacion.py` | Listar planes guardados; aprobar y rechazar una versión del plan: solo coordinador activo; llaman a las RPC de la migración 0003 y traducen sus errores a códigos de D003. |
 | `auth.py`, `rutas/sesion.py` | Sesión (V4): verifica el token de Supabase Auth y exige coordinador activo. El usuario sale del token. |
@@ -62,6 +63,7 @@ de reportes; no equivale a una prueba de conectividad externa. Ver
 | `POST /reportes` | Bot | Sí | Registra un mensaje de Telegram. 201 si es nuevo, 200 si ya estaba. |
 | `GET /reportes?limite=50` | Panel | No (V1) | Lista reportes, del más reciente al más antiguo (1 a 200). |
 | `GET /ejecuciones/{ejecucion_id}` | Panel | Token | Estado, etapa y traza de los agentes. 403 sin sesión válida; 404 si no existe. |
+| `GET /eventos` | Panel | Token | Registro general de eventos, del más nuevo al más antiguo. Filtros opcionales: `agente`, `actor_tipo`, `ejecucion_id`; `limite` (1–200, 100 por defecto). Sin `detalles`, `entrada_ids`, `salida_ids` ni `usuario_id`. 403 sin sesión; 422 filtro inválido; 503. |
 | `POST /aclaraciones/reservar` | Bot | Sí | Reserva la siguiente pregunta pendiente. 204 si no hay. |
 | `POST /aclaraciones/{aclaracion_id}/envio` | Bot | Sí | Registra `enviado`, `fallido` o `incierto`. 204. |
 | `POST /aclaraciones/respuestas` | Bot | Sí | Entrega un reply a una pregunta. Siempre 200 con un resultado. |
@@ -72,6 +74,7 @@ de reportes; no equivale a una prueba de conectividad externa. Ver
 | `GET /planes` | Panel | Token | Las 20 versiones de plan más recientes con rutas y paradas (nombre del punto del catálogo), `datos_version`, `politica_version` y bloqueos. Lectura de tablas; no expone la solicitud ni quién creó el plan. |
 | `POST /planes/{plan_id}/versiones/{version}/aprobar` | Panel | Token + coordinador | Cuerpo: `datos_version`, `politica_version`, `motivo`, `bloqueos_reconocidos`. 200 con `aprobacion_id`; repetir lo mismo da `repetido: true`. 403 / 409 (`version_obsoleta`, `politica_no_activa`, `plan_no_verificado`, `cobertura_critica_pendiente`) / 422 (`bloqueos_reconocidos` incompleto) / 503. |
 | `POST /planes/{plan_id}/versiones/{version}/rechazar` | Panel | Token + coordinador | Cuerpo: `motivo`. Deja el plan `rechazado` y la ejecución en revisión. Un plan ya resuelto da 409 `version_obsoleta`. |
+| `GET /politicas` | Panel | Token | Políticas de prioridad activas (versión, fundamento, pesos y topes) para elegirlas en el formulario de revisión sin escribir la versión. |
 | `GET /sectores` | Panel | Token | Catálogo de sectores (id, nombre, distrito, corregimiento, origen) para elegirlos en el panel. No expone fuente ni quién los creó. |
 | `GET /destinos` | Panel | Token + coordinador | Destinos de Telegram con `autorizado` y `habilitado_ensayo` (`null` si la migración 0012 no está aplicada). El identificador del chat sale truncado: `terminado en 7387`. |
 | `GET /sectores/{sector_id}/estado` | Panel o bot | Token o `X-Secreto-Bot` | `EstadoSector` (contrato de Emilia): plan vigente y estado de cada punto. Sector inexistente: 422; forma inesperada de la RPC: 503, nunca "sin plan". |

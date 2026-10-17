@@ -1,0 +1,31 @@
+/* Transiciones. Responden a una acción de la persona (cambiar de página, abrir, marcar, enviar) y
+   ninguna decora sin motivo. index.css ya las desactiva con prefers-reduced-motion. */
+:root { --t-rapida: 140ms; --t-media: 220ms; --curva: cubic-bezier(.2, .7, .2, 1); }
+
+/* Cambios de color y borde en lo que se puede tocar. :where mantiene la especificidad en cero. */
+:where(a, button, input, select, textarea, summary, .nav-enlace, .rev-opcion, .chip-tiempo, .filtro, .rev-punto, .reporte, .sello, .rev-chip) {
+  transition: background-color var(--t-rapida) ease, border-color var(--t-rapida) ease, color var(--t-rapida) ease,
+    box-shadow var(--t-rapida) ease, transform 90ms ease;
+}
+:where(button:not(:disabled), .cuenta-cta):active { transform: translateY(1px); }
+
+@keyframes entrada-pagina { from { opacity: 0; transform: translateY(8px); } }
+@keyframes abrir { from { opacity: 0; transform: translateY(-4px); } }
+@keyframes crecer { from { transform: scaleX(0); } }
+@keyframes aparecer { from { opacity: 0; } }
+
+/* Al cambiar de sección, la página nueva entra con un movimiento corto. */
+.app-main > * { animation: entrada-pagina var(--t-media) var(--curva) backwards; }
+
+/* Lo que se despliega o aparece como respuesta a una acción. */
+details[open] > :not(summary),
+.navegacion-abierta,
+.rev-cuerpo, .rev-problemas, .rev-pendiente, .rev-politica, .rev-ok, .tiempo-rango, .tiempo-error,
+.mensaje, .aprob-error, .aprob-aviso, .com-ok, .com-estado { animation: abrir var(--t-media) var(--curva) backwards; }
+
+/* Las barras de aporte crecen desde cero la primera vez que se muestran. */
+.aporte-barra > span { transform-origin: left center; animation: crecer 520ms var(--curva) backwards; }
+
+/* Acceso: el banner aparece y el formulario se asienta. */
+.acceso-banner { animation: aparecer 500ms ease-out backwards; }
+.acceso-form { animation: abrir 300ms var(--curva) 80ms backwards; }

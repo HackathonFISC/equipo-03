@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { consultarEtapa, prepararPriorizacion } from '../api/priorizacion.js'
+import { consultarEtapa, listarPoliticas, prepararPriorizacion } from '../api/priorizacion.js'
+import './FormularioRevision.css'
 
 // Estados en los que la RPC acepta un lote (ra_preparar_priorizacion_v2).
 const ESTADOS_ACEPTADOS = ['pendiente', 'ejecutando', 'espera_validacion', 'espera_revision']
@@ -8,36 +9,74 @@ const ESTADOS_ACEPTADOS = ['pendiente', 'ejecutando', 'espera_validacion', 'espe
 const MENSAJE_ERROR = {
   sin_permiso: 'Hace falta una sesión de coordinador activo para enviar la revisión.',
   version_obsoleta: 'Los incidentes cambiaron mientras revisabas. Actualiza la página y revisa de nuevo.',
-  politica_no_activa: 'Esa versión de política no está activa. Confirma cuál usar y vuelve a enviar.',
-  datos_insuficientes: 'Falta confirmar datos para calcular. Completa lo que indica el mensaje.',
+  politica_no_activa: 'Esa política ya no está activa. Elige otra de la lista.',
+  datos_insuficientes: 'Falta cubrir algún punto para poder calcular. Lee el detalle y corrige.',
   contrato_invalido: 'Algún dato no cumple el formato esperado. Revisa los campos marcados.',
   sin_conexion: 'No se pudo conectar con la API.',
 }
 
+const VULNERABILIDAD = [
+  ['sin_condicion_identificada', 'Sin condición identificada', 'No hay barreras ni dependencia documentadas.'],
+  ['moderada', 'Moderada', 'Hay barreras documentadas, pero existe una alternativa para obtener agua.'],
+  ['alta', 'Alta', 'Depende del suministro y no tiene una alternativa suficiente.'],
+]
+
 const VACIA = {
-  incluir: false, metodo: 'directa', fuente: '', litros: '', personasDemanda: '', dotacion: '', dias: '', reserva: '',
-  capacidad: '', clase: '', inicio: '', fin: '', vulnerabilidad: '', horas: '', personas: '',
+  metodo: 'directa', fuente: '', litros: '', personasDemanda: '', dotacion: '', dias: '', reserva: '',
+  capacidad: '', clase: '', vulnerabilidad: '', horas: '', personas: '', inicio: '', fin: '',
 }
 
 const num = (v) => (v === '' ? undefined : Number(v))
 // Panamá no cambia de hora (UTC−5 todo el año): se fija el desfase explícito.
 const instante = (v) => (v ? `${v}:00-05:00` : undefined)
+const formato = new Intl.NumberFormat('es-PA', { maximumFractionDigits: 1 })
+const porcentaje = (v) => `${Math.round(v * 100)} %`
 
 function limpiar(objeto) {
   return Object.fromEntries(Object.entries(objeto).filter(([, v]) => v !== undefined))
 }
 
-// Arma la revisión de un incidente con lo que la persona llenó. Lo vacío no se envía: queda pendiente.
+function demandaCompleta(f) {
+  if (f.fuente.trim() === '') return false
+  return f.metodo === 'directa' ? f.litros !== '' : [f.personasDemanda, f.dotacion, f.dias].every((v) => v !== '')
+}
+
+// Lo que todavía no se confirmó. Se envía igual: queda pendiente y no se cuenta como cero.
+function faltantesDe(f) {
+  const faltan = []
+  if (!demandaCompleta(f)) faltan.push('agua que necesita')
+  if (f.capacidad === '') faltan.push('capacidad de recepción')
+  if (f.clase === '') faltan.push('clase de prioridad')
+  if (f.vulnerabilidad === '') faltan.push('vulnerabilidad')
+  if (f.horas === '') faltan.push('horas sin agua')
+  if (f.personas === '') faltan.push('personas atendidas')
+  if (f.clase === 'critico' && !(f.inicio && f.fin)) faltan.push('ventana de entrega')
+  return faltan
+}
+const TOTAL_DATOS = 6
+
+// Errores que la API rechazaría; se dicen junto al punto y antes de enviar.
+function problemasDe(f) {
+  const p = []
+  const hayCantidad = f.metodo === 'directa' ? f.litros !== '' : [f.personasDemanda, f.dotacion, f.dias, f.reserva].some((v) => v !== '')
+  if (f.fuente.trim() === '' && hayCantidad) p.push('Indica quién confirma la demanda de agua.')
+  if (f.fuente.trim() !== '' && !demandaCompleta(f)) p.push('Completa las cantidades de agua o borra quién la confirma: no se guarda una demanda vacía.')
+  if (f.clase === 'critico' && !(f.inicio && f.fin)) p.push('Un punto crítico necesita ventana de entrega, con inicio y fin.')
+  if (Boolean(f.inicio) !== Boolean(f.fin)) p.push('La ventana necesita inicio y fin.')
+  if (f.inicio && f.fin && f.fin <= f.inicio) p.push('La ventana debe terminar después de empezar.')
+  if (f.personas !== '' && !Number.isInteger(Number(f.personas))) p.push('Las personas atendidas son un número entero.')
+  return p
+}
+
 function armarRevision(item, f) {
-  let demanda
-  if (f.fuente.trim()) {
-    demanda = f.metodo === 'directa'
+  const demanda = f.fuente.trim()
+    ? (f.metodo === 'directa'
       ? limpiar({ metodo: 'directa', fuente: f.fuente.trim(), litros_declarados: num(f.litros) })
       : limpiar({
         metodo: 'formula', fuente: f.fuente.trim(), personas_atendidas: num(f.personasDemanda),
         dotacion_litros_persona_dia: num(f.dotacion), dias_cobertura: num(f.dias), reserva_utilizable_litros: num(f.reserva),
-      })
-  }
+      }))
+    : undefined
   return limpiar({
     incidente_id: item.incidente_id,
     version_incidente: item.version,
@@ -51,196 +90,336 @@ function armarRevision(item, f) {
   })
 }
 
-// Revisa en el cliente lo que la API rechazaría, para decirlo junto al campo y no después del envío.
-function problemasDe(f) {
-  const p = []
-  const hayCantidad = f.metodo === 'directa' ? f.litros !== '' : [f.personasDemanda, f.dotacion, f.dias, f.reserva].some((v) => v !== '')
-  if (f.fuente.trim() === '' && hayCantidad) p.push('Indica la fuente de la demanda.')
-  if (f.fuente.trim() !== '' && f.metodo === 'directa' && f.litros === '') p.push('Indica los litros declarados o borra la fuente: no se confirma una demanda vacía.')
-  if (f.fuente.trim() !== '' && f.metodo === 'formula' && [f.personasDemanda, f.dotacion, f.dias].some((v) => v === '')) p.push('Para la fórmula faltan personas, litros por persona o días; complétalos o borra la fuente.')
-  if (f.clase === 'critico' && !(f.inicio && f.fin)) p.push('Un punto crítico necesita ventana de atención.')
-  if (Boolean(f.inicio) !== Boolean(f.fin)) p.push('La ventana necesita inicio y fin.')
-  if (f.inicio && f.fin && f.fin <= f.inicio) p.push('La ventana debe terminar después de empezar.')
-  if (f.personas !== '' && !Number.isInteger(Number(f.personas))) p.push('Las personas atendidas son un número entero.')
-  return p
-}
-
-function Campo({ etiqueta, children }) {
-  return <label className="rev-campo"><span>{etiqueta}</span>{children}</label>
-}
-
-function FilaRevision({ item, valor, alCambiar }) {
-  const id = item.incidente_id
-  const problemas = valor.incluir ? problemasDe(valor) : []
-  const set = (clave) => (e) => alCambiar(id, { ...valor, [clave]: e.target.value })
+function Campo({ id, etiqueta, ayuda, children }) {
   return (
-    <fieldset className="rev-incidente" data-incluido={valor.incluir}>
-      <legend>
-        <label className="rev-incluir">
-          <input type="checkbox" checked={valor.incluir} onChange={(e) => alCambiar(id, { ...valor, incluir: e.target.checked })} />
-          {item.punto?.nombre ?? 'Lugar sin identificar'}
+    <div className="rev-campo">
+      <label htmlFor={id}>{etiqueta}</label>
+      {children}
+      {ayuda && <p className="rev-ayuda" id={`${id}-ayuda`}>{ayuda}</p>}
+    </div>
+  )
+}
+
+// Dato que el sistema ya tiene: se ofrece, nunca se confirma solo.
+function DatoActual({ texto, alUsar }) {
+  if (!texto) return null
+  return (
+    <p className="rev-actual">
+      El sistema tiene: <strong>{texto}</strong>{' '}
+      <button type="button" className="rev-enlace" onClick={alUsar}>Usar este dato</button>
+    </p>
+  )
+}
+
+function Opciones({ nombre, valor, opciones, alCambiar, ayudaId }) {
+  return (
+    <div className="rev-opciones" role="radiogroup" aria-describedby={ayudaId}>
+      {opciones.map(([v, etiqueta, ayuda]) => (
+        <label key={v} className="rev-opcion" data-activa={valor === v}>
+          <input type="radio" name={nombre} value={v} checked={valor === v} onChange={() => alCambiar(v)} />
+          <span><strong>{etiqueta}</strong>{ayuda && <small>{ayuda}</small>}</span>
         </label>
-        <small>Incidente <code title={id}>{id.slice(0, 8)}</code>, versión {item.version}</small>
+      ))}
+    </div>
+  )
+}
+
+function EstadoPunto({ incluir, faltan, problemas }) {
+  if (!incluir) return <span className="rev-chip rev-chip-neutro">No se revisará</span>
+  if (problemas.length > 0) return <span className="rev-chip rev-chip-error">Hay que corregir</span>
+  if (faltan.length === 0) return <span className="rev-chip rev-chip-ok">Completo</span>
+  const hechos = TOTAL_DATOS - faltan.filter((x) => x !== 'ventana de entrega').length
+  return <span className="rev-chip rev-chip-aviso">{hechos} de {TOTAL_DATOS} datos</span>
+}
+
+function PuntoRevision({ item, valor, incluir, alCambiar, alIncluir }) {
+  const id = item.incidente_id
+  const base = `rev-${id.slice(0, 8)}`
+  const faltan = faltantesDe(valor)
+  const problemas = incluir ? problemasDe(valor) : []
+  const actual = item.evaluacion_necesidad
+  const set = (clave) => (e) => alCambiar(id, { ...valor, [clave]: e.target.value })
+  const poner = (clave, v) => alCambiar(id, { ...valor, [clave]: v })
+  const lugar = [item.punto?.corregimiento, item.punto?.distrito].filter(Boolean).join(', ')
+  const vulnActual = VULNERABILIDAD.find(([v]) => v === actual?.vulnerabilidad)
+
+  return (
+    <fieldset className="rev-punto" data-incluido={incluir}>
+      <legend className="rev-punto-cabecera">
+        <label className="rev-incluir">
+          <input type="checkbox" checked={incluir} onChange={(e) => alIncluir(id, e.target.checked)} />
+          <span>
+            <strong>{item.punto?.nombre ?? 'Lugar sin identificar'}</strong>
+            <small>{lugar || 'Sin ubicación'} · Reporte {id.slice(0, 8)}</small>
+          </span>
+        </label>
+        <EstadoPunto incluir={incluir} faltan={faltan} problemas={problemas} />
       </legend>
-      {valor.incluir && (
-        <div className="rev-campos">
-          <Campo etiqueta="Cómo se conoce la demanda">
-            <select value={valor.metodo} onChange={set('metodo')}>
-              <option value="directa">Litros declarados</option>
-              <option value="formula">Por personas y dotación</option>
-            </select>
-          </Campo>
-          <Campo etiqueta="Fuente de la demanda">
-            <input type="text" maxLength={500} value={valor.fuente} onChange={set('fuente')} placeholder="Quién la confirmó" />
-          </Campo>
-          {valor.metodo === 'directa' ? (
-            <Campo etiqueta="Litros declarados"><input type="number" min="0" step="any" value={valor.litros} onChange={set('litros')} /></Campo>
-          ) : (
-            <>
-              <Campo etiqueta="Personas a abastecer"><input type="number" min="0" step="1" value={valor.personasDemanda} onChange={set('personasDemanda')} /></Campo>
-              <Campo etiqueta="Litros por persona al día"><input type="number" min="0" step="any" value={valor.dotacion} onChange={set('dotacion')} /></Campo>
-              <Campo etiqueta="Días de cobertura"><input type="number" min="0" step="any" value={valor.dias} onChange={set('dias')} /></Campo>
-              <Campo etiqueta="Reserva utilizable (litros)"><input type="number" min="0" step="any" value={valor.reserva} onChange={set('reserva')} /></Campo>
-            </>
+
+      {incluir && (
+        <div className="rev-cuerpo">
+          <section className="rev-seccion" aria-labelledby={`${base}-agua`}>
+            <h4 id={`${base}-agua`}>Agua que necesita</h4>
+            <Opciones
+              nombre={`${base}-metodo`} valor={valor.metodo} alCambiar={(v) => poner('metodo', v)}
+              opciones={[['directa', 'Ya sé cuántos litros', 'Un dato dicho por quien conoce el punto.'], ['formula', 'Calcular por personas', 'Personas × litros por persona × días.']]}
+            />
+            <div className="rev-grilla">
+              <Campo id={`${base}-fuente`} etiqueta="¿Quién o qué lo confirma?" ayuda="Ej.: llamada con la junta de agua.">
+                <input id={`${base}-fuente`} type="text" maxLength={500} value={valor.fuente} onChange={set('fuente')} aria-describedby={`${base}-fuente-ayuda`} />
+              </Campo>
+              {valor.metodo === 'directa' ? (
+                <Campo id={`${base}-litros`} etiqueta="Litros necesarios">
+                  <input id={`${base}-litros`} type="number" inputMode="decimal" min="0" step="any" value={valor.litros} onChange={set('litros')} />
+                </Campo>
+              ) : (
+                <>
+                  <Campo id={`${base}-pd`} etiqueta="Personas a abastecer"><input id={`${base}-pd`} type="number" min="0" step="1" value={valor.personasDemanda} onChange={set('personasDemanda')} /></Campo>
+                  <Campo id={`${base}-dot`} etiqueta="Litros por persona al día"><input id={`${base}-dot`} type="number" min="0" step="any" value={valor.dotacion} onChange={set('dotacion')} /></Campo>
+                  <Campo id={`${base}-dias`} etiqueta="Días a cubrir"><input id={`${base}-dias`} type="number" min="0" step="any" value={valor.dias} onChange={set('dias')} /></Campo>
+                  <Campo id={`${base}-res`} etiqueta="Agua que ya tiene (litros)" ayuda="Opcional. Reserva que se puede usar.">
+                    <input id={`${base}-res`} type="number" min="0" step="any" value={valor.reserva} onChange={set('reserva')} aria-describedby={`${base}-res-ayuda`} />
+                  </Campo>
+                </>
+              )}
+              <Campo id={`${base}-cap`} etiqueta="Capacidad de recepción (litros)" ayuda="Cuánta agua puede recibir el punto: tanque, cisterna o depósito.">
+                <input id={`${base}-cap`} type="number" inputMode="decimal" min="0" step="any" value={valor.capacidad} onChange={set('capacidad')} aria-describedby={`${base}-cap-ayuda`} />
+              </Campo>
+            </div>
+          </section>
+
+          <section className="rev-seccion" aria-labelledby={`${base}-prio`}>
+            <h4 id={`${base}-prio`}>Qué tan urgente es</h4>
+            <p className="rev-ayuda" id={`${base}-clase-ayuda`}>
+              <strong>Crítico</strong>: la falta de agua compromete un servicio sanitario esencial o a una persona dependiente sin
+              alternativa. El nombre de una escuela o institución no basta.
+            </p>
+            <Opciones
+              nombre={`${base}-clase`} valor={valor.clase} alCambiar={(v) => poner('clase', v)} ayudaId={`${base}-clase-ayuda`}
+              opciones={[['general', 'General'], ['critico', 'Crítico', 'Se atiende antes que los generales.']]}
+            />
+            {valor.clase === '' && actual?.clase_prioridad && (
+              <DatoActual texto={actual.clase_prioridad === 'critico' ? 'Crítico' : 'General'} alUsar={() => poner('clase', actual.clase_prioridad)} />
+            )}
+            <div className="rev-grilla">
+              <Campo id={`${base}-horas`} etiqueta="Horas seguidas sin agua">
+                <input id={`${base}-horas`} type="number" inputMode="decimal" min="0" step="any" value={valor.horas} onChange={set('horas')} />
+                {valor.horas === '' && actual?.horas_sin_agua != null && (
+                  <DatoActual texto={`${formato.format(actual.horas_sin_agua)} h`} alUsar={() => poner('horas', String(actual.horas_sin_agua))} />
+                )}
+              </Campo>
+              <Campo id={`${base}-pers`} etiqueta="Personas que recibirán el agua" ayuda="Las que se atenderán, no la población total del corregimiento.">
+                <input id={`${base}-pers`} type="number" min="0" step="1" value={valor.personas} onChange={set('personas')} aria-describedby={`${base}-pers-ayuda`} />
+                {valor.personas === '' && actual?.personas_atendidas != null && (
+                  <DatoActual texto={formato.format(actual.personas_atendidas)} alUsar={() => poner('personas', String(actual.personas_atendidas))} />
+                )}
+              </Campo>
+            </div>
+            <p className="rev-subtitulo" id={`${base}-vuln-t`}>Vulnerabilidad de quienes dependen del punto</p>
+            <p className="rev-ayuda">Es una clasificación para ordenar la atención, no un diagnóstico médico.</p>
+            <Opciones nombre={`${base}-vuln`} valor={valor.vulnerabilidad} alCambiar={(v) => poner('vulnerabilidad', v)} opciones={VULNERABILIDAD} />
+            {valor.vulnerabilidad === '' && vulnActual && (
+              <DatoActual texto={vulnActual[1]} alUsar={() => poner('vulnerabilidad', vulnActual[0])} />
+            )}
+          </section>
+
+          <section className="rev-seccion" aria-labelledby={`${base}-vent`}>
+            <h4 id={`${base}-vent`}>Ventana de entrega {valor.clase === 'critico' ? <span className="rev-obligatorio">obligatoria</span> : <span className="rev-opcional">opcional</span>}</h4>
+            <p className="rev-ayuda">Entre qué horas debe llegar el agua. Hora de Panamá.</p>
+            <div className="rev-grilla">
+              <Campo id={`${base}-ini`} etiqueta="Desde"><input id={`${base}-ini`} type="datetime-local" value={valor.inicio} onChange={set('inicio')} /></Campo>
+              <Campo id={`${base}-fin`} etiqueta="Hasta"><input id={`${base}-fin`} type="datetime-local" value={valor.fin} onChange={set('fin')} /></Campo>
+            </div>
+          </section>
+
+          {problemas.length > 0 && <ul className="rev-problemas" role="alert">{problemas.map((m) => <li key={m}>{m}</li>)}</ul>}
+          {problemas.length === 0 && faltan.length > 0 && (
+            <p className="rev-pendiente">Quedará pendiente: {faltan.join(', ')}. No se cuenta como cero.</p>
           )}
-          <Campo etiqueta="Capacidad de recepción (litros)">
-            <input type="number" min="0" step="any" value={valor.capacidad} onChange={set('capacidad')} />
-          </Campo>
-          <Campo etiqueta="Clase de prioridad">
-            <select value={valor.clase} onChange={set('clase')}>
-              <option value="">Sin confirmar</option>
-              <option value="general">General</option>
-              <option value="critico">Crítico</option>
-            </select>
-          </Campo>
-          <Campo etiqueta="Vulnerabilidad">
-            <select value={valor.vulnerabilidad} onChange={set('vulnerabilidad')}>
-              <option value="">Sin confirmar</option>
-              <option value="sin_condicion_identificada">Sin condición identificada</option>
-              <option value="moderada">Moderada</option>
-              <option value="alta">Alta</option>
-            </select>
-          </Campo>
-          <Campo etiqueta="Horas sin agua"><input type="number" min="0" step="any" value={valor.horas} onChange={set('horas')} /></Campo>
-          <Campo etiqueta="Personas atendidas"><input type="number" min="0" step="1" value={valor.personas} onChange={set('personas')} /></Campo>
-          <Campo etiqueta={valor.clase === 'critico' ? 'Ventana: inicio (obligatoria)' : 'Ventana: inicio'}>
-            <input type="datetime-local" value={valor.inicio} onChange={set('inicio')} />
-          </Campo>
-          <Campo etiqueta="Ventana: fin"><input type="datetime-local" value={valor.fin} onChange={set('fin')} /></Campo>
         </div>
       )}
-      {problemas.length > 0 && <ul className="rev-problemas" role="alert">{problemas.map((m) => <li key={m}>{m}</li>)}</ul>}
     </fieldset>
   )
 }
 
-export default function FormularioRevision({ items, alActualizar }) {
-  const idsEjecucion = useMemo(() => [...new Set(items.map((i) => i.ejecucion_id))].slice(0, 12), [items])
+export default function FormularioRevision({ items, calculo, alEnviar, alActualizar }) {
+  // Clave estable: la lista de ejecuciones no se vuelve a consultar cada vez que se refrescan los datos.
+  const clave = useMemo(() => [...new Set(items.map((i) => i.ejecucion_id))].slice(0, 12).join(','), [items])
   const [ejecucion, setEjecucion] = useState({ estado: 'buscando' })
+  const [politicas, setPoliticas] = useState({ estado: 'cargando', lista: [] })
   const [politica, setPolitica] = useState('')
   const [motivo, setMotivo] = useState('')
   const [filas, setFilas] = useState({})
+  const [excluidos, setExcluidos] = useState({})
   const [envio, setEnvio] = useState({ estado: 'libre' })
 
   // Busca una ejecución que acepte el lote: etapa priorización y un estado que la RPC admita.
   useEffect(() => {
     let cancelado = false
-    Promise.allSettled(idsEjecucion.map((id) => consultarEtapa(id))).then((resultados) => {
+    Promise.allSettled(clave.split(',').map((id) => consultarEtapa(id))).then((resultados) => {
       if (cancelado) return
       const validas = resultados.filter((r) => r.status === 'fulfilled').map((r) => r.value)
         .filter((e) => e.etapa === 'priorizacion' && ESTADOS_ACEPTADOS.includes(e.estado))
       if (validas.length > 0) {
         validas.sort((a, b) => new Date(b.actualizado_en) - new Date(a.actualizado_en))
-        setEjecucion({ estado: 'lista', id: validas[0].ejecucion_id, total: validas.length })
+        setEjecucion({ estado: 'lista', id: validas[0].ejecucion_id })
       } else {
         const falla = resultados.find((r) => r.status === 'rejected')
         setEjecucion({ estado: 'ninguna', error: falla?.reason?.message })
       }
     })
     return () => { cancelado = true }
-  }, [idsEjecucion])
+  }, [clave])
 
+  useEffect(() => {
+    let cancelado = false
+    listarPoliticas()
+      .then((lista) => { if (!cancelado) setPoliticas({ estado: 'lista', lista }) })
+      .catch((e) => { if (!cancelado) setPoliticas({ estado: 'error', lista: [], mensaje: e.message }) })
+    return () => { cancelado = true }
+  }, [])
+
+  // Los puntos que aún no tienen cálculo vienen marcados: son los que hay que confirmar.
+  const incluido = (item) => excluidos[item.incidente_id] === undefined
+    ? item.evaluacion_necesidad?.estado_prioridad !== 'calculada'
+    : !excluidos[item.incidente_id]
   const filaDe = (id) => filas[id] ?? VACIA
   const cambiar = (id, valor) => setFilas((f) => ({ ...f, [id]: valor }))
-  const incluidos = items.filter((i) => filaDe(i.incidente_id).incluir)
-  const hayProblemas = incluidos.some((i) => problemasDe(filaDe(i.incidente_id)).length > 0)
-  const puedeEnviar = ejecucion.estado === 'lista' && politica.trim() && motivo.trim() && !hayProblemas && envio.estado !== 'enviando'
+  const alIncluir = (id, si) => setExcluidos((e) => ({ ...e, [id]: !si }))
+
+  const incluidos = items.filter(incluido)
+  const politicaElegida = politica || (politicas.lista.length === 1 ? politicas.lista[0].politica_version : '')
+  const detallePolitica = politicas.lista.find((p) => p.politica_version === politicaElegida)
+  const conProblemas = incluidos.filter((i) => problemasDe(filaDe(i.incidente_id)).length > 0)
+  const incompletos = incluidos.filter((i) => faltantesDe(filaDe(i.incidente_id)).length > 0)
+
+  const razon = ejecucion.estado !== 'lista' ? 'Todavía no hay una ejecución lista para priorizar.'
+    : !politicaElegida ? 'Elige la política de prioridad.'
+      : !motivo.trim() ? 'Escribe el motivo de la revisión.'
+        : conProblemas.length > 0 ? `Corrige ${conProblemas[0].punto?.nombre ?? 'un punto'} antes de enviar.`
+          : null
+  const puedeEnviar = !razon && envio.estado !== 'enviando'
 
   async function enviar(evento) {
     evento.preventDefault()
+    if (!puedeEnviar) return
     setEnvio({ estado: 'enviando' })
     try {
       const resultado = await prepararPriorizacion(ejecucion.id, {
-        politica_version: politica.trim(),
+        politica_version: politicaElegida,
         motivo: motivo.trim(),
         revisiones: incluidos.map((i) => armarRevision(i, filaDe(i.incidente_id))),
       })
       setEnvio({ estado: 'enviado', resultado })
+      alEnviar?.(resultado)
     } catch (e) {
       setEnvio({ estado: 'error', codigo: e.codigo, mensaje: e.message })
     }
   }
 
   return (
-    <section className="revision" aria-labelledby="titulo-revision">
-      <h2 id="titulo-revision" className="grupo-titulo">Revisar y enviar a priorización</h2>
-      <p className="grupo-nota">
-        Confirma solo lo que sabes. Lo que dejes sin confirmar queda pendiente y no se cuenta como cero. Quién revisa
-        y cuándo lo registra el servidor con tu sesión.
-      </p>
+    <section className="revision" id="revision" aria-labelledby="titulo-revision">
+      <header className="rev-encabezado">
+        <h2 id="titulo-revision">Confirmar datos y calcular el orden</h2>
+        <p>
+          El orden de atención solo se calcula con datos que una persona confirmó. Marca los puntos que vas a revisar y
+          llena lo que sepas. Lo que dejes vacío queda pendiente: <strong>no se cuenta como cero</strong>.
+        </p>
+      </header>
 
       {ejecucion.estado === 'buscando' && <p className="mensaje" role="status">Buscando una ejecución lista para priorizar…</p>}
       {ejecucion.estado === 'ninguna' && (
         <p className="mensaje" role="status">
-          Ninguna ejecución está en la etapa de priorización, así que por ahora no se puede enviar una revisión.
+          Ninguna ejecución está esperando la revisión de prioridad, así que por ahora no se puede enviar.
           {ejecucion.error ? ` ${ejecucion.error}` : ''}
         </p>
       )}
 
       {ejecucion.estado === 'lista' && (
-        <form className="rev-form" onSubmit={enviar}>
-          <div className="rev-cabecera">
-            <Campo etiqueta="Versión de la política">
-              <input type="text" required maxLength={200} value={politica} onChange={(e) => setPolitica(e.target.value)} placeholder="Debe coincidir con la política activa" />
+        <form className="rev-form" onSubmit={enviar} noValidate>
+          <section className="rev-bloque" aria-labelledby="rev-paso1">
+            <h3 id="rev-paso1"><span className="rev-paso">1</span> Cómo se ordena la atención</h3>
+            {politicas.estado === 'cargando' && <p className="rev-ayuda">Cargando las políticas disponibles…</p>}
+            {politicas.estado === 'lista' && politicas.lista.length === 0 && (
+              <p className="mensaje mensaje-error" role="alert">No hay ninguna política activa. Pide que activen una antes de enviar.</p>
+            )}
+            {politicas.estado === 'error' && (
+              <div className="rev-campo">
+                <p className="rev-ayuda" role="alert">No se pudo cargar la lista de políticas ({politicas.mensaje}). Escribe la versión que te indicó la persona de datos.</p>
+                <input aria-label="Versión de la política" type="text" maxLength={200} value={politica} onChange={(e) => setPolitica(e.target.value)} />
+              </div>
+            )}
+            {politicas.lista.length > 0 && (
+              <Campo id="rev-politica" etiqueta="Política de prioridad" ayuda="Es la regla con la que se calcula el orden. Solo aparecen las activas.">
+                <select id="rev-politica" value={politicaElegida} onChange={(e) => setPolitica(e.target.value)} aria-describedby="rev-politica-ayuda">
+                  {politicas.lista.length > 1 && <option value="">Elige una política</option>}
+                  {politicas.lista.map((p) => <option key={p.politica_version} value={p.politica_version}>{p.politica_version}</option>)}
+                </select>
+              </Campo>
+            )}
+            {detallePolitica && (
+              <div className="rev-politica">
+                <p>{detallePolitica.fundamento}</p>
+                <dl>
+                  <div><dt>Tiempo sin agua</dt><dd>{porcentaje(detallePolitica.peso_duracion)}</dd></div>
+                  <div><dt>Vulnerabilidad</dt><dd>{porcentaje(detallePolitica.peso_vulnerabilidad)}</dd></div>
+                  <div><dt>Personas atendidas</dt><dd>{porcentaje(detallePolitica.peso_poblacion)}</dd></div>
+                </dl>
+                <p className="rev-ayuda">Los puntos críticos confirmados van primero. Tope de {formato.format(detallePolitica.tope_horas)} h y {formato.format(detallePolitica.tope_personas)} personas.</p>
+              </div>
+            )}
+            <Campo id="rev-motivo" etiqueta="Motivo de la revisión" ayuda="Queda registrado con tu nombre y la hora. Ej.: confirmado por llamada a las 9:10.">
+              <textarea id="rev-motivo" maxLength={2000} rows={2} value={motivo} onChange={(e) => setMotivo(e.target.value)} aria-describedby="rev-motivo-ayuda" />
             </Campo>
-            <Campo etiqueta="Motivo de la revisión">
-              <textarea required maxLength={2000} rows={2} value={motivo} onChange={(e) => setMotivo(e.target.value)} />
-            </Campo>
-          </div>
-          <p className="rev-ejecucion">Ejecución <code title={ejecucion.id}>{ejecucion.id.slice(0, 8)}</code>
-            {ejecucion.total > 1 ? `, la más reciente de ${ejecucion.total} en priorización` : ''}.</p>
+          </section>
 
-          {items.map((item) => (
-            <FilaRevision key={item.incidente_id} item={item} valor={filaDe(item.incidente_id)} alCambiar={cambiar} />
-          ))}
+          <section className="rev-bloque" aria-labelledby="rev-paso2">
+            <h3 id="rev-paso2"><span className="rev-paso">2</span> Confirma los datos de cada punto</h3>
+            <p className="rev-ayuda">Los puntos sin cálculo ya vienen marcados. Desmarca los que no quieras revisar ahora.</p>
+            <div className="rev-puntos">
+              {items.map((item) => (
+                <PuntoRevision
+                  key={item.incidente_id} item={item} valor={filaDe(item.incidente_id)} incluir={incluido(item)}
+                  alCambiar={cambiar} alIncluir={alIncluir}
+                />
+              ))}
+            </div>
+          </section>
 
-          <p className="rev-resumen" role="status">
-            {incluidos.length} de {items.length} incidentes con revisión. El ámbito completo debe quedar cubierto,
-            con un incidente por punto.
-          </p>
-          {envio.estado === 'error' && (
-            <div className="mensaje mensaje-error" role="alert">
-              <p>{MENSAJE_ERROR[envio.codigo] ?? 'No se pudo enviar la revisión.'}</p>
-              <p className="rev-detalle">{envio.mensaje}</p>
+          <section className="rev-bloque" aria-labelledby="rev-paso3">
+            <h3 id="rev-paso3"><span className="rev-paso">3</span> Enviar</h3>
+            <p className="rev-resumen" role="status">
+              {incluidos.length} de {items.length} puntos con revisión
+              {incompletos.length > 0 ? `; ${incompletos.length} con datos pendientes` : incluidos.length > 0 ? '; todos completos' : ''}.
+              {' '}Todos los puntos del ámbito viajan en el envío; los que no revisas quedan pendientes.
+            </p>
+            {envio.estado === 'error' && (
+              <div className="mensaje mensaje-error" role="alert">
+                <p>{MENSAJE_ERROR[envio.codigo] ?? 'No se pudo enviar la revisión.'}</p>
+                <p className="rev-detalle">{envio.mensaje}</p>
+              </div>
+            )}
+            {envio.estado === 'enviado' && (
+              <div className="mensaje rev-ok" role="status">
+                <p><strong>{envio.resultado.repetido ? 'Este mismo envío ya estaba registrado: no se duplicó.' : 'Revisión enviada.'}</strong></p>
+                <p className="rev-detalle">{envio.resultado.incidentes} puntos en el envío, {envio.resultado.sin_revisar} sin revisar.</p>
+                {calculo?.estado === 'esperando' && <p className="rev-calculo">Calculando el orden. Se consulta cada 5 segundos; no hace falta recargar.</p>}
+                {calculo?.estado === 'listo' && <p className="rev-calculo rev-calculo-ok">Listo: el orden de atención ya está actualizado arriba.</p>}
+                {calculo?.estado === 'tarda' && (
+                  <p className="rev-calculo rev-calculo-aviso">
+                    El cálculo tarda más de lo normal. Comprueba que el trabajador de agentes esté en marcha y vuelve a revisar.
+                  </p>
+                )}
+                <button type="button" className="actualizar" onClick={alActualizar}>Revisar ahora</button>
+              </div>
+            )}
+            <div className="rev-barra">
+              <button type="submit" className="rev-enviar" disabled={!puedeEnviar} aria-describedby="rev-razon">
+                {envio.estado === 'enviando' ? 'Enviando…' : 'Enviar revisión'}
+              </button>
+              <p id="rev-razon" className="rev-razon" aria-live="polite">{razon ?? 'Todo listo para enviar.'}</p>
             </div>
-          )}
-          {envio.estado === 'enviado' && (
-            <div className="mensaje rev-ok" role="status">
-              <p>
-                {envio.resultado.repetido
-                  ? 'Este mismo lote ya estaba enviado: no se duplicó.'
-                  : 'Revisión enviada. El cálculo queda pendiente y se mostrará aquí al actualizar.'}
-              </p>
-              <p className="rev-detalle">
-                {envio.resultado.incidentes} incidentes en el lote, {envio.resultado.sin_revisar} sin revisar.
-                Estado {envio.resultado.estado}, etapa {envio.resultado.etapa}.
-              </p>
-              <button type="button" className="actualizar" onClick={alActualizar}>Actualizar necesidades</button>
-            </div>
-          )}
-          <button type="submit" className="rev-enviar" disabled={!puedeEnviar}>
-            {envio.estado === 'enviando' ? 'Enviando…' : 'Enviar revisión'}
-          </button>
+          </section>
         </form>
       )}
     </section>

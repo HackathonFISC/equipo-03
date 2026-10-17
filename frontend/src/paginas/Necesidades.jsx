@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { obtenerNecesidades, USAR_EJEMPLOS_NECESIDADES } from '../api/necesidades.js'
+import { iniciarSondeo } from '../api/sondeo.js'
 import FormularioRevision from './FormularioRevision.jsx'
 import './Necesidades.css'
 
@@ -246,11 +247,14 @@ function TarjetaNecesidad({ item }) {
       {evaluacion?.supuestos.length > 0 && (
         <p className="supuestos">Supuestos: {evaluacion.supuestos.join(' ')}</p>
       )}
-      <p className="pie">
-        Incidente <Id valor={item.incidente_id} /> versión {item.version}, ejecución{' '}
-        <Id valor={item.ejecucion_id} />, datos {ORIGEN[item.origen] ?? item.origen}
-        {evaluacion && `; política ${evaluacion.politica_version}, versión de datos ${evaluacion.datos_version}`}.
-      </p>
+      <details className="detalle-tecnico">
+        <summary>Detalles técnicos</summary>
+        <p className="pie">
+          Incidente <Id valor={item.incidente_id} /> versión {item.version}, ejecución <Id valor={item.ejecucion_id} />, datos{' '}
+          {ORIGEN[item.origen] ?? item.origen}
+          {evaluacion && `; política ${evaluacion.politica_version}, versión de datos ${evaluacion.datos_version}`}.
+        </p>
+      </details>
     </li>
   )
 }
@@ -261,6 +265,10 @@ export default function Necesidades({ conSesion }) {
   const [error, setError] = useState(null)
   const [sinSesion, setSinSesion] = useState(false)
   const [intento, setIntento] = useState(0)
+  // Tras enviar una revisión, se consulta cada 5 s hasta ver el cálculo o hasta 2 minutos.
+  const [calculo, setCalculo] = useState(null)
+  const estadoCalculo = calculo?.estado
+  const versionCalculo = calculo?.datosVersion
 
   useEffect(() => {
     let cancelado = false
@@ -282,6 +290,30 @@ export default function Necesidades({ conSesion }) {
       cancelado = true
     }
   }, [intento])
+
+  useEffect(() => {
+    if (estadoCalculo !== 'esperando') return
+    const limite = Date.now() + 120000
+    return iniciarSondeo(obtenerNecesidades, {
+      onDatos: (datos) => {
+        setItems(datos)
+        if (datos.some((i) => i.evaluacion_necesidad?.datos_version === versionCalculo)) {
+          setCalculo({ datosVersion: versionCalculo, estado: 'listo' })
+        } else if (Date.now() > limite) {
+          setCalculo({ datosVersion: versionCalculo, estado: 'tarda' })
+        }
+      },
+      onError: () => {
+        if (Date.now() > limite) setCalculo({ datosVersion: versionCalculo, estado: 'tarda' })
+      },
+      intervalo: 5000,
+    })
+  }, [estadoCalculo, versionCalculo])
+
+  // Actualiza la lista sin esconderla: el formulario conserva lo escrito y el aviso de envío.
+  function recargarSinOcultar() {
+    obtenerNecesidades().then(setItems).catch(() => {})
+  }
 
   function reintentar() {
     setCargando(true)
@@ -311,6 +343,12 @@ export default function Necesidades({ conSesion }) {
         </div>
         <p>Puntos de atención con falta de agua, en el orden en que se atenderían.</p>
       </header>
+
+      <ol className="pasos" aria-label="Cómo se usa esta página">
+        <li><strong>Mira</strong><span>los puntos con falta de agua y qué datos les faltan.</span></li>
+        <li><strong>Confirma</strong><span>{conSesion ? 'los datos que sepas, en el formulario al final de la página.' : 'los datos que sepas. Para hacerlo, inicia sesión como coordinador.'}</span></li>
+        <li><strong>Envía</strong><span>y el sistema calcula el orden de atención.</span></li>
+      </ol>
 
       {!cargando && !error && items.length > 0 && (
         <div className="necesidades-balance" aria-label="Resumen de necesidades">
@@ -368,6 +406,7 @@ export default function Necesidades({ conSesion }) {
             No entran al orden de atención hasta que se confirmen sus datos. Un dato faltante no se
             cuenta como cero.
           </p>
+          {conSesion && <a className="cuenta-cta" href="#revision" onClick={(e) => { e.preventDefault(); document.getElementById('revision')?.scrollIntoView({ behavior: 'smooth' }) }}>Confirmar estos datos</a>}
           <ul className="lista-necesidades">
             {pendientes.map((item) => (
               <TarjetaNecesidad key={item.incidente_id} item={item} />
@@ -376,7 +415,12 @@ export default function Necesidades({ conSesion }) {
         </>
       )}
       {conSesion && !cargando && !error && items.length > 0 && (
-        <FormularioRevision items={items} alActualizar={reintentar} />
+        <FormularioRevision
+          items={items}
+          calculo={calculo}
+          alEnviar={(r) => setCalculo({ datosVersion: r.datos_version, estado: 'esperando' })}
+          alActualizar={recargarSinOcultar}
+        />
       )}
     </section>
   )

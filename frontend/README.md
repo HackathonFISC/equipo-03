@@ -23,6 +23,44 @@ Abrir http://localhost:5173. La API debe permitir ese origen (CORS en `api/main.
 La barra superior cambia de página; la página activa queda en la dirección
 (`#reportes`, `#necesidades`, `#plan`, `#aprobacion`) para que recargar no la pierda.
 
+### Acceso y transiciones
+
+- **El acceso es la primera pantalla.** Sin sesión no se muestra el panel: cualquier dirección (`#necesidades`, etc.) abre el
+  inicio de sesión. Al entrar, se abre la página que se pidió en la dirección o Reportes si no hubo ninguna. Si la sesión
+  vence, vuelve al acceso con el aviso "Tu sesión venció". Sin `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` el acceso
+  lo dice y no hay forma de entrar.
+- **Diseño del acceso** (`Acceso.jsx`, `Acceso.css`): a la izquierda, el paisaje de la foto de bienvenida (recorte sin el
+  texto incrustado, `h2oeste-paisaje.webp`), el logo, el lema y el recorrido Reporte, Prioridad, Plan y Firma; a la derecha, el
+  formulario con iconos, botón para mostrar la contraseña, aviso de Bloq Mayús y estado de carga. En móvil la foto pasa
+  arriba. `Mi cuenta` conserva la tarjeta anterior.
+- **Transiciones** (`src/transiciones.css`): cada una responde a una acción de la persona. La página nueva entra con un
+  movimiento corto (220 ms) al cambiar de sección; lo que se despliega (detalles de un reporte, formulario de un punto,
+  mensajes y errores, menú móvil) aparece con un desplazamiento leve; botones, chips y opciones cambian de color y
+  borde con suavidad; las barras de aporte crecen una vez. Con "reducir movimiento" en el sistema todo se desactiva
+  (regla en `index.css`).
+
+### Barra lateral y cuenta (`src/App.jsx`, `Navegacion.css`, `MenuCuenta.jsx`, `paginas/Cuenta.jsx`)
+
+- **Barra lateral:** dos grupos. "Flujo de trabajo" (Reportes → Necesidades → Plan → Aprobación) son pasos numerados y unidos
+  por una línea, porque son una secuencia. "Seguimiento" (Eventos) no es un paso y lleva ícono. `Navegacion.css` se carga
+  después de `App.css` y `editorial.css` y reemplaza sus reglas de la barra.
+- **Menú de la cuenta (encabezado):** avatar con iniciales, nombre y rol. Abre un menú con "Ver mi cuenta" y "Cerrar sesión"
+  desde cualquier página. Se cierra con Esc o al hacer clic fuera.
+- **Mi cuenta:** perfil, qué puedes hacer y cuándo vence la sesión. El nombre y el vencimiento salen del token (solo para
+  mostrar; `src/perfil.js`); el rol sale de `GET /sesion`. Si esa consulta falla, dice "Rol sin comprobar". La API
+  sigue comprobando los permisos en cada acción.
+
+### Eventos (`src/paginas/Eventos.jsx`)
+
+- Registro de decisiones: lee `GET /eventos` (últimos 200) y los muestra en una línea de tiempo, del más reciente al
+  más antiguo. Cada evento dice quién actuó (agente o persona), qué decidió, el resultado, la herramienta, cuánto tardó,
+  en qué estado quedó la ejecución y el origen del dato.
+- Se actualiza sola cada 5 s (`iniciarSondeo`); el botón Pausar la detiene para leer con calma. Lo que llega después se
+  resalta un momento.
+- Filtros: por quién lo hizo (cada agente, o Personas y sistema) y por ejecución, para seguir un reporte de punta a punta.
+  Los eventos que dejan la ejecución esperando a una persona o con fallo se marcan en ámbar y en rojo.
+- Sin sesión o con la sesión vencida vuelve al acceso. No muestra texto de ciudadanos ni datos internos de los agentes.
+
 ### Reportes (`src/paginas/Reportes.jsx`)
 
 - Lista de `GET /reportes`, del más reciente al más antiguo.
@@ -37,6 +75,14 @@ La barra superior cambia de página; la página activa queda en la dirección
   y cada decisión de los agentes, con su resultado, hora, duración y herramienta.
   Mientras la fila siga abierta, actualiza también la traza mediante sondeo.
 - Fechas en hora de Panamá.
+
+- **Filtro por hora de llegada** (Reportes): Cualquier hora, Últimos 15 min, Última hora, Hoy, o un rango Desde/Hasta
+  en hora de Panamá, más el orden (recientes o antiguos primero). Se combina con el filtro por estado; los conteos de los
+  estados siguen el rango elegido y el aviso "Mostrando N de M" tiene un enlace para quitar los filtros. La lista se
+  refresca cada 5 s y los rangos relativos se mueven con ella.
+- **Sondeo tras enviar una revisión** (Necesidades): después de enviar, la página consulta `GET /incidentes` cada 5 s hasta
+  ver una evaluación con la `datos_version` del envío (máximo 2 minutos) y lo dice en el formulario. Si tarda, avisa de
+  que se compruebe el trabajador de agentes. "Revisar ahora" actualiza sin ocultar el formulario.
 
 ### Necesidades (`src/paginas/Necesidades.jsx`) — V2
 
@@ -56,18 +102,19 @@ La barra superior cambia de página; la página activa queda en la dirección
   - Después de separar un reporte, la RPC de Emilia invalida las evaluaciones: sello
     **Requiere recálculo** y el motivo en la lista de pendientes.
 - Un incidente sin punto identificado se muestra como "Lugar sin identificar".
-- **Revisar y enviar a priorización** (`src/paginas/FormularioRevision.jsx`, solo con sesión): el
-  coordinador marca los incidentes que revisa y confirma demanda (litros declarados, o personas,
-  dotación y días), capacidad de recepción del punto (sin ella la validación de demanda queda pendiente), clase, vulnerabilidad, horas sin agua, personas y ventana (obligatoria si es
-  crítico). Pide la versión de la política y el motivo. Envía `POST /ejecuciones/{id}/priorizacion`
-  (`src/api/priorizacion.js`). Lo que se deja vacío no se envía y queda pendiente. La ejecución se
-  elige sola: la más reciente con etapa `priorizacion` y estado aceptado por la RPC. Las ventanas
-  se envían con desfase −05:00 (Panamá). Quién confirma y cuándo lo pone el servidor con el token.
-  Repetir el mismo envío no duplica (`repetido`). La API exige cubrir todo el ámbito con un
-  incidente por punto: si falta, devuelve 422 y el mensaje se muestra tal cual.
-- Los ejemplos (`src/datos/necesidadesEjemplo.js`) son sintéticos, se validaron con
-  `IncidenteConsolidado` y `EvaluacionNecesidades` y se convierten a la forma de `GET /incidentes`.
-  Incluyen un incidente sin evaluación y otro que requiere recálculo.
+- **Confirmar datos y calcular el orden** (`src/paginas/FormularioRevision.jsx`, solo con sesión), en tres pasos
+  visibles: (1) elegir la política en una lista de las activas (`GET /politicas`), con sus pesos y topes explicados,
+  y escribir el motivo; (2) confirmar los datos de cada punto en secciones con lenguaje llano: agua que necesita y
+  capacidad de recepción, qué tan urgente es (clase, horas sin agua, personas, vulnerabilidad) y ventana de entrega;
+  (3) enviar. Cada campo trae su ayuda; el dato que el sistema ya tiene se ofrece con "Usar este dato", nunca se
+  confirma solo. Cada punto muestra "N de 6 datos" y qué quedará pendiente. El botón explica por qué está
+  desactivado. Los puntos sin cálculo vienen marcados. Envía `POST /ejecuciones/{id}/priorizacion`
+  (`src/api/priorizacion.js`); lo vacío no se envía y queda pendiente. La ejecución se elige sola: la más reciente en
+  etapa `priorizacion` con estado aceptado. Ventanas con desfase −05:00. Quién confirma y cuándo lo pone el servidor.
+  Si `GET /politicas` falla, el campo vuelve a ser de texto. La API exige cubrir todo el ámbito con un incidente por
+  punto; si falta, devuelve 422 y se muestra el mensaje.
+- La página abre con una guía de tres pasos (Mira, Confirma, Envía) y los datos técnicos de cada tarjeta van en un
+  desplegable "Detalles técnicos".
 
 ### Aprobación (`src/paginas/Aprobacion.jsx`) — V4
 
@@ -125,6 +172,8 @@ Con datos de ejemplo, la página muestra un aviso amarillo para que no se confun
 | `src/App.jsx`, `App.css` | Barra superior y navegación entre páginas. |
 | `src/index.css` | Colores y tipografía compartidos. |
 | `src/api/reportes.js` | `obtenerReportes()` y `obtenerEjecucion(id)`. |
+| `src/api/eventos.js` | `obtenerEventos()` (lee `GET /eventos`). |
+| `src/perfil.js` | Nombre, iniciales, rol y permisos que se muestran en la cuenta (con prueba en `tests/perfil.test.mjs`). |
 | `src/api/necesidades.js` | `obtenerNecesidades()` (lee `GET /incidentes`). |
 | `src/api/priorizacion.js` | `prepararPriorizacion(ejecucionId, cuerpo)` y `consultarEtapa(id)`. |
 | `src/assets/` | Logo circular (cabecera, favicon) y banner de bienvenida (acceso), en WebP optimizado. |

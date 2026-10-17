@@ -79,6 +79,13 @@ class EventoPanel(BaseModel):
     creado_en: AwareDatetime
 
 
+class EventoRegistro(EventoPanel):
+    """Un evento del registro general: la traza de una decisión más su ejecución y su origen."""
+
+    ejecucion_id: UUID
+    origen: Literal["real", "estimado", "sintetico"]
+
+
 class EjecucionPanel(BaseModel):
     ejecucion_id: UUID
     reporte_id: UUID | None
@@ -397,3 +404,16 @@ class ResultadoPriorizacion(BaseModel):
     datos_version: str
     incidentes: int
     sin_revisar: int
+
+
+class PoliticaActiva(BaseModel):
+    """Una política de prioridad activa, para elegirla en el formulario de revisión sin escribir su versión."""
+
+    politica_version: str
+    fundamento: str
+    peso_duracion: float
+    peso_vulnerabilidad: float
+    peso_poblacion: float
+    tope_horas: float
+    tope_personas: int
+    origen: Literal["real", "estimado", "sintetico"]
