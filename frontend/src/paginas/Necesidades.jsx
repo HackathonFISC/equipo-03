@@ -26,7 +26,14 @@ const VALIDACION = {
   rechazada: 'Rechazado',
 }
 
-// Aportes ya calculados por la política de cada evaluación, sobre 100 puntos totales.
+// Cada aporte puede valer como máximo 100 × el peso de su política. Los pesos son los de
+// cada política y se buscan por su versión; con una versión desconocida no se inventa
+// un máximo: se muestra solo el valor, sin barra ni "de N".
+const MAXIMOS_POR_POLITICA = {
+  'demo-1.0': { aporte_duracion: 50, aporte_vulnerabilidad: 30, aporte_poblacion: 20 },
+  'oeste-prioridad-apoyo-pa-1': { aporte_duracion: 40, aporte_vulnerabilidad: 40, aporte_poblacion: 20 },
+}
+
 const APORTES = [
   { clave: 'aporte_duracion', nombre: 'Tiempo sin agua' },
   { clave: 'aporte_vulnerabilidad', nombre: 'Vulnerabilidad' },
@@ -97,18 +104,18 @@ function Urgencia({ evaluacion, recalculo }) {
             <span className="puntaje-valor">{decimales.format(evaluacion.puntaje)}</span>
             <span className="puntaje-escala"> de 100 puntos</span>
           </p>
-          <p className="sin-puntaje">Aportes al puntaje total, en una escala de 0 a 100.</p>
           <ul className="aportes">
             {APORTES.map((a) => {
               const valor = evaluacion.componentes[a.clave]
+              const maximo = MAXIMOS_POR_POLITICA[evaluacion.politica_version]?.[a.clave]
               return (
                 <li key={a.clave}>
                   <span className="aporte-nombre">{a.nombre}</span>
                   <span className="aporte-barra" aria-hidden="true">
-                    <span style={{ width: `${Math.min(100, Math.max(0, valor))}%` }} />
+                    {maximo !== undefined && <span style={{ width: `${(valor / maximo) * 100}%` }} />}
                   </span>
                   <span className="aporte-valor">
-                    {decimales.format(valor)} puntos
+                    {maximo !== undefined ? `${decimales.format(valor)} de ${maximo}` : decimales.format(valor)}
                   </span>
                 </li>
               )

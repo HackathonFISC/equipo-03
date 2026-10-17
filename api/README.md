@@ -57,7 +57,7 @@ CORS admite solo `http://localhost:5173` (servidor de desarrollo del panel).
 | `POST /avisos/{aviso_id}/envio` | Bot | Sí | Registra `enviado`, `fallido` o `incierto`. 204. |
 
 Las rutas de lectura del panel no tienen autenticación por decisión del equipo. Separar un
-reporte de un incidente se reserva a V4 y sí la necesitará: `ra_separar_reporte` exige un coordinador activo y
+reporte de un incidente sí la necesitará: `ra_separar_reporte` exige un coordinador activo y
 su `usuario_id` debe salir del token de sesión, nunca del navegador (acuerdo con Emilia).
 
 ### `POST /reportes`
@@ -141,11 +141,6 @@ Se arma con las RPC de la migración `0007_territorial_orquestador_v2.sql`:
 2. `ra_catalogo_v2()`: nombre, distrito y corregimiento de los puntos activos.
 3. `vinculos_reportes` con `desvinculado_en IS NULL`: cuántos reportes tiene cada incidente.
 
-Con 0010, la consulta habitual excluye los ensayos de priorización aislados. La
-RPC backend `ra_incidentes_contexto_v2(p_ejecucion_id)` permite consultar un caso
-específico; su filtro de lectura en API/panel debe integrarse aparte. Ver
-[ensayo V2](../docs/ENSAYO_PRIORIZACION_V2.md).
-
 Cada elemento trae identidad y versión (`incidente_id`, `ejecucion_id`, `version`, `origen`),
 lugar (`sector_id`, `punto_atencion_id`, `punto`), consolidación (`estado_validacion`,
 `tipo_problema`, `episodio_establecido`, período, `primera_deteccion_en`, `confianza`,
@@ -157,7 +152,7 @@ lugar (`sector_id`, `punto_atencion_id`, `punto`), consolidación (`estado_valid
 - `evaluacion_necesidad` se valida con `EvaluacionNecesidades`. Si no cumple el contrato se
   devuelve `null` y se agrega un pendiente: nunca se muestra como calculada.
 - Sin lote de cálculo, la evaluación es `null` y `pendientes_calculo` dice por qué. Después
-  de separar un reporte (interfaz prevista para V4), la RPC de Emilia invalida las evaluaciones de los incidentes de su ámbito
+  de separar un reporte, la RPC de Emilia invalida las evaluaciones de todos los incidentes
   y deja "recalcular" en los pendientes.
 - `punto` es `null` si el incidente no tiene punto o este no está activo en el catálogo.
 - **No incluye** remitentes, chats, mensajes, textos de reportes, `creado_por`, `motivo` ni
@@ -211,13 +206,7 @@ Usan una base de datos y RPC simuladas: no necesitan red, claves ni Supabase.
 
 ## Pendiente
 
-- V4: sesión de coordinador y separar un reporte (`ra_separar_reporte`); verificar
-  el token en la API y obtener usuario_id del token, nunca del navegador. No se
-  expone esta escritura en V2. La preparación del fixture V2 es administrativa
-  desde backend, con revisión explícita; ver [guía del ensayo](../docs/ENSAYO_PRIORIZACION_V2.md).
+- V2: separar un reporte de un incidente (`ra_separar_reporte`), con la sesión mínima del
+  coordinador acordada con Emilia.
 - V4: `auth.py` (rol de coordinador), `servicios/aprobacion.py` y migraciones `0002`/`0003`.
   La bandeja de salida ya está (migración `0011`, sin aplicar todavía).
-
-Las decisiones D006 y D008 documentan aclaraciones y caducidad; D005 corresponde
-a la corrección del solver mínimo. Para el estado actualizado del recorrido real
-y los pendientes, ver [guía V2](../docs/V2_EMILIA.md).

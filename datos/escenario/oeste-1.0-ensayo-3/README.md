@@ -64,4 +64,8 @@ Para conservar otra salida, añadir `--salida ruta_nueva.json`; no sobrescribe a
 
 El bloque 3 queda preparado para desarrollo y pruebas sintéticas: cantidades y recepción calculadas, demandas validadas y ranking calculado con confirmaciones ficticias. Para uso real siguen faltando operador autorizado, calidad del agua, flota, depósito, acceso, recepción y evidencias de campo.
 
-La salida de esta demo de demanda/prioridad no incluye rutas calculadas ni informe de `verify_plan`, aprobación o publicación. El resultado declara `autorizacion_operativa=false` y bloqueos explícitos. El solver mínimo V1 no admite referencias reales mezcladas con este ensayo; no se eluden sus guardas. Los bloques 4/5 ya están implementados en [PLAN_V3](../../../calculo/PLAN_V3.md). El bloque 6 tiene integración local de Planificación en [V3 de Emilia](../../../docs/V3_EMILIA.md); eso no acredita despliegue, API/panel ni cierre conjunto.
+Este fixture y su demo preparan demanda, recepción y prioridad; no ejecutan el solver ni el verificador. Su resultado declara `autorizacion_operativa=false` y bloqueos explícitos. El solver mínimo V1 no admite referencias reales mezcladas con este ensayo; no se eluden sus guardas.
+
+Los bloques 4 y 5 de V3 ya están implementados y probados: `solve_routes` calcula las rutas y `verify_plan` las comprueba de forma independiente. La demo `python -m calculo.demo_plan_v3` utiliza este escenario para probar ambos bloques. Consultar [solver y verificador V3](../../../calculo/PLAN_V3.md).
+
+El bloque 6 conserva pendiente el cierre de la integración del equipo. Planificación ya invoca ambas herramientas y dispone de persistencia comprobada en PostgreSQL temporal; esto no acredita por sí solo el recorrido completo en Supabase y API/panel. Ver [integración de Planificación](../../../docs/V3_EMILIA.md). No hay aprobación ni publicación operativa acreditadas por este ensayo.
