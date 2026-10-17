@@ -112,10 +112,17 @@ falta alguno se rechaza. Cualquier otro (cobertura crítica, solver sin solució
 levanta con una confirmación. Los bloqueos reconocidos quedan en el evento y en `planes.propuesta`. La
 publicación sigue limitada por destinos autorizados (`destinos.autorizado`), que la bandeja (0011) comprueba.
 
+Al aprobar, bloquea (SHARE) las tablas de entradas (depósitos, vehículos, incidentes, puntos y políticas), igual
+que `ra_finalizar_planificacion_v3`: nadie las cambia entre la comparación del snapshot y el commit. Un
+disparador `ra_invalidar_planes` en esas cinco tablas (función `ra_invalidar_planes_obsoletos`, SECURITY
+DEFINER, solo mira planes aprobados) pasa el plan a `invalidado` si después cambia una entrada que usó el
+cálculo, y deja un evento `Invalidar plan aprobado`. Los avisos pendientes del plan los cancela `ra_reservar_aviso`
+al ver que ya no está aprobado. Un plan invalidado no se aprueba de nuevo: hay que calcular una versión nueva.
+
 `ra_rechazar_plan` deja el plan `rechazado` y la ejecución en `espera_revision`, con el motivo en el evento.
 
-Verificación local: PostgreSQL 16 con 0001 a 0011 aplicadas; smoke aprobado (también se comprobó que falla si
-se quita el control de vigencia de entradas) y smoke de 0011 aprobado con 0003 instalada. No usa Supabase ni
+Verificación local: PostgreSQL 16 con 0001 a 0011 aplicadas; smoke aprobado, incluida la invalidación posterior
+(también se comprobó que falla si se quita el control de vigencia de entradas) y smoke de 0011 aprobado con 0003 instalada. No usa Supabase ni
 concurrencia real de varios procesos. Sin aplicar a Supabase. La etapa `comunicacion` no la procesa aún ningún
 trabajador: el trabajador de Emilia solo toma ingesta, territorial, priorización y planificación.
 

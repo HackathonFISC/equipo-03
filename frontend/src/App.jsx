@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Aprobacion from './paginas/Aprobacion.jsx'
 import Necesidades from './paginas/Necesidades.jsx'
 import Plan from './paginas/Plan.jsx'
 import Reportes from './paginas/Reportes.jsx'
@@ -8,9 +9,10 @@ const PAGINAS = [
   { id: 'reportes', nombre: 'Reportes', Componente: Reportes },
   { id: 'necesidades', nombre: 'Necesidades', Componente: Necesidades },
   { id: 'plan', nombre: 'Plan', Componente: Plan },
+  { id: 'aprobacion', nombre: 'Aprobación', Componente: Aprobacion },
 ]
 
-// La página activa vive en la dirección (#reportes, #necesidades, #plan) para que recargar no la pierda.
+// La página activa vive en la dirección (#reportes, #necesidades, #plan, #aprobacion) para que recargar no la pierda.
 function paginaDeLaDireccion() {
   const id = window.location.hash.replace('#', '')
   return PAGINAS.some((p) => p.id === id) ? id : 'reportes'

@@ -1,0 +1,419 @@
+/* Aprobación: se lee como un acta que se firma. Títulos en serifa; el acceso es una pantalla aparte. */
+.aprob {
+  --agua-profunda: #08323d;
+  --espuma: #dcebe8;
+  --serifa: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+
+.aprob h2,
+.aprob h3,
+.acceso h2 {
+  margin: 0;
+  font-family: var(--serifa);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.aprob h2 { font-size: 1.7rem; }
+.aprob h3 { font-size: 1.35rem; }
+.aprob h3 small {
+  font-family: system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--tinta-suave);
+  letter-spacing: 0;
+}
+
+.aprob h4 {
+  margin: 0;
+  font-family: var(--serifa);
+  font-size: 1.05rem;
+}
+
+.aprob-suave {
+  margin: 0.2rem 0 0;
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+.aprob-aviso,
+.aprob-error {
+  margin: 0.75rem 0 0;
+  padding: 0.55rem 0.8rem;
+  border-left: 4px solid var(--ambar);
+  background: var(--ambar-fondo);
+  font-size: 0.92rem;
+}
+
+.aprob-error {
+  border-left-color: var(--ladrillo);
+  background: #f7e3df;
+  color: var(--ladrillo);
+}
+
+.aprob code {
+  padding: 0.05rem 0.3rem;
+  background: var(--espuma);
+  font-size: 0.85em;
+}
+
+/* --- Cabecera --- */
+
+.aprob-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--agua-profunda);
+}
+
+.aprob-sesion {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.aprob-rol {
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--agua);
+  color: var(--agua);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.aprob-rol-lectura {
+  border-color: var(--gris);
+  color: var(--gris);
+}
+
+/* --- Botones y campos (compartidos con el acceso) --- */
+
+.aprob button,
+.acceso button {
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--agua);
+  background: var(--agua);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aprob button:hover:not(:disabled),
+.acceso button:hover:not(:disabled) {
+  background: var(--agua-profunda);
+}
+
+.aprob button:disabled,
+.acceso button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.aprob .aprob-secundario {
+  background: transparent;
+  color: var(--agua);
+}
+
+.aprob .aprob-secundario:hover:not(:disabled) {
+  background: var(--espuma);
+}
+
+.aprob .aprob-peligro {
+  border-color: var(--ladrillo);
+  background: transparent;
+  color: var(--ladrillo);
+}
+
+.aprob .aprob-peligro:hover:not(:disabled) {
+  background: #f7e3df;
+}
+
+.aprob button:focus-visible,
+.aprob input:focus-visible,
+.aprob textarea:focus-visible,
+.acceso button:focus-visible,
+.acceso input:focus-visible,
+.acceso a:focus-visible {
+  outline: 3px solid var(--ambar);
+  outline-offset: 2px;
+}
+
+.aprob label,
+.acceso label {
+  display: grid;
+  gap: 0.3rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.aprob input[type='email'],
+.aprob input[type='password'],
+.aprob textarea,
+.acceso input {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--borde);
+  background: #fff;
+  color: var(--tinta);
+  font: inherit;
+  font-weight: 400;
+}
+
+/* --- Plan --- */
+
+.aprob-plan {
+  margin-top: 1.5rem;
+  padding: 1.1rem 1.25rem 1.25rem;
+  border: 1px solid var(--borde);
+  border-top: 4px solid var(--gris);
+  background: var(--papel);
+}
+
+.aprob-plan-pendiente_revision { border-top-color: var(--ambar); }
+.aprob-plan-aprobado { border-top-color: var(--agua); }
+.aprob-plan-rechazado,
+.aprob-plan-invalidado { border-top-color: var(--ladrillo); }
+
+.aprob-plan > header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.aprob-estado {
+  padding: 0.15rem 0.6rem;
+  border: 1px solid currentColor;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.aprob-estado-pendiente_revision { color: var(--ambar); }
+.aprob-estado-aprobado { color: var(--agua); }
+.aprob-estado-rechazado,
+.aprob-estado-invalidado { color: var(--ladrillo); }
+.aprob-estado-calculando { color: var(--gris); }
+
+.aprob-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.6rem 1.25rem;
+  margin: 0.9rem 0 0;
+  padding: 0.75rem 0;
+  border-block: 1px solid var(--borde);
+}
+
+.aprob-meta dt {
+  color: var(--tinta-suave);
+  font-size: 0.78rem;
+}
+
+.aprob-meta dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.aprob-plan details {
+  margin-top: 0.75rem;
+  font-size: 0.92rem;
+}
+
+.aprob-plan summary { cursor: pointer; font-weight: 600; }
+
+/* --- Rutas como recorrido --- */
+
+.aprob-rutas {
+  display: grid;
+  gap: 1.1rem;
+  margin-top: 1.1rem;
+}
+
+.aprob-ruta > header {
+  display: grid;
+  gap: 0.1rem;
+  margin-bottom: 0.6rem;
+}
+
+.aprob-ruta > header p {
+  margin: 0;
+  color: var(--tinta-suave);
+  font-size: 0.88rem;
+}
+
+.aprob-paradas {
+  position: relative;
+  margin: 0;
+  padding: 0 0 0 1.6rem;
+  list-style: none;
+}
+
+/* La línea es el recorrido; cada parada es un nodo sobre ella. */
+.aprob-paradas::before {
+  content: '';
+  position: absolute;
+  top: 0.9rem;
+  bottom: 0.9rem;
+  left: 0.4rem;
+  width: 2px;
+  background: var(--agua);
+}
+
+.aprob-paradas li {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+}
+
+.aprob-paradas li::before {
+  content: '';
+  position: absolute;
+  top: 0.95rem;
+  left: -1.55rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 2px solid var(--agua);
+  border-radius: 50%;
+  background: var(--papel);
+}
+
+.aprob-paradas li div {
+  display: grid;
+  gap: 0.05rem;
+}
+
+.aprob-paradas li span {
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+}
+
+.aprob-litros {
+  flex: none;
+  font-family: var(--serifa);
+  font-size: 1.15rem;
+  white-space: nowrap;
+}
+
+/* --- Firma --- */
+
+.aprob-decision {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1.25rem;
+  padding: 1rem 1.1rem;
+  border-left: 4px solid var(--agua-profunda);
+  background: var(--espuma);
+}
+
+.aprob-decision fieldset {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--ambar);
+  background: var(--ambar-fondo);
+}
+
+.aprob-decision legend { padding: 0 0.3rem; font-weight: 700; font-size: 0.9rem; }
+
+.aprob .aprob-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-weight: 400;
+}
+
+.aprob-check input { margin-top: 0.25rem; }
+
+.aprob-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* --- Acceso: pantalla aparte, por encima de la barra --- */
+
+.acceso {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  background: var(--papel);
+  color: var(--tinta);
+  overflow-y: auto;
+}
+
+.acceso-lema {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2.5rem;
+  background-color: #08323d;
+  /* Líneas de nivel del agua: ondas que se desplazan despacio. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='36'%3E%3Cpath d='M0 18 Q30 2 60 18 T120 18 T180 18 T240 18' fill='none' stroke='%23ffffff' stroke-opacity='0.13' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-size: 240px 36px;
+  color: #fff;
+  animation: acceso-oleaje 40s linear infinite;
+}
+
+@keyframes acceso-oleaje {
+  to { background-position: 240px 0; }
+}
+
+.acceso-marca {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.acceso-frase {
+  max-width: 17ch;
+  margin: 0;
+  font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  line-height: 1.12;
+}
+
+.acceso-lado {
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.25rem;
+}
+
+.acceso-form {
+  display: grid;
+  gap: 0.9rem;
+  width: min(100%, 22rem);
+}
+
+.acceso h2 { font-size: 1.6rem; }
+.acceso .aprob-suave { margin: 0; color: var(--tinta-suave); font-size: 0.92rem; }
+
+.acceso-volver {
+  justify-self: start;
+  color: var(--agua);
+  font-size: 0.92rem;
+}
+
+@media (max-width: 720px) {
+  .acceso { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .acceso-lema { padding: 1.25rem; gap: 0.75rem; }
+  .acceso-frase { max-width: none; font-size: 1.25rem; }
+  .aprob-paradas li { flex-direction: column; gap: 0.1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acceso-lema { animation: none; }
+}
