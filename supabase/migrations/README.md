@@ -130,3 +130,13 @@ expresamente habilitados; no habilita ninguno al aplicar la migración.
 
 La aprobación concurrente requiere el ajuste de Noel documentado en
 [V4_EMILIA](../../docs/V4_EMILIA.md). No aplicada a Supabase real por Codex.
+
+## Feedback de aclaraciones de ubicación (0013, Emilia)
+
+Aplicar `0013_feedback_aclaraciones.sql` una vez tras 0006. Puede aplicarse
+sin 0012: no depende de V4. Conserva la firma de `ra_crear_aclaracion`, reconoce
+respuestas previas y detiene repreguntas de ubicación tras dos respuestas sin
+resolución. No modifica ni reenvía preguntas existentes. Probar el smoke
+`../tests/0013_feedback_aclaraciones_smoke.sql` completo, con Territorial y
+catálogo instalados; termina en ROLLBACK. Sin cambios en API/bot de Noel.
+No aplicada a Supabase real por Codex. Ver [V2](../../docs/V2_EMILIA.md).
