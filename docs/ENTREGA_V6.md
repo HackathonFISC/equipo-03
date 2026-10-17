@@ -62,7 +62,7 @@ manteniendo intactas las fuentes. La copia literal no certifica hechos ajenos.
 | Migraciones y concurrencia | Emilia y Noel; José revisa | Versiones aplicadas y smoke por entorno; intercalado real del caso 21. |
 | Tres recorridos seguidos, uno adverso | Equipo | Misma versión entregable, trazas y resultados; registrar fallos y repetir la serie estable. |
 | Robustez V5 | Noel y Emilia; José evalúa | Casos 19/22/23/24/25 reales, incluida nueva aprobación y aviso tras retiro. |
-| Dos correcciones del panel notificadas | Noel | Respuestas tardías por sector y origen visible; revisar siguiente pull. |
+| Dos correcciones del panel notificadas | Noel | Incorporadas en 9dbd4f8: respuesta vinculada al sector actual y origen visible. Revisadas en código y caso tardío reproducido con handler; validación visual pendiente. |
 | Datos/autorización de demo | Equipo | Origen sintético visible, destinatarios autorizados, coordinador real; sin rellenar desconocidos. |
 | Acceso y laptop | Noel y equipo | Prueba desde entorno de exposición y acceso de evaluadores. |
 | Exposición y respaldo | Equipo; guion de Emilia | Ensayo 6 min 30 s, máximo siete; respaldo identificado como grabación. |
