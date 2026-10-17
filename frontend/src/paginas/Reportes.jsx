@@ -14,6 +14,31 @@ const ESTADOS = {
 
 const FILTROS = ['todos', 'interpretado', 'aclaracion', 'sin_interpretar', 'fuera_de_alcance']
 
+// Filtro por hora de llegada del mensaje (hora de Panamá, UTC−5 todo el año).
+const RANGOS = [
+  { id: 'todo', etiqueta: 'Cualquier hora' },
+  { id: '15m', etiqueta: 'Últimos 15 min', minutos: 15 },
+  { id: '1h', etiqueta: 'Última hora', minutos: 60 },
+  { id: 'hoy', etiqueta: 'Hoy' },
+  { id: 'personalizado', etiqueta: 'Elegir horas' },
+]
+
+const formatoDia = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Panama' })
+
+function inicioDeHoy(ahora) {
+  return new Date(`${formatoDia.format(ahora)}T00:00:00-05:00`).getTime()
+}
+
+// Devuelve [desde, hasta] en milisegundos; null = sin límite.
+function limitesDe(rango, desde, hasta, ahora) {
+  if (rango === 'hoy') return [inicioDeHoy(ahora), null]
+  if (rango === 'personalizado') {
+    return [desde ? new Date(`${desde}:00-05:00`).getTime() : null, hasta ? new Date(`${hasta}:59-05:00`).getTime() : null]
+  }
+  const r = RANGOS.find((x) => x.id === rango)
+  return r?.minutos ? [ahora - r.minutos * 60000, null] : [null, null]
+}
+
 const ORIGENES = { real: 'Real', estimado: 'Estimado', sintetico: 'Sintético' }
 
 const TIPOS_PROBLEMA = {
@@ -233,10 +258,17 @@ export default function Reportes() {
   const [error, setError] = useState(null)
   const [filtro, setFiltro] = useState('todos')
   const [intento, setIntento] = useState(0)
+  const [rango, setRango] = useState('todo')
+  const [desde, setDesde] = useState('')
+  const [hasta, setHasta] = useState('')
+  const [orden, setOrden] = useState('recientes')
+  // "Ahora" se refresca con cada consulta, para que "Últimos 15 min" se mueva solo.
+  const [ahora, setAhora] = useState(() => Date.now())
 
   useEffect(() => {
     return iniciarSondeo(obtenerReportes, {
       onDatos: (datos) => {
+        setAhora(Date.now())
         setReportes(datos)
         setError(null)
         setCargando(false)
@@ -255,13 +287,15 @@ export default function Reportes() {
     setIntento((n) => n + 1)
   }
 
-  const ordenados = useMemo(
-    () =>
-      [...reportes].sort(
-        (a, b) => new Date(b.registrado.creado_en) - new Date(a.registrado.creado_en),
-      ),
-    [reportes],
-  )
+  const [limiteInicio, limiteFin] = limitesDe(rango, desde, hasta, ahora)
+  const ordenados = useMemo(() => {
+    const lista = reportes.filter((r) => {
+      const t = new Date(r.registrado.creado_en).getTime()
+      return (limiteInicio === null || t >= limiteInicio) && (limiteFin === null || t <= limiteFin)
+    })
+    const signo = orden === 'recientes' ? -1 : 1
+    return lista.sort((a, b) => signo * (new Date(a.registrado.creado_en) - new Date(b.registrado.creado_en)))
+  }, [reportes, limiteInicio, limiteFin, orden])
 
   const conteos = useMemo(() => {
     const c = { todos: ordenados.length, interpretado: 0, aclaracion: 0, sin_interpretar: 0, fuera_de_alcance: 0 }
@@ -270,20 +304,29 @@ export default function Reportes() {
   }, [ordenados])
 
   const visibles = filtro === 'todos' ? ordenados : ordenados.filter((i) => estadoDe(i) === filtro)
+  const hayFiltroDeTiempo = rango !== 'todo'
+  const rangoInvalido = rango === 'personalizado' && desde && hasta && hasta < desde
+
+  function quitarFiltros() {
+    setRango('todo')
+    setDesde('')
+    setHasta('')
+    setFiltro('todos')
+  }
 
   return (
     <section className="reportes" aria-labelledby="titulo-reportes">
       <header className="reportes-cabecera">
         <span className="seccion-etiqueta">COMUNIDAD / RECEPCIÓN</span>
         <h1 id="titulo-reportes">Reportes recibidos</h1>
-        <p>Mensajes de la comunidad, del más reciente al más antiguo.</p>
+        <p>Mensajes de la comunidad. Filtra por la hora en que llegaron para ir revisándolos por tandas.</p>
       </header>
 
       {!cargando && !error && reportes.length > 0 && (
         <dl className="bandeja-resumen" aria-label="Resumen de reportes recibidos">
-          <div><dt>Reportes recibidos</dt><dd>{conteos.todos}</dd></div>
-          <div><dt>Interpretados</dt><dd>{conteos.interpretado}</dd></div>
-          <div className="resumen-atencion"><dt>Necesitan aclaración</dt><dd>{conteos.aclaracion}</dd></div>
+          <div><dt>Reportes recibidos</dt><dd>{reportes.length}</dd></div>
+          <div><dt>Interpretados</dt><dd>{reportes.filter((i) => estadoDe(i) === 'interpretado').length}</dd></div>
+          <div className="resumen-atencion"><dt>Necesitan aclaración</dt><dd>{reportes.filter((i) => estadoDe(i) === 'aclaracion').length}</dd></div>
         </dl>
       )}
 
@@ -292,6 +335,38 @@ export default function Reportes() {
           Datos de ejemplo. Los reportes de esta lista son sintéticos y no vienen de la API.
         </p>
       )}
+
+      <fieldset className="tiempo">
+        <legend>Hora de llegada</legend>
+        <div className="tiempo-chips">
+          {RANGOS.map((r) => (
+            <button key={r.id} type="button" className="chip-tiempo" aria-pressed={rango === r.id} onClick={() => setRango(r.id)}>
+              {r.etiqueta}
+            </button>
+          ))}
+        </div>
+        {rango === 'personalizado' && (
+          <div className="tiempo-rango">
+            <label>Desde<input type="datetime-local" value={desde} onChange={(e) => setDesde(e.target.value)} /></label>
+            <label>Hasta<input type="datetime-local" value={hasta} onChange={(e) => setHasta(e.target.value)} /></label>
+            <p className="tiempo-nota">Hora de Panamá. Deja uno vacío para no poner límite.</p>
+          </div>
+        )}
+        {rangoInvalido && <p className="tiempo-error" role="alert">La hora final es anterior a la inicial: no puede haber reportes en ese rango.</p>}
+        <label className="tiempo-orden">
+          Orden
+          <select value={orden} onChange={(e) => setOrden(e.target.value)}>
+            <option value="recientes">Más recientes primero</option>
+            <option value="antiguos">Más antiguos primero</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <p className="tiempo-resumen" role="status">
+        Mostrando {visibles.length} de {reportes.length} reportes
+        {hayFiltroDeTiempo ? ' en la hora elegida' : ''}.
+        {(hayFiltroDeTiempo || filtro !== 'todos') && <> <button type="button" className="enlace" onClick={quitarFiltros}>Quitar filtros</button></>}
+      </p>
 
       <div className="filtros" role="group" aria-label="Filtrar por estado">
         {FILTROS.map((f) => (
@@ -321,9 +396,9 @@ export default function Reportes() {
 
       {!cargando && !error && visibles.length === 0 && (
         <p className="mensaje">
-          {filtro === 'todos'
+          {reportes.length === 0
             ? 'Todavía no hay reportes. Aparecerán aquí cuando alguien escriba al bot.'
-            : 'Ningún reporte tiene este estado.'}
+            : 'Ningún reporte coincide con los filtros elegidos. Prueba con otra hora o quita los filtros.'}
         </p>
       )}
 

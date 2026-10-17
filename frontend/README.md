@@ -38,6 +38,14 @@ La barra superior cambia de página; la página activa queda en la dirección
   Mientras la fila siga abierta, actualiza también la traza mediante sondeo.
 - Fechas en hora de Panamá.
 
+- **Filtro por hora de llegada** (Reportes): Cualquier hora, Últimos 15 min, Última hora, Hoy, o un rango Desde/Hasta
+  en hora de Panamá, más el orden (recientes o antiguos primero). Se combina con el filtro por estado; los conteos de los
+  estados siguen el rango elegido y el aviso "Mostrando N de M" tiene un enlace para quitar los filtros. La lista se
+  refresca cada 5 s y los rangos relativos se mueven con ella.
+- **Sondeo tras enviar una revisión** (Necesidades): después de enviar, la página consulta `GET /incidentes` cada 5 s hasta
+  ver una evaluación con la `datos_version` del envío (máximo 2 minutos) y lo dice en el formulario. Si tarda, avisa de
+  que se compruebe el trabajador de agentes. "Revisar ahora" actualiza sin ocultar el formulario.
+
 ### Necesidades (`src/paginas/Necesidades.jsx`) — V2
 
 - Lee `GET /incidentes` con la sesión (sin ella la API responde 403 y la página ofrece ir al inicio de sesión): un elemento por incidente con vínculos activos. El botón
@@ -56,18 +64,19 @@ La barra superior cambia de página; la página activa queda en la dirección
   - Después de separar un reporte, la RPC de Emilia invalida las evaluaciones: sello
     **Requiere recálculo** y el motivo en la lista de pendientes.
 - Un incidente sin punto identificado se muestra como "Lugar sin identificar".
-- **Revisar y enviar a priorización** (`src/paginas/FormularioRevision.jsx`, solo con sesión): el
-  coordinador marca los incidentes que revisa y confirma demanda (litros declarados, o personas,
-  dotación y días), capacidad de recepción del punto (sin ella la validación de demanda queda pendiente), clase, vulnerabilidad, horas sin agua, personas y ventana (obligatoria si es
-  crítico). Pide la versión de la política y el motivo. Envía `POST /ejecuciones/{id}/priorizacion`
-  (`src/api/priorizacion.js`). Lo que se deja vacío no se envía y queda pendiente. La ejecución se
-  elige sola: la más reciente con etapa `priorizacion` y estado aceptado por la RPC. Las ventanas
-  se envían con desfase −05:00 (Panamá). Quién confirma y cuándo lo pone el servidor con el token.
-  Repetir el mismo envío no duplica (`repetido`). La API exige cubrir todo el ámbito con un
-  incidente por punto: si falta, devuelve 422 y el mensaje se muestra tal cual.
-- Los ejemplos (`src/datos/necesidadesEjemplo.js`) son sintéticos, se validaron con
-  `IncidenteConsolidado` y `EvaluacionNecesidades` y se convierten a la forma de `GET /incidentes`.
-  Incluyen un incidente sin evaluación y otro que requiere recálculo.
+- **Confirmar datos y calcular el orden** (`src/paginas/FormularioRevision.jsx`, solo con sesión), en tres pasos
+  visibles: (1) elegir la política en una lista de las activas (`GET /politicas`), con sus pesos y topes explicados,
+  y escribir el motivo; (2) confirmar los datos de cada punto en secciones con lenguaje llano: agua que necesita y
+  capacidad de recepción, qué tan urgente es (clase, horas sin agua, personas, vulnerabilidad) y ventana de entrega;
+  (3) enviar. Cada campo trae su ayuda; el dato que el sistema ya tiene se ofrece con "Usar este dato", nunca se
+  confirma solo. Cada punto muestra "N de 6 datos" y qué quedará pendiente. El botón explica por qué está
+  desactivado. Los puntos sin cálculo vienen marcados. Envía `POST /ejecuciones/{id}/priorizacion`
+  (`src/api/priorizacion.js`); lo vacío no se envía y queda pendiente. La ejecución se elige sola: la más reciente en
+  etapa `priorizacion` con estado aceptado. Ventanas con desfase −05:00. Quién confirma y cuándo lo pone el servidor.
+  Si `GET /politicas` falla, el campo vuelve a ser de texto. La API exige cubrir todo el ámbito con un incidente por
+  punto; si falta, devuelve 422 y se muestra el mensaje.
+- La página abre con una guía de tres pasos (Mira, Confirma, Envía) y los datos técnicos de cada tarjeta van en un
+  desplegable "Detalles técnicos".
 
 ### Aprobación (`src/paginas/Aprobacion.jsx`) — V4
 

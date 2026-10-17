@@ -397,3 +397,16 @@ class ResultadoPriorizacion(BaseModel):
     datos_version: str
     incidentes: int
     sin_revisar: int
+
+
+class PoliticaActiva(BaseModel):
+    """Una política de prioridad activa, para elegirla en el formulario de revisión sin escribir su versión."""
+
+    politica_version: str
+    fundamento: str
+    peso_duracion: float
+    peso_vulnerabilidad: float
+    peso_poblacion: float
+    tope_horas: float
+    tope_personas: int
+    origen: Literal["real", "estimado", "sintetico"]

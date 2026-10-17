@@ -292,3 +292,19 @@
     gap: 0.35rem;
   }
 }
+
+/* Filtro por hora de llegada */
+.tiempo { display: flex; flex-wrap: wrap; align-items: end; gap: 12px 24px; margin: 0 0 12px; padding: 14px 16px 16px; background: var(--papel); border: 1px solid var(--borde); border-radius: 12px; min-width: 0; }
+.tiempo legend { padding: 0 6px; font-size: 13px; font-weight: 600; color: var(--agua-profunda); }
+.tiempo-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-tiempo { padding: 8px 14px; border: 1px solid #b5c3d1; border-radius: 999px; background: white; color: var(--tinta); font-size: 14px; }
+.chip-tiempo:hover { border-color: var(--agua); }
+.chip-tiempo[aria-pressed='true'] { background: var(--agua-profunda); border-color: var(--agua-profunda); color: white; font-weight: 600; }
+.tiempo-rango { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
+.tiempo label { display: grid; gap: 4px; font-size: 13px; font-weight: 600; color: var(--tinta); }
+.tiempo input, .tiempo select { padding: 8px 10px; border: 1px solid #8293a5; border-radius: 8px; background: white; font-weight: 400; }
+.tiempo-orden { margin-left: auto; }
+.tiempo-nota { flex-basis: 100%; margin: 0; font-size: 12px; color: var(--tinta-suave); }
+.tiempo-error { flex-basis: 100%; margin: 0; padding: 8px 12px; background: var(--error-fondo); border-left: 4px solid var(--ladrillo); border-radius: 8px; color: var(--ladrillo); font-size: 14px; }
+.tiempo-resumen { margin: 0 0 12px; font-size: 14px; color: var(--tinta-suave); }
+@media (max-width: 600px) { .tiempo-orden { margin-left: 0; } }

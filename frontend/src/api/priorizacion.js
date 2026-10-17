@@ -10,3 +10,8 @@ export function prepararPriorizacion(ejecucionId, cuerpo) {
 export function consultarEtapa(ejecucionId) {
   return llamarConSesion(`/ejecuciones/${encodeURIComponent(ejecucionId)}`)
 }
+
+// GET /politicas: políticas de prioridad activas, para elegirlas en el formulario sin escribir su versión.
+export function listarPoliticas() {
+  return llamarConSesion('/politicas')
+}
