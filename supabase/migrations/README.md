@@ -55,3 +55,14 @@ posibles eventos duplicados históricos.
 Verificación local: cinco smoke SQL en PostgreSQL temporal, incluyendo prueba
 que falla con 0007 y pasa con 0008, permisos de backend y rechazo de anon y
 authenticated. Codex no ha aplicado esta migración a Supabase real.
+
+
+## Planificación V3 de Emilia (0009)
+
+Aplicar una vez `0009_planificacion_v3.sql` después de 0008 y ejecutar completo
+`../tests/0009_planificacion_v3_smoke.sql` (termina en ROLLBACK). Crea registro de
+ensayos aislados, cinco RPC backend y `planes.propuesta`; amplía mantenimiento a
+reservas de Planificación. No crea cuentas ni aprueba/publica planes. Permite
+varios coordinadores activos; el alta es administrativa y separada de la migración.
+Guía, firmas, comandos y límites en [V3_EMILIA](../../docs/V3_EMILIA.md).
+Probada en PostgreSQL temporal; 0009 no aplicada a Supabase real por Codex.

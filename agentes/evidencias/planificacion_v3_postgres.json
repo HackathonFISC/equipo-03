@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "postgres_temporal": true,
+  "gemini_real": true,
+  "cierre": {
+    "etapa": "planificacion",
+    "estado": "espera_validacion",
+    "plan_id": "950bde81-0a2b-525a-88b9-a07e75edeaee",
+    "version": 1,
+    "repetido": false,
+    "ejecucion_id": "1bc1a262-1775-55cc-8867-74a11e4be8c1"
+  },
+  "conteos": {
+    "planes": 1,
+    "rutas": 2,
+    "paradas": 6
+  },
+  "cierre_repetido_sin_escrituras": true,
+  "incidente_previo_v2_intacto": true,
+  "publicacion": "bloqueada",
+  "supabase_real_modificado": false
+}
