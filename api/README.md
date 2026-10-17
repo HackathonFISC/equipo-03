@@ -41,6 +41,7 @@ CORS admite solo `http://localhost:5173` (servidor de desarrollo del panel).
 | `rutas/aclaraciones.py`, `servicios/aclaraciones.py` | Circuito de aclaración: reservar, registrar envío y entregar respuesta. |
 | `rutas/incidentes.py`, `servicios/incidentes.py` | Incidentes consolidados con su necesidad o sus pendientes. |
 | `rutas/avisos.py`, `servicios/bandeja_salida.py` | Bandeja de salida: reservar el siguiente aviso vigente y registrar su envío. |
+| `rutas/sectores.py`, `servicios/sectores.py` | Estado de un sector, selección del plan que Comunicación usará por sector y habilitación de un destino de ensayo. Llaman a las RPC de la migración 0012 (Emilia) y traducen sus errores. |
 | `rutas/planes.py`, `servicios/planes.py`, `servicios/aprobacion.py` | Listar planes guardados; aprobar y rechazar una versión del plan: solo coordinador activo; llaman a las RPC de la migración 0003 y traducen sus errores a códigos de D003. |
 | `auth.py`, `rutas/sesion.py` | Sesión (V4): verifica el token de Supabase Auth y exige coordinador activo. El usuario sale del token. |
 
@@ -69,6 +70,9 @@ de reportes; no equivale a una prueba de conectividad externa. Ver
 | `GET /planes` | Panel | Token | Las 20 versiones de plan más recientes con rutas y paradas (nombre del punto del catálogo), `datos_version`, `politica_version` y bloqueos. Lectura de tablas; no expone la solicitud ni quién creó el plan. |
 | `POST /planes/{plan_id}/versiones/{version}/aprobar` | Panel | Token + coordinador | Cuerpo: `datos_version`, `politica_version`, `motivo`, `bloqueos_reconocidos`. 200 con `aprobacion_id`; repetir lo mismo da `repetido: true`. 403 / 409 (`version_obsoleta`, `politica_no_activa`, `plan_no_verificado`, `cobertura_critica_pendiente`) / 422 (`bloqueos_reconocidos` incompleto) / 503. |
 | `POST /planes/{plan_id}/versiones/{version}/rechazar` | Panel | Token + coordinador | Cuerpo: `motivo`. Deja el plan `rechazado` y la ejecución en revisión. Un plan ya resuelto da 409 `version_obsoleta`. |
+| `GET /sectores/{sector_id}/estado` | Panel o bot | Token o `X-Secreto-Bot` | `EstadoSector` (contrato de Emilia): plan vigente y estado de cada punto. Sector inexistente: 422; forma inesperada de la RPC: 503, nunca "sin plan". |
+| `POST /sectores/{sector_id}/plan-vigente` | Panel | Token + coordinador | Cuerpo: `plan_id`, `version`, `motivo`. Elige el plan aprobado que Comunicación usará en ese sector. 403 / 409 (`version_obsoleta`: sin aprobación vigente o entradas cambiadas) / 422 (sector ajeno al plan). |
+| `PUT /destinos/{destino_id}/ensayo` | Panel | Token + coordinador | Cuerpo: `habilitado`, `motivo`. Habilita o deshabilita un destino de Telegram autorizado para recibir planes sintéticos. 403 si el destino no está autorizado. |
 | `GET /sesion` | Panel | Token | Quién es la persona con sesión y si es coordinador activo (`usuario_id`, `rol`, `activo`, `es_coordinador`). 403 sin sesión válida. |
 
 Las rutas de lectura del panel no tienen autenticación por decisión del equipo. Separar un
@@ -234,6 +238,8 @@ Usan una base de datos y RPC simuladas: no necesitan red, claves ni Supabase.
   y que el usuario salga siempre del token.
 - `tests/test_api_planes.py`: listar, aprobar y rechazar con RPC simuladas: usuario tomado del token, cuerpo inválido,
   traducción de cada error de la RPC, acceso solo de coordinador activo y respuestas inesperadas.
+- `tests/test_api_sectores.py`: estado con sesión y con secreto del bot, rechazo sin credencial, forma inesperada de la RPC,
+  selección de plan y destino de ensayo con usuario tomado del token, cuerpo inválido, cada error de la RPC y solo coordinador.
 - `tests/test_api_avisos.py`: reserva, forma inesperada de la RPC, campos que no se exponen,
   registro de envío coherente, reserva ajena, secreto y errores de la base.
 
@@ -241,7 +247,6 @@ Usan una base de datos y RPC simuladas: no necesitan red, claves ni Supabase.
 
 - V2: separar un reporte de un incidente (`ra_separar_reporte`), con la sesión mínima del
   coordinador acordada con Emilia.
-- V4: la migración `0002`, el inicio de sesión del panel y la consulta
-  `estado_sector`. `auth.py` y las rutas de aprobar y rechazar ya están (sin probar contra Supabase real: falta
-  el inicio de sesión del panel y aplicar la migración `0003`).
+- V4: la migración `0002`. `auth.py`, el inicio de sesión del panel, las rutas de aprobar y rechazar y las de sector/destino
+  (sobre la migración `0012`) ya están, probadas con RPC simuladas; falta aplicar las migraciones en Supabase real.
   La bandeja de salida ya está (migración `0011`, sin aplicar todavía).

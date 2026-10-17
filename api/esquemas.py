@@ -281,3 +281,30 @@ class PlanPanel(BaseModel):
     origen: Literal["real", "estimado", "sintetico"]
     creado_en: AwareDatetime
     rutas: list[RutaPanel]
+
+
+# --- Operaciones de V4 con las RPC de Emilia (0012) ---
+
+class SeleccionarPlanSector(Peticion):
+    """El plan aprobado que Comunicación usará para este sector. Quién selecciona sale del token."""
+
+    plan_id: UUID
+    version: Annotated[int, Field(gt=0)]
+    motivo: Annotated[str, Field(min_length=1, max_length=4000)]
+
+
+class ResultadoSeleccion(BaseModel):
+    sector_id: UUID
+    plan_id: UUID | None = None
+    version: Annotated[int, Field(gt=0)] | None = None
+    repetido: bool
+
+
+class DestinoEnsayo(Peticion):
+    habilitado: bool
+    motivo: Annotated[str, Field(min_length=1, max_length=4000)]
+
+
+class ResultadoDestinoEnsayo(BaseModel):
+    destino_id: UUID
+    habilitado: bool

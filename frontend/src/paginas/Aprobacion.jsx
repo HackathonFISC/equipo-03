@@ -9,6 +9,7 @@ import {
   obtenerSesion,
   obtenerToken,
 } from '../api/sesion.js'
+import ComunicacionSector from './ComunicacionSector.jsx'
 import './Aprobacion.css'
 
 const ESTADOS = {
@@ -302,6 +303,7 @@ function Aprobacion() {
           alDecidir={() => setRecarga((n) => n + 1)}
         />
       ))}
+      {sesion?.es_coordinador === true && planes !== null && <ComunicacionSector planes={planes} />}
     </section>
   )
 }
