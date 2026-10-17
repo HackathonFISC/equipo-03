@@ -145,11 +145,12 @@ def test_leer_chats_autorizados():
 
 # --- Ayuda (/start, /ayuda, /help) ---
 
-def test_ayuda_explica_que_escribir_sin_llamar_a_la_api():
+def test_ayuda_muestra_los_botones_sin_llamar_a_la_api():
     update, contexto, llamadas, respuestas = armar(lambda p: json_de(201), texto="/ayuda")
     asyncio.run(mostrar_ayuda(update, contexto))
     assert llamadas == []
-    respuestas.assert_awaited_once_with(MENSAJE_AYUDA)
+    teclado = respuestas.await_args.kwargs["reply_markup"].inline_keyboard
+    assert [b.callback_data for fila in teclado for b in fila] == ["reportar", "instrucciones"]
     for dato in ("Dónde", "Desde cuándo", "Cuántas personas", "Responder"):
         assert dato in MENSAJE_AYUDA
 
