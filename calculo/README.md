@@ -3,3 +3,32 @@
 **Dueño:** José
 
 demanda, prioridad, matriz, solver, verificador, orden_llegada
+
+## Solver mínimo V1
+
+Desde la raíz del repositorio, con el entorno V0 instalado:
+
+```powershell
+.\.venv\Scripts\python.exe -m calculo.demo_v1
+.\.venv\Scripts\python.exe -m pytest calculo/tests contratos/tests -q
+```
+
+La demo ejecuta `solve_routes_minimo(SolicitudResolverRutas) -> PropuestaDistribucion` en `solver.py`. Consume el fixture sintético de Emilia en `contratos/ejemplos/solicitud_resolver_rutas.json`: dos cisternas de 10 000 L, un depósito, seis puntos con 18 000 L, diez minutos por viaje y diez por descarga. No modifica ese ejemplo ni activa la política pendiente de `datos/escenario/`. Las confirmaciones ficticias del fixture están identificadas como tales; no son autorización humana real.
+
+El ensayo exige cobertura completa. OR-Tools calcula rutas con capacidad, disponibilidad, ventanas completas de servicio, espera y retorno dentro del turno. Usa la matriz por identificadores, respeta dirección y arcos `null` bloqueados. Las cantidades se representan exactamente en mililitros; se rechazan más de tres decimales y cantidades superiores a 10^12 L en este ensayo. El tiempo interno usa segundos UTC, redondeando límites de forma conservadora; la consola muestra las horas UTC−05:00 del fixture. IDs de parada derivados de plan/versión/vehículo/punto conservan estabilidad al repetir la entrada.
+
+Si no puede cubrir el conjunto completo, V1 devuelve todas las necesidades como pendientes con motivo y sin rutas; no distribuye una fracción ni afirma inviabilidad del problema de reparto parcial. Un timeout sin solución se distingue del fallo genérico. Son estados del ensayo completo, no resultados de optimización de cobertura. La selección por criticidad/ranking, casos pendientes/cero del flujo operativo y diagnóstico individual de déficit corresponden al solver completo de V3.
+
+Todas las salidas están pendientes de revisión, sin aprobación ni informe de verificación y con publicación bloqueada. Las aserciones de las pruebas comprueban físicamente rutas calculadas, pero no implementan `verify_plan` ni sustituyen el verificador independiente de V3. No registrar esta función como `solve_routes` operativa antes de completar esa versión.
+
+## Evidencia reproducible
+
+```powershell
+.\.venv\Scripts\python.exe -m calculo.demo_v1 --salida evals/resultados/solver_minimo_v1.json
+```
+
+No sobrescribe un archivo de evidencia existente. Usar otro nombre para guardar un nuevo ensayo. La evidencia conserva entrada, salida, esperado, métricas con denominador, versión y duración. `evals/resultados/v1_pruebas.xml` conserva el resultado de la ejecución de pruebas registrada durante el desarrollo. Los horarios de atención son simulados del escenario, no horarios de entrega del hackatón.
+
+Las pruebas cubren carga, servicio y ventanas, retorno, espera, unicidad y cantidades completas, capacidades distintas, flota no disponible, matriz reordenada/asimétrica/bloqueada, política propuesta, datos pendientes, origen no sintético y traducción de estados del motor. El timeout se comprueba con un resultado del motor simulado, no como evidencia de timeout real.
+
+Referencias de implementación: [OR-Tools capacidad](https://developers.google.com/optimization/routing/cvrp) y [OR-Tools ventanas](https://developers.google.com/optimization/routing/vrptw). No se usan rutas viales reales.
