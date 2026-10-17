@@ -1,0 +1,21 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "esquema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Esquema Version",
+      "type": "string"
+    },
+    "sector_id": {
+      "format": "uuid",
+      "title": "Sector Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "sector_id"
+  ],
+  "title": "SolicitudEstadoSector",
+  "type": "object"
+}

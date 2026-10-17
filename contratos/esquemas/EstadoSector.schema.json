@@ -1,0 +1,323 @@
+{
+  "$defs": {
+    "EstadoParada": {
+      "enum": [
+        "programada",
+        "iniciada",
+        "atendida",
+        "con_incidencia"
+      ],
+      "title": "EstadoParada",
+      "type": "string"
+    },
+    "EstadoPuntoSector": {
+      "additionalProperties": false,
+      "properties": {
+        "punto_atencion_id": {
+          "format": "uuid",
+          "title": "Punto Atencion Id",
+          "type": "string"
+        },
+        "sector_id": {
+          "format": "uuid",
+          "title": "Sector Id",
+          "type": "string"
+        },
+        "nombre": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Nombre",
+          "type": "string"
+        },
+        "origen": {
+          "$ref": "#/$defs/OrigenDato"
+        },
+        "estado": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EstadoParada"
+            },
+            {
+              "const": "sin_asignacion",
+              "type": "string"
+            }
+          ],
+          "title": "Estado"
+        },
+        "parada_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parada Id"
+        },
+        "litros_asignados": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Litros Asignados"
+        },
+        "ventana_estimada": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VentanaTiempo"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "motivo_sin_asignacion": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Motivo Sin Asignacion"
+        }
+      },
+      "required": [
+        "punto_atencion_id",
+        "sector_id",
+        "nombre",
+        "origen",
+        "estado"
+      ],
+      "title": "EstadoPuntoSector",
+      "type": "object"
+    },
+    "OrigenDato": {
+      "enum": [
+        "real",
+        "estimado",
+        "sintetico"
+      ],
+      "title": "OrigenDato",
+      "type": "string"
+    },
+    "PlanVigenteSector": {
+      "additionalProperties": false,
+      "properties": {
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "version": {
+          "exclusiveMinimum": 0,
+          "title": "Version",
+          "type": "integer"
+        },
+        "ejecucion_id": {
+          "format": "uuid",
+          "title": "Ejecucion Id",
+          "type": "string"
+        },
+        "datos_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Datos Version",
+          "type": "string"
+        },
+        "politica_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Politica Version",
+          "type": "string"
+        },
+        "origen": {
+          "$ref": "#/$defs/OrigenDato"
+        },
+        "estado": {
+          "const": "aprobado",
+          "title": "Estado",
+          "type": "string"
+        },
+        "verificado": {
+          "const": true,
+          "title": "Verificado",
+          "type": "boolean"
+        },
+        "aprobacion_id": {
+          "format": "uuid",
+          "title": "Aprobacion Id",
+          "type": "string"
+        },
+        "aprobado_en": {
+          "format": "date-time",
+          "title": "Aprobado En",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "version",
+        "ejecucion_id",
+        "datos_version",
+        "politica_version",
+        "origen",
+        "estado",
+        "verificado",
+        "aprobacion_id",
+        "aprobado_en"
+      ],
+      "title": "PlanVigenteSector",
+      "type": "object"
+    },
+    "ResumenSector": {
+      "additionalProperties": false,
+      "properties": {
+        "sector_id": {
+          "format": "uuid",
+          "title": "Sector Id",
+          "type": "string"
+        },
+        "nombre": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Nombre",
+          "type": "string"
+        },
+        "distrito": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Distrito",
+          "type": "string"
+        },
+        "corregimiento": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Corregimiento"
+        },
+        "origen": {
+          "$ref": "#/$defs/OrigenDato"
+        },
+        "estado_informacion": {
+          "enum": [
+            "sin_informacion",
+            "pendiente_verificar",
+            "necesidad_conocida",
+            "atencion_reciente"
+          ],
+          "title": "Estado Informacion",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sector_id",
+        "nombre",
+        "distrito",
+        "origen",
+        "estado_informacion"
+      ],
+      "title": "ResumenSector",
+      "type": "object"
+    },
+    "VentanaTiempo": {
+      "additionalProperties": false,
+      "properties": {
+        "inicio": {
+          "format": "date-time",
+          "title": "Inicio",
+          "type": "string"
+        },
+        "fin": {
+          "format": "date-time",
+          "title": "Fin",
+          "type": "string"
+        }
+      },
+      "required": [
+        "inicio",
+        "fin"
+      ],
+      "title": "VentanaTiempo",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Snapshot del servicio: no autoriza publicación ni acredita entrega de agua.",
+  "properties": {
+    "esquema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Esquema Version",
+      "type": "string"
+    },
+    "consultado_en": {
+      "format": "date-time",
+      "title": "Consultado En",
+      "type": "string"
+    },
+    "origen": {
+      "$ref": "#/$defs/OrigenDato"
+    },
+    "sector": {
+      "$ref": "#/$defs/ResumenSector"
+    },
+    "estado": {
+      "enum": [
+        "con_plan_vigente",
+        "sin_plan_vigente"
+      ],
+      "title": "Estado",
+      "type": "string"
+    },
+    "plan_vigente": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PlanVigenteSector"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "puntos": {
+      "items": {
+        "$ref": "#/$defs/EstadoPuntoSector"
+      },
+      "title": "Puntos",
+      "type": "array"
+    }
+  },
+  "required": [
+    "consultado_en",
+    "origen",
+    "sector",
+    "estado",
+    "plan_vigente",
+    "puntos"
+  ],
+  "title": "EstadoSector",
+  "type": "object"
+}
