@@ -1,5 +1,11 @@
 # V4: Comunicación, vigencia por sector y lectura consistente
 
+Actualización A1 del 17/10: ver [puente de necesidades persistidas](A1_PUENTE_NECESIDADES.md)
+y [relevo a Noel](HANDOFF_NOEL_A1.md). La nueva 0016 conserva la procedencia del
+reporte y conecta la misma ejecución con un escenario de ensayo usando recursos
+ficticios. El cuerpo histórico siguiente describe la entrega anterior; no acredita
+aplicación remota ni resuelve los ajustes de captura/recepción de Noel.
+
 Entrega backend de Emilia. Noel mantiene exclusivamente `api/`, `bot/` y
 `frontend/`; esas carpetas no se modifican aquí. José mantiene solver y verificador.
 No se aplica SQL ni se envían mensajes al ejecutar pruebas locales.

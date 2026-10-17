@@ -1,0 +1,27 @@
+{
+  "fecha": "2026-10-17T13:10:54.110Z",
+  "modo": "integracion_local_controlada",
+  "datos_reales_usados": false,
+  "origen_probado": "real",
+  "origen_escenario": "sintetico",
+  "modo_plan": "ensayo",
+  "mismo_ejecucion_id": true,
+  "necesidades": 6,
+  "litros_asignados": 15000,
+  "verificacion_valida": true,
+  "agentes": [
+    "ingesta",
+    "territorial",
+    "priorizacion",
+    "planificacion",
+    "comunicacion"
+  ],
+  "traza_cinco_agentes": true,
+  "avisos_creados": 6,
+  "telegram_real": false,
+  "gemini_real": false,
+  "aprobacion_humana": "simulada en fixture",
+  "destino_no_habilitado_bloqueado": true,
+  "plan_invalidado_tras_cambio_necesidades": true,
+  "avisos_cancelados_tras_cambio": 6
+}

@@ -152,12 +152,14 @@ def test_api_en_pruebas_no_arranca_procesos_reales(proceso):
 
 def test_senal_de_parada_antes_de_reservar_no_toca_bd():
     db = Mock()
+    db.rpc.return_value.execute.return_value.data=[]
     assert una_vuelta(db, None, detener=lambda: True) == []
     assert not db.mock_calls
 
 
 def test_senal_entre_ejecuciones_no_toma_mas_trabajo():
     db = Mock()
+    db.rpc.return_value.execute.return_value.data=[]
     db.table.return_value.select.return_value.eq.return_value.in_.return_value.order.return_value.limit.return_value.execute.return_value.data = [
         dict(ejecucion_id='primera', etapa='ingesta'), dict(ejecucion_id='segunda', etapa='ingesta')]
     señal = iter([False, False, True])

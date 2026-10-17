@@ -214,3 +214,24 @@ usa mantenimiento global, datos sintéticos y ROLLBACK. Probado en PostgreSQL te
 PGlite, junto a regresiones 0006/0013/0014; pendiente de aplicación y roles reales en
 Supabase. El smoke 0005 es histórico y espera el comportamiento anterior de error
 recuperable terminal; para el comportamiento nuevo usar 0015. Guía: `../../docs/INGESTA_A4.md`.
+
+## 0016 Puente persistido de necesidades a planificación
+
+Aplicar completo una vez después de 0015 y antes de arrancar el trabajador A1.
+No altera archivos históricos. Añade cola con RLS/service_role y fuente/modo del
+escenario; crea RPC de contexto, registro idempotente y revisión. Las firmas de
+aprobación y de las cuatro herramientas se conservan. El ámbito de incidentes V2
+se explicita por origen y ensayo, sin omitir conflictos dentro de él.
+
+Un reporte real puede aportar necesidades conservando su procedencia a un escenario
+sintético de ensayo. El plan y los recursos ficticios siguen sujetos a los destinos
+de prueba de 0012. El puente registra el escenario en la misma ejecución, sin nuevos
+incidentes o necesidades y sin activar políticas. La vigencia incorpora las
+necesidades persistidas: cambios invalidan planes aprobados y cancelan avisos
+pendientes no reservados. Un plan registrado no se sobrescribe para replanificar.
+
+Ejecutar `../tests/0016_puente_necesidades_v3_smoke.sql` completo; ámbitos aislados,
+sin servicios externos y ROLLBACK. Probado en PGlite para real/estimado/sintético y
+con regresiones 0006/0009/0010/0012/0013/0014/0015. Integración local reproducible
+adicional en `../tests/0016_integracion_local.mjs`. No acredita aplicación remota ni
+concurrencia de servidores reales. Ver `../../docs/A1_PUENTE_NECESIDADES.md`.
