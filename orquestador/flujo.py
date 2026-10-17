@@ -20,4 +20,7 @@ def avanzar(ejecucion, db, extractor, herramientas=None, decisor_planificacion=N
         from agentes.planificacion_gemini import DecisorGeminiPlanificacion
         return procesar_planificacion(eid, db, trabajador,
             decisor=decisor_planificacion or DecisorGeminiPlanificacion())
-    return {'estado': 'etapa_no_v2'}
+    if etapa == 'comunicacion':
+        from agentes.comunicacion import procesar_comunicacion
+        return procesar_comunicacion(eid, db, trabajador)
+    return {'estado': 'etapa_no_soportada'}

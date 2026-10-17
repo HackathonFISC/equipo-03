@@ -1,0 +1,52 @@
+{
+  "fecha_cliente": "2026-10-17",
+  "entorno": "PostgreSQL temporal PGlite; no Supabase remoto",
+  "alcance": "Recorrido local V3→V4, sin acreditar integración API/panel ni envío Telegram",
+  "llm": "Decisor de reglas explícito en este ensayo; sin Gemini real",
+  "herramientas_reales": [
+    "solve_routes",
+    "verify_plan",
+    "ra_preparar_ensayo_v3",
+    "ra_finalizar_planificacion_v3",
+    "ra_aprobar_plan",
+    "ra_seleccionar_plan_sector_v4",
+    "ra_comunicar_plan_v4",
+    "ra_reservar_aviso",
+    "ra_registrar_envio_aviso",
+    "ra_estado_sector_v4"
+  ],
+  "coordinador": "Identidad ficticia temporal en auth.users, revertida; no cuenta real",
+  "mensajeria": "Acuses simulados; cero llamadas Telegram",
+  "resultados": {
+    "avisos": 6,
+    "paradas": 6,
+    "rutas": 2,
+    "litros_asignados": 15000,
+    "acuses_simulados": 6,
+    "contrato_estado_sector_valido": true,
+    "etiqueta_sintetica_en_plantilla_bot": true
+  },
+  "python": {
+    "pasaron": 532,
+    "subpruebas": 66,
+    "avisos_dependencias": 4
+  },
+  "sql": {
+    "smokes": 10,
+    "variante_adicional": "Modificar litros invalida; cambiar solo estado no invalida"
+  },
+  "pendientes": [
+    "Ajuste de bloqueo previo y rechazo de replay obsoleto en aprobación de Noel",
+    "Concurrencia en dos sesiones (caso oficial 21)",
+    "Integración API/panel por Noel",
+    "Aplicación SQL remota y recorrido Telegram autorizado"
+  ],
+  "sha256": {
+    "agentes/comunicacion.py": "180f3aaf80164e17ebf137f483dc699eb57db77790ba334404651920b2fa90ef",
+    "agentes/estado_sector.py": "5a0e0ecbc87a8ff9d23dc13f58eca2a06102d03de65fdd0402d9ec2a44577832",
+    "orquestador/flujo.py": "66031fc0fb3a387387fce1e2e35538af98e678d6051f8bad259970f5208d7278",
+    "orquestador/trabajador.py": "f452e1d7f5bc4db5d1a7f4110e6fc0f31ca1eaf0d401774de7b981eb49498eae",
+    "supabase/migrations/0012_comunicacion_v4.sql": "e434c20806994d5be9125e72eeb8f4a54e4910381be9f990c8fbf6ba56881f43",
+    "supabase/tests/0012_comunicacion_v4_smoke.sql": "931a98e6307f414bf71f772e414db3e55253ad2e07974e998ece83ec56a3f664"
+  }
+}
