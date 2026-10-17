@@ -1,4 +1,4 @@
-"""Trabajador V2/V3. Ejecutar --una-vuelta primero; Ctrl+C detiene el sondeo."""
+"""Trabajador V2/V3/V4. Ejecutar --una-vuelta primero; Ctrl+C detiene el sondeo."""
 import argparse
 import json
 import time
@@ -17,7 +17,7 @@ def una_vuelta(db, extractor, herramientas=None, limite=20, *, planificacion_id=
     else:
         db.rpc('ra_mantenimiento_planificacion_v3', {'p_ejecucion_id': str(planificacion_id)}).execute()
     consulta = db.table('ejecuciones').select('ejecucion_id,etapa').eq('estado', 'pendiente').in_(
-        'etapa', ['ingesta', 'territorial', 'priorizacion', 'planificacion'])
+        'etapa', ['ingesta', 'territorial', 'priorizacion', 'planificacion', 'comunicacion'])
     if planificacion_id is not None:
         consulta = consulta.eq('ejecucion_id', str(planificacion_id)).eq('etapa', 'planificacion')
     filas = consulta.order('creado_en').limit(limite).execute().data
@@ -34,7 +34,7 @@ def una_vuelta(db, extractor, herramientas=None, limite=20, *, planificacion_id=
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Trabajador RutaAgua V2/V3')
+    parser = argparse.ArgumentParser(description='Trabajador RutaAgua V2/V3/V4')
     parser.add_argument('--una-vuelta', action='store_true')
     parser.add_argument('--planificacion-id', type=UUID, help='Procesar solo este ensayo V3, sin mantenimiento global de V2')
     parser.add_argument('--intervalo', type=float, default=5)
@@ -61,7 +61,7 @@ def main():
     except KeyboardInterrupt:
         return 0
     except Exception:
-        print(json.dumps({'estado': 'error', 'mensaje': 'Revisar configuración y migraciones 0006–0009; no se muestran credenciales.'}))
+        print(json.dumps({'estado': 'error', 'mensaje': 'Revisar configuración y migraciones V2/V3/V4; no se muestran credenciales.'}))
         return 1
 
 

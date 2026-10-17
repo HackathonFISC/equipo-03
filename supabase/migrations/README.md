@@ -118,3 +118,25 @@ Verificación local: PostgreSQL 16 con 0001 a 0011 aplicadas; smoke aprobado (ta
 se quita el control de vigencia de entradas) y smoke de 0011 aprobado con 0003 instalada. No usa Supabase ni
 concurrencia real de varios procesos. Sin aplicar a Supabase. La etapa `comunicacion` no la procesa aún ningún
 trabajador: el trabajador de Emilia solo toma ingesta, territorial, priorización y planificación.
+
+## Comunicación y vigencia V4 (0012, Emilia)
+
+Aplicar `0012_comunicacion_v4.sql` después de 0009, 0010, 0011 y **0003 de Noel**.
+Ejecutar `../tests/0012_comunicacion_v4_smoke.sql` completo; termina en ROLLBACK.
+Crea avisos por punto/destino, selección única de plan por sector y consulta del
+contrato EstadoSector. Extiende reserva de avisos sin cambiar firma/forma; no
+modifica 0003 ni API/bot/frontend. Los sintéticos solo salen a destinos de ensayo
+expresamente habilitados; no habilita ninguno al aplicar la migración.
+
+La aprobación concurrente requiere el ajuste de Noel documentado en
+[V4_EMILIA](../../docs/V4_EMILIA.md). No aplicada a Supabase real por Codex.
+
+## Feedback de aclaraciones de ubicación (0013, Emilia)
+
+Aplicar `0013_feedback_aclaraciones.sql` una vez tras 0006. Puede aplicarse
+sin 0012: no depende de V4. Conserva la firma de `ra_crear_aclaracion`, reconoce
+respuestas previas y detiene repreguntas de ubicación tras dos respuestas sin
+resolución. No modifica ni reenvía preguntas existentes. Probar el smoke
+`../tests/0013_feedback_aclaraciones_smoke.sql` completo, con Territorial y
+catálogo instalados; termina en ROLLBACK. Sin cambios en API/bot de Noel.
+No aplicada a Supabase real por Codex. Ver [V2](../../docs/V2_EMILIA.md).

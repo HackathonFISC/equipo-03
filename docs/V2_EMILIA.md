@@ -208,3 +208,38 @@ RPC administrativas backend conservan sus controles de coordinador; en V2 no
 hay login ni se acepta un UID libre desde el navegador. Planificación integrada
 para el fixture separado está en [V3 de Emilia](V3_EMILIA.md), sin promoción
 automática de incidentes ni autorización de entregas.
+
+## Feedback de ubicación (0013)
+
+`0013_feedback_aclaraciones.sql` reemplaza la implementación de
+`ra_crear_aclaracion` manteniendo su firma y permisos. Requiere 0006; no depende
+de 0012 ni modifica el bot/API de Noel. Se aplica completa una vez; después
+ejecutar `supabase/tests/0013_feedback_aclaraciones_smoke.sql` completo, con
+Territorial y catálogo disponibles. El smoke termina en ROLLBACK y no reserva
+preguntas de otros reportes ni se conecta a Telegram/Gemini.
+
+Cuando solo falta ubicación, la pregunta pide el nombre completo y distrito
+o una ubicación estática de referencia; no repite cantidades. Si ya recibió
+una respuesta, explica: «Recibimos tu respuesta, pero no encontramos una coincidencia única
+para el lugar indicado en nuestro catálogo. Esto no significa que el lugar esté
+fuera de cobertura». No devuelve al chat el texto privado
+de respuestas anteriores ni inventa referencias del catálogo. No estar en el
+catálogo sigue sin significar fuera de cobertura.
+
+Se permite una pregunta inicial y un seguimiento sobre ubicación. Tras dos
+respuestas a solicitudes que incluían ubicación (también preguntas mixtas),
+si no se resuelve, la ejecución pasa a `espera_revision` con código interno
+`ubicacion_sin_resolver_tras_aclaraciones`, reporte y evidencia conservados.
+No hay una tercera pregunta automática. La revisión queda visible en estado
+y traza; no se crea un aviso comunitario ni una notificación nueva de Telegram.
+Una ubicación reconocida avanza; coordenadas sin correspondencia comprobada
+siguen requiriendo revisión humana, sin crear un punto de entrega.
+
+Las preguntas activas y las ya enviadas se conservan sin reescribir ni reenviar.
+El texto nuevo se usa al crear la siguiente pregunta después de aplicar 0013.
+No requiere reiniciar el bot ni cambiar endpoints. Este cambio no se aplica a
+Supabase real por guardar los archivos en GitHub.
+
+Si 0013 ya se ejecutó, puede ejecutarse de nuevo su versión actualizada completa:
+usa CREATE OR REPLACE FUNCTION, conserva la firma y no reescribe preguntas
+existentes. El mensaje se aplica a las nuevas aclaraciones de ubicación.
