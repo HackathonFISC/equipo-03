@@ -197,3 +197,19 @@ class IncidentePanel(BaseModel):
     reportes_independientes: int
     evaluacion_necesidad: EvaluacionNecesidades | None
     pendientes_calculo: list[str]
+
+
+# --- Bandeja de salida de avisos (V4) ---
+
+
+class AvisoPorEnviar(BaseModel):
+    """Lo mínimo para redactar un aviso: el bot arma el texto con la plantilla, no con texto libre."""
+
+    aviso_id: UUID
+    chat_id: int
+    tipo: Literal["distribucion", "actualizacion"]
+    version: Annotated[int, Field(gt=0)]
+    punto_nombre: str
+    litros_asignados: Annotated[float, Field(gt=0, allow_inf_nan=False)]
+    ventana_inicio: AwareDatetime
+    ventana_fin: AwareDatetime

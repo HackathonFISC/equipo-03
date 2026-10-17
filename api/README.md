@@ -39,6 +39,7 @@ CORS admite solo `http://localhost:5173` (servidor de desarrollo del panel).
 | `rutas/ejecuciones.py`, `servicios/ejecuciones.py` | Estado de una ejecución y traza de sus agentes. |
 | `rutas/aclaraciones.py`, `servicios/aclaraciones.py` | Circuito de aclaración: reservar, registrar envío y entregar respuesta. |
 | `rutas/incidentes.py`, `servicios/incidentes.py` | Incidentes consolidados con su necesidad o sus pendientes. |
+| `rutas/avisos.py`, `servicios/bandeja_salida.py` | Bandeja de salida: reservar el siguiente aviso vigente y registrar su envío. |
 
 ## Rutas
 
@@ -52,6 +53,8 @@ CORS admite solo `http://localhost:5173` (servidor de desarrollo del panel).
 | `POST /aclaraciones/{aclaracion_id}/envio` | Bot | Sí | Registra `enviado`, `fallido` o `incierto`. 204. |
 | `POST /aclaraciones/respuestas` | Bot | Sí | Entrega un reply a una pregunta. Siempre 200 con un resultado. |
 | `GET /incidentes` | Panel | No (V2) | Incidentes con vínculos activos, su necesidad calculada o sus pendientes. |
+| `POST /avisos/reservar` | Bot | Sí | Reserva el siguiente aviso vigente. 204 si no hay. Requiere la migración 0009. |
+| `POST /avisos/{aviso_id}/envio` | Bot | Sí | Registra `enviado`, `fallido` o `incierto`. 204. |
 
 Las rutas de lectura del panel no tienen autenticación por decisión del equipo. Separar un
 reporte de un incidente sí la necesitará: `ra_separar_reporte` exige un coordinador activo y
@@ -115,6 +118,20 @@ Resultados de una respuesta: `aceptada`, `repetida`, `ya_respondida`, `autor_dis
 no existe, devuelve `autor_distinto` sin llamar a la RPC. Una ubicación se envía según el
 contrato `Ubicacion` con `fuente = "compartida"` y `representa_punto_atencion = null`.
 Los nombres de las RPC están solo en `servicios/aclaraciones.py`.
+
+### Bandeja de salida de avisos (V4, migración 0009)
+
+Las dos rutas llaman a `ra_reservar_aviso` y `ra_registrar_envio_aviso` con `service_role`. La API no
+crea avisos (los crea Comunicación) ni los aprueba: solo entrega al bot uno a la vez.
+
+- **Vigencia al reservar:** la RPC cancela, con motivo, un aviso cuyo plan ya no está aprobado, tiene
+  una versión más reciente aprobada, cuya suscripción o destino dejó de estar autorizado, o cuyos litros
+  o ventana no coinciden con la parada aprobada. Un aviso cancelado no se envía.
+- **Qué recibe el bot:** solo `aviso_id`, `chat_id`, `tipo`, `version`, `punto_nombre`, `litros_asignados`
+  y la ventana. El texto lo arma el bot con `bot/plantillas.py`; el texto libre del aviso no se envía.
+- **Sin reenvío:** una reserva de 60 s que vence sin resultado deja el aviso `incierto`. Un acuse tardío
+  de quien reservó puede resolverlo con el ID real. Repetir el mismo resultado es seguro; uno distinto se rechaza.
+- Los nombres de las RPC están solo en `servicios/bandeja_salida.py`.
 
 ### `GET /incidentes` (V2)
 
@@ -184,10 +201,12 @@ Usan una base de datos y RPC simuladas: no necesitan red, claves ni Supabase.
   ubicación, remitente desconocido, secreto y errores de la base.
 - `tests/test_api_incidentes.py`: lista vacía, conteos, evaluación calculada e inválida,
   recálculo, punto ausente, orden, campos ocultos y errores de la base.
+- `tests/test_api_avisos.py`: reserva, forma inesperada de la RPC, campos que no se exponen,
+  registro de envío coherente, reserva ajena, secreto y errores de la base.
 
 ## Pendiente
 
 - V2: separar un reporte de un incidente (`ra_separar_reporte`), con la sesión mínima del
   coordinador acordada con Emilia.
-- V4: `auth.py` (rol de coordinador), `servicios/aprobacion.py`, `servicios/bandeja_salida.py`
-  y migraciones `0002`/`0003`.
+- V4: `auth.py` (rol de coordinador), `servicios/aprobacion.py` y migraciones `0002`/`0003`.
+  La bandeja de salida ya está (migración `0009`, sin aplicar todavía).

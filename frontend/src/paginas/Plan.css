@@ -1,0 +1,387 @@
+.plan-pagina {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+.plan-pagina-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.plan-pagina-cabecera h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.plan-pagina-cabecera p {
+  margin: 0 0 1.25rem;
+  color: var(--tinta-suave);
+}
+
+.plan-pagina .actualizar {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  background: var(--papel);
+  color: var(--tinta);
+  font: inherit;
+  cursor: pointer;
+}
+
+.plan-pagina .actualizar:disabled {
+  color: var(--tinta-suave);
+  cursor: progress;
+}
+
+.plan-pagina .actualizar:focus-visible {
+  outline: 3px solid var(--agua);
+  outline-offset: 2px;
+}
+
+.lista-planes {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.plan {
+  padding: 1rem;
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  background: var(--papel);
+}
+
+.plan-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.plan-cabecera h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.plan-ejemplo,
+.plan-fecha {
+  margin: 0.15rem 0 0;
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+.sello-estado {
+  flex: none;
+  padding: 0.1rem 0.55rem;
+  border: 1px solid var(--tinta-suave);
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sello-estado[data-estado='aprobado'] {
+  border-color: var(--agua);
+  background: var(--agua);
+  color: #fff;
+}
+
+.sello-estado[data-estado='rechazado'],
+.sello-estado[data-estado='invalidado'] {
+  border-color: var(--ladrillo);
+  color: var(--ladrillo);
+}
+
+.aviso-solver {
+  margin: 0.75rem 0 0;
+  padding: 0.6rem 0.8rem;
+  border-left: 4px solid var(--ladrillo);
+  background: var(--ambar-fondo);
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.resumen dt {
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+.resumen dd {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Verificación: el borde y el título dicen el resultado; el color no es la única señal. */
+.verificacion {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--borde);
+  border-left: 6px solid var(--gris);
+  border-radius: 4px;
+}
+
+.verificacion h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.verificacion p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+}
+
+.verificacion ul {
+  margin: 0.4rem 0 0;
+  padding-left: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.verificacion-ok {
+  border-left-color: var(--agua);
+}
+
+.verificacion-ok h3::before {
+  content: '✓ ';
+}
+
+.verificacion-falla {
+  border-left-color: var(--ladrillo);
+}
+
+.verificacion-falla h3::before {
+  content: '✕ ';
+}
+
+.bloqueos {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border-left: 4px solid var(--ambar);
+  background: var(--ambar-fondo);
+}
+
+.bloqueos h3 {
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+}
+
+.bloqueos ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.titulo-rutas {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 1.05rem;
+}
+
+.rutas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.ruta {
+  padding: 0.75rem;
+  border: 1px solid var(--borde);
+  border-left: 6px solid var(--agua);
+  border-radius: 4px;
+}
+
+.ruta-cabecera h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.ruta-horario {
+  margin: 0.15rem 0 0.5rem;
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+.ruta-carga {
+  margin: 0 0 0.35rem;
+}
+
+.carga-valor {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.carga-escala {
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+.carga-barra {
+  display: block;
+  height: 6px;
+  margin-bottom: 0.75rem;
+  border-radius: 3px;
+  background: var(--fondo);
+  overflow: hidden;
+}
+
+.carga-barra span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--agua);
+}
+
+.paradas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.parada {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.parada-orden {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--agua);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.parada-texto {
+  min-width: 0;
+}
+
+.parada-nombre,
+.parada-detalle {
+  margin: 0;
+}
+
+.parada-nombre {
+  font-weight: 600;
+}
+
+.parada-detalle {
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.sin-salida {
+  margin: 0.6rem 0 0;
+  padding-left: 1.2rem;
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+.pendientes-plan {
+  margin-top: 1.25rem;
+}
+
+.pendientes-plan h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+
+.pendientes-plan ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.pendientes-plan li {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--borde);
+  border-left: 6px solid var(--ambar);
+  border-radius: 4px;
+}
+
+.pendientes-plan li[data-clase='critico'] {
+  border-left-color: var(--ladrillo);
+}
+
+.pendiente-nombre,
+.pendiente-detalle,
+.pendiente-motivo {
+  margin: 0;
+}
+
+.pendiente-nombre {
+  font-weight: 600;
+}
+
+.pendiente-detalle {
+  font-size: 0.9rem;
+}
+
+.pendiente-motivo {
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+}
+
+.sello-critico {
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 3px;
+  background: var(--ladrillo);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.supuestos-plan {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+}
+
+.supuestos-plan summary {
+  cursor: pointer;
+}
+
+.supuestos-plan summary:focus-visible {
+  outline: 3px solid var(--agua);
+  outline-offset: 2px;
+}
+
+.supuestos-plan ul {
+  margin: 0.4rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.plan .pie {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+@media (min-width: 44rem) {
+  .resumen {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

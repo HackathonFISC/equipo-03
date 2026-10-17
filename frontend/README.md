@@ -21,7 +21,7 @@ Abrir http://localhost:5173. La API debe permitir ese origen (CORS en `api/main.
 ## Páginas
 
 La barra superior cambia de página; la página activa queda en la dirección
-(`#reportes`, `#necesidades`) para que recargar no la pierda.
+(`#reportes`, `#necesidades`, `#plan`) para que recargar no la pierda.
 
 ### Reportes (`src/paginas/Reportes.jsx`)
 
@@ -56,12 +56,30 @@ La barra superior cambia de página; la página activa queda en la dirección
   `IncidenteConsolidado` y `EvaluacionNecesidades` y se convierten a la forma de `GET /incidentes`.
   Incluyen un incidente sin evaluación y otro que requiere recálculo.
 
+### Plan (`src/paginas/Plan.jsx`) — V3, con datos de ejemplo
+
+- Muestra una `PropuestaDistribucion` por tarjeta: estado del plan, litros asignados, puntos
+  atendidos y sin atender, y cisternas en ruta.
+- **Verificación:** "Cumple las restricciones" o "No cumple las restricciones" con cada
+  violación. Que cumpla las restricciones no significa que sea el mejor plan ni que esté
+  aprobado; el texto lo dice. Sin informe: "Sin verificar".
+- **Rutas por cisterna:** salida y retorno, litros contra capacidad y cada parada con su
+  llegada y ventana de descarga.
+- **Puntos sin atender:** motivo del cálculo, litros pendientes (un dato desconocido dice
+  "Demanda por confirmar") y sello Crítico.
+- **Pendiente antes de publicar:** los bloqueos de publicación del plan, tal como vienen.
+- Todavía no existe `GET /planes`: `USAR_EJEMPLOS_PLANES = true` usa `src/datos/planesEjemplo.js`,
+  tres casos que salieron de `solve_routes` y `verify_plan` sobre el escenario ficticio de
+  `calculo/` (seis puntos y dos cisternas; una cisterna; crítico de 12 000 L). No hay botón de
+  aprobar: llega en V4.
+
 ## Configuración
 
 | Dónde | Qué controla |
 | --- | --- |
 | `src/api/reportes.js`, `USAR_EJEMPLOS` | `false`: lee la API (actual). `true`: usa `src/datos/reportesEjemplo.js` sin API. |
 | `src/api/necesidades.js`, `USAR_EJEMPLOS_NECESIDADES` | `false`: lee `GET /incidentes` (actual). `true`: usa los ejemplos sin API. |
+| `src/api/planes.js`, `USAR_EJEMPLOS_PLANES` | `true` (actual): usa los ejemplos, porque `GET /planes` aún no existe. `false`: lee `GET /planes`. |
 | `VITE_API_URL` (en `frontend/.env`) | Opcional. Por defecto `http://localhost:8000`. |
 
 Con datos de ejemplo, la página muestra un aviso amarillo para que no se confundan con datos reales.
@@ -74,6 +92,7 @@ Con datos de ejemplo, la página muestra un aviso amarillo para que no se confun
 | `src/index.css` | Colores y tipografía compartidos. |
 | `src/api/reportes.js` | `obtenerReportes()` y `obtenerEjecucion(id)`. |
 | `src/api/necesidades.js` | `obtenerNecesidades()` (lee `GET /incidentes`). |
+| `src/api/planes.js` | `obtenerPlanes()` (ejemplos hasta que exista `GET /planes`). |
 | `src/paginas/` | Una página por archivo, con su hoja de estilos. |
 | `src/datos/` | Datos de ejemplo sintéticos. |
 

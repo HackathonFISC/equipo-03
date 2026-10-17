@@ -82,6 +82,18 @@ Un reply a la pregunta se entrega a `POST /aclaraciones/respuestas` y el bot con
 el resultado. Si es `no_encontrada`, el reply no era a una pregunta y sigue como reporte nuevo.
 El plazo de 30 minutos y el cambio a `espera_revision` los controla la RPC de Emilia.
 
+## Envío de avisos aprobados (V4)
+
+`bandeja.py`, si `AVISOS_ACTIVOS` es `True` (hoy `False`: requiere la migración 0009):
+
+1. Cada 7 segundos pide a la API el siguiente aviso vigente (hasta 10 por ciclo).
+2. Arma el mensaje con `plantillas.py` a partir de lugar, litros, ventana y versión. El bot no
+   envía texto libre de un modelo. La hora es de Panamá (UTC-5 fijo) y el mensaje dice que es una
+   estimación del plan y que puede cambiar.
+3. Lo envía y registra `enviado` con el ID del mensaje, `fallido` si Telegram lo rechazó, o `incierto`
+   si hubo tiempo agotado o fallo de red. Del error solo se guarda el tipo.
+4. Nunca reenvía. Si no logra registrar el resultado, la reserva vence y la base lo deja `incierto`.
+
 ## Interruptor
 
 `ACLARACIONES_ACTIVAS` en `adaptador.py`, en `True`: la migración `0006` está aplicada y la API
@@ -108,7 +120,10 @@ Con API y Telegram simulados (`httpx.MockTransport`):
 - `tests/test_bot_aclaraciones.py`: envío, clasificación de errores de Telegram, sin
   reenvío, límite por ciclo, replies, ubicaciones e interruptor apagado.
 - `tests/test_bot_botones_grupos.py`: filtro de grupos, menciones y botones.
+- `tests/test_bot_avisos.py`: plantilla (cantidad, hora de Panamá, versión), envío, fallido e
+  incierto sin reenvío, límite por ciclo y avisos apagados por defecto.
 
 ## Pendiente
 
-- V4: `plantillas.py` (avisos de sector, cantidad y ventana) y envío de avisos aprobados.
+- V4: activar `AVISOS_ACTIVOS` cuando se aplique la migración 0009 y haya un plan aprobado.
+  Envío de un aviso real a un chat de prueba: sin probar contra Telegram.

@@ -55,3 +55,17 @@ posibles eventos duplicados históricos.
 Verificación local: cinco smoke SQL en PostgreSQL temporal, incluyendo prueba
 que falla con 0007 y pasa con 0008, permisos de backend y rechazo de anon y
 authenticated. Codex no ha aplicado esta migración a Supabase real.
+
+## Bandeja de salida (0009, Noel)
+
+Aplicar una vez `0009_bandeja_salida.sql`, completo, después de 0001 (no depende de 0004 a 0008).
+Después ejecutar `../tests/0009_bandeja_salida_smoke.sql`, completo: usa datos sintéticos, inserta un
+usuario temporal en `auth.users` y termina en ROLLBACK. Exige un entorno sin avisos previos.
+
+Añade tres columnas de reserva a `avisos` y cuatro funciones, ejecutables solo por service_role:
+`ra_reservar_aviso`, `ra_registrar_envio_aviso`, `ra_revisar_avisos` y `ra_traza_aviso`.
+La reserva cancela con motivo un aviso que dejó de ser vigente; una reserva vencida lo deja `incierto`
+y nunca se reenvía solo. No crea avisos, no aprueba planes y no sustituye a 0002 ni a 0003.
+
+Verificación local: PostgreSQL 16 con las migraciones 0001 a 0008 aplicadas antes; smoke completo
+aprobado. Esa prueba no usa Supabase ni concurrencia real de varios procesos. Sin aplicar a Supabase.

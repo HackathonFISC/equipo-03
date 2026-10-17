@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import Necesidades from './paginas/Necesidades.jsx'
+import Plan from './paginas/Plan.jsx'
 import Reportes from './paginas/Reportes.jsx'
 import './App.css'
 
 const PAGINAS = [
   { id: 'reportes', nombre: 'Reportes', Componente: Reportes },
   { id: 'necesidades', nombre: 'Necesidades', Componente: Necesidades },
+  { id: 'plan', nombre: 'Plan', Componente: Plan },
 ]
 
-// La página activa vive en la dirección (#reportes, #necesidades) para que recargar no la pierda.
+// La página activa vive en la dirección (#reportes, #necesidades, #plan) para que recargar no la pierda.
 function paginaDeLaDireccion() {
   const id = window.location.hash.replace('#', '')
   return PAGINAS.some((p) => p.id === id) ? id : 'reportes'

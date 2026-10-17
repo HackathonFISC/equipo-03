@@ -38,7 +38,7 @@ from telegram.ext import (
     filters,
 )
 
-from bot import adaptador
+from bot import adaptador, bandeja
 from bot.adaptador import MENSAJES_RESULTADO, ciclo_envio, entregar_respuesta, es_reply_al_bot
 
 logger = logging.getLogger("bot")
@@ -289,6 +289,12 @@ async def iniciar_envio(app: Application) -> None:
     except TelegramError as error:
         # El menú es una ayuda visual: si falla, el bot sigue funcionando.
         logger.warning("No se pudo publicar el menú de comandos: %s", type(error).__name__)
+    if bandeja.AVISOS_ACTIVOS:
+        app.bot_data["tarea_avisos"] = asyncio.create_task(
+            bandeja.ciclo_avisos(app.bot, app.bot_data["cliente_api"], app.bot_data["trabajador_id"])
+        )
+    else:
+        logger.info("Avisos apagados: no se consultan avisos pendientes.")
     if not adaptador.ACLARACIONES_ACTIVAS:
         logger.info("Aclaraciones apagadas: no se consultan preguntas pendientes.")
         return
@@ -298,13 +304,14 @@ async def iniciar_envio(app: Application) -> None:
 
 
 async def detener_envio(app: Application) -> None:
-    tarea = app.bot_data.get("tarea_envio")
-    if tarea:
-        tarea.cancel()
-        try:
-            await tarea
-        except asyncio.CancelledError:
-            pass
+    for clave in ("tarea_envio", "tarea_avisos"):
+        tarea = app.bot_data.get(clave)
+        if tarea:
+            tarea.cancel()
+            try:
+                await tarea
+            except asyncio.CancelledError:
+                pass
 
 
 async def cerrar_cliente(app: Application) -> None:
