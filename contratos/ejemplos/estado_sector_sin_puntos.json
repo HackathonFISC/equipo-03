@@ -1,0 +1,16 @@
+{
+  "esquema_version": "1.0",
+  "consultado_en": "2026-10-16T18:05:00-05:00",
+  "origen": "sintetico",
+  "sector": {
+    "sector_id": "973bc96c-73f6-578e-9873-be50e57cb2eb",
+    "nombre": "Sector sintético de consulta V4",
+    "distrito": "Arraiján",
+    "corregimiento": null,
+    "origen": "sintetico",
+    "estado_informacion": "necesidad_conocida"
+  },
+  "estado": "sin_plan_vigente",
+  "plan_vigente": null,
+  "puntos": []
+}

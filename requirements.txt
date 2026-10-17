@@ -8,6 +8,7 @@
 fastapi
 uvicorn[standard]
 supabase
+python-dotenv
 python-telegram-bot
 
 # Cálculo y pruebas de José.

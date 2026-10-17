@@ -8,3 +8,7 @@ __all__ = [
     "AvisoComunidad", "EvaluacionNecesidades", "ExtraccionReporteLLM",
     "IncidenteConsolidado", "PropuestaDistribucion", "ReporteInterpretado",
 ]
+
+from .consultas import EstadoSector, SolicitudEstadoSector
+
+__all__ += ["EstadoSector", "SolicitudEstadoSector"]

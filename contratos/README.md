@@ -27,12 +27,14 @@ Puedes regenerar los JSON Schema con `python -m contratos.exportar_esquemas`.
 | Archivo | Para qué sirve |
 | --- | --- |
 | `modelos.py` | Cinco contratos principales, extracción del LLM y objetos auxiliares tipados |
+| `consultas.py` | Solicitud y respuesta de `estado_sector` V4; firma de lectura que implementa Noel |
+| `ESTADO_SECTOR.md` | Semántica, responsabilidades y decisiones confirmadas para la consulta |
 | `estados.py` | Estados y enumeraciones serializados en español |
 | `solicitudes.py` | Entradas y salidas de las herramientas de cálculo |
 | `funciones.py` | Firmas de las cuatro funciones puras que implementa José |
 | `errores.py` | Códigos y respuesta estructurada de error |
-| `ejemplos/` | 24 fixtures sintéticos y manifiesto que identifica el modelo de cada JSON |
-| `tests/` | 43 pruebas de contratos, ejecutables con unittest o pytest |
+| `ejemplos/` | 28 fixtures sintéticos y manifiesto que identifica el modelo de cada JSON |
+| `tests/` | 63 pruebas de contratos, ejecutables con unittest o pytest |
 | `esquemas/` | JSON Schema para revisar e integrar con la API y frontend de Noel |
 | `POLITICA_PRIORIDAD.md` | Política de demo diseñada y decisiones aprobadas por el usuario |
 
@@ -144,3 +146,18 @@ Resultado de verificación local: **43 pruebas de contratos aprobadas** y 24 eje
 - Documentación de Pydantic para modelos y serialización: https://pydantic.dev/docs/validation/latest/concepts/models/
 
 Los puntos reales, dotación, capacidades, horarios, descarga y despliegue siguen siendo decisiones del escenario. Los tipos de los contratos permiten acordarlos sin renombrar campos ni tomar por reales los fixtures.
+
+## Consulta de estado del sector (ampliación V4)
+
+`SolicitudEstadoSector` y `EstadoSector` están en `contratos/consultas.py` y
+también se exportan desde `contratos`. Noel implementa la firma
+`estado_sector(entrada: SolicitudEstadoSector) -> EstadoSector`.
+Solo se muestran planes aprobados y válidos y todos los puntos activos del
+sector. Sin asignación: litros y ventana en `null`, con motivo. Sin plan
+vigente: no se rescatan asignaciones históricas.
+
+Ver [especificación de estado_sector](ESTADO_SECTOR.md) para selección de
+vigencia, proyección, ejemplos, origen y revisión pendiente de Noel/José.
+La consulta no crea ejecuciones de agentes ni sustituye las comprobaciones
+de vigencia y permisos de la API. Es una ampliación aditiva: conserva las
+interfaces existentes y agrega cuatro fixtures y dos JSON Schema raíz.

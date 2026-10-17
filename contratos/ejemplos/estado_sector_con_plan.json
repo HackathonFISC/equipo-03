@@ -1,0 +1,53 @@
+{
+  "esquema_version": "1.0",
+  "consultado_en": "2026-10-16T18:05:00-05:00",
+  "origen": "sintetico",
+  "sector": {
+    "sector_id": "973bc96c-73f6-578e-9873-be50e57cb2eb",
+    "nombre": "Sector sintético de consulta V4",
+    "distrito": "Arraiján",
+    "corregimiento": null,
+    "origen": "sintetico",
+    "estado_informacion": "necesidad_conocida"
+  },
+  "estado": "con_plan_vigente",
+  "plan_vigente": {
+    "plan_id": "46bf9c62-595d-5ae4-9879-d29191f8de05",
+    "version": 1,
+    "ejecucion_id": "efdae7d9-3aac-5cd8-ab6d-fdba9e663f4e",
+    "datos_version": "escenario-1.0",
+    "politica_version": "demo-1.0",
+    "origen": "sintetico",
+    "estado": "aprobado",
+    "verificado": true,
+    "aprobacion_id": "a54b2a56-c748-5c1d-ab29-3f7052b9dc00",
+    "aprobado_en": "2026-10-16T18:00:00-05:00"
+  },
+  "puntos": [
+    {
+      "punto_atencion_id": "e42009e1-0718-57dd-bacf-6c0a8d6a8521",
+      "sector_id": "973bc96c-73f6-578e-9873-be50e57cb2eb",
+      "nombre": "P1 SINTÉTICO no validado como lugar real",
+      "origen": "sintetico",
+      "estado": "programada",
+      "parada_id": "82fa1ca5-5d56-50f2-b43f-26d5aeceada6",
+      "litros_asignados": 2500.0,
+      "ventana_estimada": {
+        "inicio": "2026-10-17T08:10:00-05:00",
+        "fin": "2026-10-17T08:20:00-05:00"
+      },
+      "motivo_sin_asignacion": null
+    },
+    {
+      "punto_atencion_id": "a2b617a0-3651-52f0-a313-9f27c552a32e",
+      "sector_id": "973bc96c-73f6-578e-9873-be50e57cb2eb",
+      "nombre": "Punto sintético adicional sin asignación",
+      "origen": "sintetico",
+      "estado": "sin_asignacion",
+      "parada_id": null,
+      "litros_asignados": null,
+      "ventana_estimada": null,
+      "motivo_sin_asignacion": "Punto activo sin parada en la versión vigente."
+    }
+  ]
+}

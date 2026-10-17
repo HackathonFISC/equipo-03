@@ -22,5 +22,9 @@
   "informe_verificacion.json": "contratos.modelos:InformeVerificacion",
   "solicitud_aclaracion.json": "contratos.modelos:SolicitudAclaracion",
   "evento_traza.json": "contratos.modelos:EventoTraza",
-  "error_dominio.json": "contratos.errores:ErrorDominio"
+  "error_dominio.json": "contratos.errores:ErrorDominio",
+  "solicitud_estado_sector.json": "contratos.consultas:SolicitudEstadoSector",
+  "estado_sector_con_plan.json": "contratos.consultas:EstadoSector",
+  "estado_sector_sin_plan.json": "contratos.consultas:EstadoSector",
+  "estado_sector_sin_puntos.json": "contratos.consultas:EstadoSector"
 }
