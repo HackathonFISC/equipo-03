@@ -1,8 +1,6 @@
-import { useRef, useState } from 'react'
-import { configurarDestinoEnsayo, estadoSector, seleccionarPlanSector } from '../api/sectores.js'
+import { useEffect, useRef, useState } from 'react'
+import { configurarDestinoEnsayo, estadoSector, listarDestinos, listarSectores, seleccionarPlanSector } from '../api/sectores.js'
 import './ComunicacionSector.css'
-
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 const ESTADOS_SECTOR = {
   sin_plan_vigente: 'Sin plan vigente',
@@ -25,7 +23,7 @@ const ESTADOS_PUNTO = {
   asignado: 'Asignado',
 }
 
-function Sector({ planes }) {
+function Sector({ planes, sectores }) {
   const aprobados = planes.filter((p) => p.estado === 'aprobado')
   const [sectorId, setSectorId] = useState('')
   // Cada respuesta guarda el sector que se pidió: solo se muestra si sigue siendo el que está escrito.
@@ -37,7 +35,7 @@ function Sector({ planes }) {
   const sectorActual = useRef('')
 
   const idSector = sectorId.trim()
-  const sectorValido = UUID.test(idSector)
+  const sectorValido = idSector !== ''
   const estado = consulta?.sectorId === idSector ? consulta.datos : null
   const aviso = mensaje?.sectorId === idSector ? mensaje : null
   const plan = aprobados.find((p) => `${p.plan_id}:${p.version}` === eleccion)
@@ -89,18 +87,24 @@ function Sector({ planes }) {
     <form className="com-bloque" onSubmit={elegir}>
       <h3>Plan que se comunica por sector</h3>
       <p className="aprob-suave">
-        Comunicación avisa a la comunidad solo con el plan aprobado que elijas aquí. Pega el identificador del sector.
+        Comunicación avisa a la comunidad solo con el plan aprobado que elijas aquí.
       </p>
       <div className="com-fila">
         <label>
           Sector
-          <input value={sectorId} onChange={(e) => cambiarSector(e.target.value)} placeholder="Identificador del sector" spellCheck={false} />
+          <select value={sectorId} onChange={(e) => cambiarSector(e.target.value)} disabled={sectores.length === 0}>
+            <option value="">{sectores.length === 0 ? 'No hay sectores en el catálogo' : 'Elige un sector'}</option>
+            {sectores.map((s) => (
+              <option key={s.sector_id} value={s.sector_id}>
+                {s.nombre} · {s.distrito} · {ORIGENES[s.origen] ?? s.origen}
+              </option>
+            ))}
+          </select>
         </label>
         <button type="button" className="aprob-secundario" disabled={!sectorValido || trabajando} onClick={consultar}>
           Ver estado
         </button>
       </div>
-      {idSector !== '' && !sectorValido && <p className="aprob-suave">El identificador tiene formato de UUID.</p>}
       {estado && (
         <div className="com-estado" role="status">
           <p>
@@ -153,22 +157,29 @@ function Sector({ planes }) {
   )
 }
 
-function Destino() {
+function estadoEnsayo(destino) {
+  if (destino.habilitado_ensayo === null) return 'ensayo sin migración 0012'
+  return destino.habilitado_ensayo ? 'ensayo habilitado' : 'ensayo apagado'
+}
+
+function Destino({ destinos, alCambiar }) {
   const [destinoId, setDestinoId] = useState('')
   const [motivo, setMotivo] = useState('')
   const [trabajando, setTrabajando] = useState(false)
   const [error, setError] = useState(null)
   const [resultado, setResultado] = useState(null)
 
-  const valido = UUID.test(destinoId.trim()) && motivo.trim() !== ''
+  const destino = destinos.find((d) => d.destino_id === destinoId)
+  const valido = destino !== undefined && destino.autorizado && motivo.trim() !== ''
 
   async function cambiar(habilitado) {
     setTrabajando(true)
     setError(null)
     setResultado(null)
     try {
-      const r = await configurarDestinoEnsayo(destinoId.trim(), habilitado, motivo.trim())
+      const r = await configurarDestinoEnsayo(destinoId, habilitado, motivo.trim())
       setResultado(r.habilitado ? 'Destino de ensayo habilitado.' : 'Destino de ensayo deshabilitado.')
+      alCambiar()
     } catch (e) {
       setError(e.message)
     } finally {
@@ -181,11 +192,22 @@ function Destino() {
       <h3>Destino de ensayo en Telegram</h3>
       <p className="aprob-suave">
         Un destino habilitado recibe planes sintéticos para ensayar el aviso. Solo funciona con chats ya autorizados.
+        Por seguridad solo se muestra el final del identificador del chat.
       </p>
       <label>
         Destino
-        <input value={destinoId} onChange={(e) => { setDestinoId(e.target.value); setResultado(null) }} placeholder="Identificador del destino" spellCheck={false} />
+        <select value={destinoId} onChange={(e) => { setDestinoId(e.target.value); setResultado(null) }} disabled={destinos.length === 0}>
+          <option value="">{destinos.length === 0 ? 'No hay destinos de Telegram' : 'Elige un destino'}</option>
+          {destinos.map((d) => (
+            <option key={d.destino_id} value={d.destino_id}>
+              Telegram {d.referencia} · {d.autorizado ? 'autorizado' : 'sin autorizar'} · {estadoEnsayo(d)}
+            </option>
+          ))}
+        </select>
       </label>
+      {destino && !destino.autorizado && (
+        <p className="aprob-aviso" role="status">Este destino aún no está autorizado: no se puede habilitar para ensayos.</p>
+      )}
       <label>
         Motivo
         <textarea rows={2} maxLength={4000} value={motivo} onChange={(e) => setMotivo(e.target.value)} />
@@ -201,14 +223,43 @@ function Destino() {
 }
 
 function ComunicacionSector({ planes }) {
+  const [listas, setListas] = useState(null)
+  const [errorListas, setErrorListas] = useState(null)
+  const [recarga, setRecarga] = useState(0)
+
+  useEffect(() => {
+    let activo = true
+    Promise.all([listarSectores(), listarDestinos()])
+      .then(([sectores, destinos]) => {
+        if (!activo) return
+        setListas({ sectores, destinos })
+        setErrorListas(null)
+      })
+      .catch((e) => {
+        if (activo) setErrorListas(e.message)
+      })
+    return () => {
+      activo = false
+    }
+  }, [recarga])
+
   return (
     <section className="com" aria-labelledby="com-titulo">
       <h2 id="com-titulo">Comunicación a la comunidad</h2>
       <p className="aprob-suave">Después de aprobar, decide qué plan se avisa en cada sector y dónde se ensaya.</p>
-      <div className="com-columnas">
-        <Sector planes={planes} />
-        <Destino />
-      </div>
+      {errorListas && (
+        <p className="aprob-error" role="alert">
+          No se pudieron cargar los sectores y destinos: {errorListas}{' '}
+          <button type="button" className="aprob-secundario" onClick={() => setRecarga((n) => n + 1)}>Reintentar</button>
+        </p>
+      )}
+      {listas === null && !errorListas && <p className="aprob-suave">Cargando sectores y destinos…</p>}
+      {listas && (
+        <div className="com-columnas">
+          <Sector planes={planes} sectores={listas.sectores} />
+          <Destino destinos={listas.destinos} alCambiar={() => setRecarga((n) => n + 1)} />
+        </div>
+      )}
     </section>
   )
 }

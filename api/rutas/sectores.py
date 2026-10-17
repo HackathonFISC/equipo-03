@@ -7,10 +7,17 @@ import httpx
 from fastapi import APIRouter, Depends
 from postgrest.exceptions import APIError
 
-from api.auth import UsuarioAutenticado, coordinador_actual, sesion_o_bot
+from api.auth import UsuarioAutenticado, coordinador_actual, sesion_o_bot, usuario_autenticado
 from api.dependencias import obtener_db
 from api.errores_http import ErrorApi
-from api.esquemas import DestinoEnsayo, ResultadoDestinoEnsayo, ResultadoSeleccion, SeleccionarPlanSector
+from api.esquemas import (
+    DestinoEnsayo,
+    DestinoPanel,
+    ResultadoDestinoEnsayo,
+    ResultadoSeleccion,
+    SectorPanel,
+    SeleccionarPlanSector,
+)
 from api.servicios import sectores
 from contratos.consultas import EstadoSector
 from contratos.errores import CodigoError, ErrorDominio
@@ -37,6 +44,32 @@ def _proveedor_no_disponible(error: Exception) -> ErrorApi:
         "No se pudo completar la operación con la base de datos. Inténtalo de nuevo.",
         recuperable=True,
     )
+
+
+@router.get(
+    "/sectores",
+    response_model=list[SectorPanel],
+    dependencies=[Depends(usuario_autenticado)],
+    summary="Sectores del catálogo, para elegirlos en el panel (sesión válida)",
+)
+def listar_sectores(db=Depends(obtener_db)):
+    try:
+        return sectores.listar_sectores(db)
+    except ERRORES_INFRAESTRUCTURA as error:
+        raise _proveedor_no_disponible(error) from None
+
+
+@router.get(
+    "/destinos",
+    response_model=list[DestinoPanel],
+    dependencies=[Depends(coordinador_actual)],
+    summary="Destinos de Telegram con su estado de ensayo; el identificador sale truncado (coordinador activo)",
+)
+def listar_destinos(db=Depends(obtener_db)):
+    try:
+        return sectores.listar_destinos(db)
+    except ERRORES_INFRAESTRUCTURA as error:
+        raise _proveedor_no_disponible(error) from None
 
 
 @router.get(

@@ -18,3 +18,7 @@ export const configurarDestinoEnsayo = (destinoId, habilitado, motivo) =>
     metodo: 'PUT',
     cuerpo: { habilitado, motivo },
   })
+
+// Catálogo de sectores y destinos de Telegram para elegirlos sin pegar identificadores.
+export const listarSectores = () => llamarConSesion('/sectores')
+export const listarDestinos = () => llamarConSesion('/destinos')

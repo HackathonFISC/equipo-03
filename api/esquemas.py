@@ -308,3 +308,22 @@ class DestinoEnsayo(Peticion):
 class ResultadoDestinoEnsayo(BaseModel):
     destino_id: UUID
     habilitado: bool
+
+
+class SectorPanel(BaseModel):
+    """Un sector del catálogo, para elegirlo en el panel sin pegar su identificador."""
+
+    sector_id: UUID
+    nombre: str
+    distrito: str
+    corregimiento: str | None = None
+    origen: Literal["real", "estimado", "sintetico"]
+
+
+class DestinoPanel(BaseModel):
+    """Un destino de Telegram. Solo se muestra el final de su identificador; el completo no sale de la API."""
+
+    destino_id: UUID
+    referencia: str
+    autorizado: bool
+    habilitado_ensayo: bool | None = None  # None: la migración 0012 aún no está aplicada

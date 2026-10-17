@@ -72,6 +72,12 @@ La barra superior cambia de página; la página activa queda en la dirección
   (`datos_version`, `politica_version`, bloqueos reconocidos, motivo); **Rechazar** solo pide motivo.
   Quién decide sale del token en la API, nunca de este formulario. Otra cuenta solo puede ver.
 - Un plan invalidado (cambió una entrada tras aprobarlo) se marca y no tiene acciones.
+- Al final, solo para coordinadores, la sección **Comunicación a la comunidad** (`ComunicacionSector.jsx`):
+  elegir de una lista el sector y el plan aprobado que se avisa en él (`POST /sectores/{id}/plan-vigente`), con el
+  estado del sector (`GET /sectores/{id}/estado`) y el origen (real, estimado, sintético) a la vista; y habilitar o
+  deshabilitar un destino de Telegram de ensayo (`PUT /destinos/{id}/ensayo`). Las listas salen de `GET /sectores` y
+  `GET /destinos`; del chat solo se muestra el final del identificador. Cambiar de sector mientras se consulta no
+  mezcla datos: cada respuesta se muestra solo para el sector que se pidió.
 - Si el token vence, vuelve al formulario de acceso con un aviso. No hay renovación automática.
 - No se ha probado contra un Supabase real: necesita un usuario en Auth y su fila de coordinador activo
   en `usuarios_operativos`.
