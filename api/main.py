@@ -4,7 +4,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.errores_http import ErrorApi, respuesta_error
-from api.rutas import aclaraciones, avisos, ejecuciones, eventos, incidentes, planes, politicas, priorizacion, reportes, sectores, sesion
+from api.rutas import audio, aclaraciones, avisos, ejecuciones, eventos, incidentes, planes, politicas, priorizacion, reportes, sectores, sesion
 from contratos.errores import CodigoError
 from orquestador.servicio import ciclo_vida_agentes
 
@@ -53,6 +53,7 @@ app.include_router(eventos.router)
 app.include_router(priorizacion.router)
 app.include_router(politicas.router)
 app.include_router(aclaraciones.router)
+app.include_router(audio.router)
 app.include_router(avisos.router)
 app.include_router(incidentes.router)
 app.include_router(sesion.router)

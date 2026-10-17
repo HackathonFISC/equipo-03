@@ -85,6 +85,7 @@ class EntradaReporte(Contrato):
     remitente_ref: UUID
     modalidad: Literal["texto", "voz", "foto", "ubicacion"]
     texto: Texto | None = None
+    fuente_texto: Literal["escrito", "transcripcion_audio"] = "escrito"
     adjunto_id: UUID | None = None
     ubicacion_compartida: Ubicacion | None = None
 

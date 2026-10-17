@@ -261,3 +261,8 @@ apuntando a un package.json temporal que incluya @electric-sql/pglite.
 ### 0019 — Matriz vial de planificación
 
 Después de 0018. `ra_actualizar_matriz_planificacion` permite al trabajador reemplazar solo la matriz antes del cálculo, verificando reserva, snapshot, nodos y tiempos. No altera planes cerrados ni cantidades. RPC exclusiva de service_role. Integración efímera: RA_PROBAR_RUTAS_GOOGLE=1 en `../tests/0016_integracion_local.mjs`.
+
+
+### 0020 — Transcripciones de audio
+
+Después de 0019. Agrega reportes.fuente_texto y aclaraciones.respuesta_fuente_texto, con valor previo escrito. La RPC ra_aceptar_respuesta_audio conserva controles de autor, pregunta, plazo e idempotencia y marca la procedencia en la misma transacción. Solo service_role puede ejecutarla. No guarda grabaciones ni cambia permisos de distribución. Prueba local: `../tests/0020_integracion_local.mjs`.

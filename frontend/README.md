@@ -254,3 +254,6 @@ Las tres imágenes nuevas adjuntas no se incorporaron porque su descarga falló.
 ### Rutas Google en Plan
 
 La página Plan permite previsualizar un recorrido de hasta seis reportes localizados desde un depósito activo. Los planes de cisternas tienen navegación completa y por tramos con retorno. Activación: [Rutas Google](../docs/RUTAS_GOOGLE.md).
+
+
+Reportes distingue las transcripciones de audio mediante una etiqueta en el detalle del mensaje. Requiere API y migración 0020; ver [guía de audio](../docs/AUDIO_TELEGRAM.md).

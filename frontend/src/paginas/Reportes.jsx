@@ -207,6 +207,9 @@ function FilaReporte({ item, alQuitar }) {
         </summary>
 
         <div className="ficha">
+          {registrado.entrada.fuente_texto === 'transcripcion_audio' && (
+            <p className="ficha-resumen">Transcripción automática de un mensaje de audio.</p>
+          )}
           {ubicacion && (
             <div className="evidencia">
               <h3>{localizacion ? 'Ubicación resuelta automáticamente' : 'Ubicación recibida por Telegram'}</h3>
