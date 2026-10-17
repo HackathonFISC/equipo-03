@@ -4,14 +4,12 @@
 
 0001_esquema.sql, 0002_politicas_rls.sql, 0003_aprobacion.sql
 
-
 Emilia mantiene también `0004_identidad_reportes.sql`: referencia de remitente
 con canal y deduplicación Telegram independiente del remitente. Requiere 0001;
 0002 y 0003 continúan reservadas a Noel y no son dependencias de 0004.
 Coordinar el orden/registro con Noel antes de usar un ejecutor de migraciones.
 Ver `../IDENTIDAD_REPORTES.md` y `../tests/0004_identidad_reportes_smoke.sql`.
 0004 probada localmente; Emilia confirmó su aplicación y smoke correctos en Supabase desde el SQL Editor. No volver a aplicar si ya está instalada.
-
 
 Emilia mantiene `0005_ingesta_transaccional.sql` para V1. Crea las RPC
 `ra_tomar_ingesta` y `ra_finalizar_ingesta`; solo service_role puede ejecutarlas.
@@ -23,7 +21,6 @@ no aplicada a Supabase real por Codex. Ver `../../agentes/INGESTA_V1.md`.
 ## V2 de Emilia
 
 Aplicar una vez 0006_aclaraciones_v2.sql y después 0007_territorial_orquestador_v2.sql; requieren 0001/0004/0005. Ejecutar sus smoke completos. No habilitar destino_origen_id en la API hasta aplicar 0006. [Guía](../../docs/V2_EMILIA.md).
-
 
 ## Idempotencia de lotes V2 (0008)
 
@@ -66,10 +63,17 @@ varios coordinadores activos; el alta es administrativa y separada de la migraci
 Guía, firmas, comandos y límites en [V3_EMILIA](../../docs/V3_EMILIA.md).
 Probada en PostgreSQL temporal; 0009 no aplicada a Supabase real por Codex.
 
-## Bandeja de salida (0010, Noel)
+## Ensayos aislados para cerrar V2 (0010)
 
-Aplicar una vez `0010_bandeja_salida.sql`, completo, después de 0001 (no depende de 0004 a 0009).
-Después ejecutar `../tests/0010_bandeja_salida_smoke.sql`, completo: usa datos sintéticos, inserta un
+`0010_ensayos_priorizacion_v2.sql` requiere 0008 y catálogo, no 0009. Conserva las
+firmas V2 y aísla los casos calculable/insuficiente sin cambiar Telegram. Ejecutar
+su smoke completo con ROLLBACK. No aplicada por Codex a Supabase real. Guía y
+consulta para Noel: [ENSAYO_PRIORIZACION_V2](../../docs/ENSAYO_PRIORIZACION_V2.md).
+
+## Bandeja de salida (0011, Noel)
+
+Aplicar una vez `0011_bandeja_salida.sql`, completo, después de 0001 (no depende de 0004 a 0010).
+Después ejecutar `../tests/0011_bandeja_salida_smoke.sql`, completo: usa datos sintéticos, inserta un
 usuario temporal en `auth.users` y termina en ROLLBACK. Exige un entorno sin avisos previos.
 
 Añade tres columnas de reserva a `avisos` y cuatro funciones, ejecutables solo por service_role:
@@ -77,5 +81,5 @@ Añade tres columnas de reserva a `avisos` y cuatro funciones, ejecutables solo 
 La reserva cancela con motivo un aviso que dejó de ser vigente; una reserva vencida lo deja `incierto`
 y nunca se reenvía solo. No crea avisos, no aprueba planes y no sustituye a 0002 ni a 0003.
 
-Verificación local: PostgreSQL 16 con las migraciones 0001 a 0008 aplicadas antes (sin 0009 de Emilia); smoke completo
+Verificación local: PostgreSQL 16 con las migraciones 0001 a 0008 aplicadas antes (sin 0009 ni 0010 de Emilia); smoke completo
 aprobado. Esa prueba no usa Supabase ni concurrencia real de varios procesos. Sin aplicar a Supabase.
