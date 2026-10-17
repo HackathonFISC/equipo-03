@@ -30,22 +30,24 @@ class ResultadoIngesta:
     siguiente_etapa: str
 
 
-def interpretar_reporte(reporte: ReporteRegistrado, extractor: Extractor, *, intento_ref: str = 'manual') -> ResultadoIngesta:
+def interpretar_reporte(reporte: ReporteRegistrado, extractor: Extractor, *, intento_ref: str = 'manual', aclaraciones=()) -> ResultadoIngesta:
     """No persiste ni envía mensajes. Solo V1 texto; IDs y origen del backend."""
     reporte = ReporteRegistrado.model_validate(reporte.model_dump(mode='json'))
     if reporte.entrada.modalidad != 'texto':
         raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Ingesta V1 admite solo reportes de texto.')
-    texto = reporte.entrada.texto
+    fuentes = [reporte.entrada.texto]
+    fuentes += [a['respuesta_texto'] for a in aclaraciones if a.get('respuesta_texto')]
+    texto = '\n\nRespuesta de aclaración:\n'.join(fuentes)
     inicio = time.monotonic()
     try:
         propuesta = extractor.extraer(texto)
         salida = ExtraccionReporteLLM.model_validate(propuesta.model_dump(mode='json'))
     except (ValidationError, AttributeError, TypeError):
         raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Extracción incompatible con el contrato.') from None
-    if any(fragmento not in texto for fragmento in salida.evidencia_textual):
+    if any(not any(fragmento in fuente for fuente in fuentes) for fragmento in salida.evidencia_textual):
         raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'La evidencia citada no pertenece al texto original.')
     for valor in (salida.ubicacion_declarada, salida.campos.institucion_declarada, salida.campos.vulnerabilidad_declarada):
-        if valor is not None and valor not in texto:
+        if valor is not None and not any(valor in fuente for fuente in fuentes):
             raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Se declaró un dato textual que no está en el reporte.')
     # Guardia V1 para cantidades expresadas con dígitos. Se admiten horas y días;
     # expresiones no comprobables aquí deben quedar desconocidas, no adivinarse.
@@ -67,11 +69,25 @@ def interpretar_reporte(reporte: ReporteRegistrado, extractor: Extractor, *, int
         descripcion='Texto original persistido; las citas de la extracción se cotejaron literalmente.',
         campos_respaldados=['entrada.texto'],
     )
+    evidencias = [evidencia]
+    ubicacion_compartida = reporte.entrada.ubicacion_compartida
+    for aclaracion in aclaraciones:
+        tipo = 'ubicacion' if aclaracion.get('respuesta_ubicacion') else 'texto'
+        evidencias.append(Evidencia(evidencia_id=uuid5(reporte.reporte_id, 'aclaracion:' + str(aclaracion['aclaracion_id'])),
+            reporte_id=reporte.reporte_id, tipo=tipo, referencia='aclaraciones/' + str(aclaracion['aclaracion_id']),
+            descripcion='Respuesta aceptada con identidad y pregunta verificadas; se conserva separada del texto original.',
+            campos_respaldados=['ubicacion_compartida' if tipo == 'ubicacion' else 'interpretacion']))
+        if tipo == 'ubicacion':
+            from contratos.modelos import Ubicacion
+            ubicacion_compartida = Ubicacion.model_validate(aclaracion['respuesta_ubicacion'])
+    if ubicacion_compartida is not None and salida.requiere_aclaracion and salida.faltantes and all(
+            re.search(r'ubicaci|lugar|direcci|sector|punto', f, re.I) for f in salida.faltantes):
+        salida = salida.model_copy(update={'requiere_aclaracion': False, 'faltantes': []})
     interpretado = ReporteInterpretado(
         esquema_version=reporte.esquema_version, ejecucion_id=reporte.ejecucion_id,
         creado_en=datetime.now(timezone.utc), origen=reporte.origen, reporte_id=reporte.reporte_id,
-        modalidad='texto', interpretacion=salida, evidencias=[evidencia],
-        ubicacion_compartida=reporte.entrada.ubicacion_compartida,
+        modalidad='texto', interpretacion=salida, evidencias=evidencias,
+        ubicacion_compartida=ubicacion_compartida,
     )
     if salida.fuera_de_alcance:
         estado, etapa, decision = EstadoEjecucion.COMPLETADA, 'terminada', 'Cerrar entrada fuera del alcance de agua.'
@@ -126,7 +142,7 @@ def procesar_ejecucion(ejecucion_id: UUID, persistencia: PersistenciaIngesta, ex
                     creado_en=datetime.now(timezone.utc), origen=r['origen'])
     try:
         reporte = reconstruir_reporte(filas)
-        resultado = interpretar_reporte(reporte, extractor, intento_ref=trabajador_id)
+        resultado = interpretar_reporte(reporte, extractor, intento_ref=trabajador_id, aclaraciones=filas.get('aclaraciones', []))
     except (ErrorIngesta, ValidationError) as error:
         fallo = error if isinstance(error, ErrorIngesta) else ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Reporte persistido incompatible con el contrato.')
         detalle = ErrorDominio(**contexto, codigo=fallo.codigo, mensaje=str(fallo), recuperable=fallo.recuperable, campos=[])

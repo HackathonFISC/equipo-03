@@ -42,3 +42,32 @@ Límites: aceptar el contrato no activa la política `demo-1.0`, no confirma los
 - Aceptado sin cambios: contrato `estado_sector` (`ESTADO_SECTOR.md`); clave de idempotencia de avisos con `punto_atencion_id`; identidad de remitentes con `mensaje_externo_id = "<chat_id>:<message_id>"` (`supabase/IDENTIDAD_REPORTES.md`).
 - Aceptado como propuesta de Noel: todos los reportes de V1 se guardan con origen `"sintetico"`; errores de dominio a HTTP: 422 (`contrato_invalido`, `datos_insuficientes`, `ubicacion_ambigua`, `fuera_de_area`), 403 (`sin_permiso`), 409 (`politica_no_activa`, `version_obsoleta`, `plan_no_verificado`, `cobertura_critica_pendiente`), 503 (`proveedor_no_disponible`), 502 (`envio_incierto`), con el `ErrorDominio` completo como cuerpo.
 - Python: sin impedimento declarado; no se fija una versión obligatoria.
+
+## D004 Alcance de geografía de la demo
+
+- Fecha: 2026-10-16 22:08 EST.
+- Decisión del usuario: confirmó «seis puntos totales, tres por distrito» para
+  Arraiján y La Chorrera, autorizando preparar catálogo y semilla.
+- Se conservan dos cisternas y un depósito. No se amplía el número máximo de
+  puntos por solicitud de rutas ni se modifican contratos.
+- Catálogo documental inicial: oeste-1.0, con seis instalaciones candidatas y
+  nuevas identidades estables. Fuente AIG enero 2022 con coordenadas, páginas y PA.
+- El alcance está aprobado; acceso, lugar de descarga, autorización, precisión,
+  capacidad de recepción y demanda operativa siguen pendientes. Las referencias
+  geográficas no se presentan como un ranking IDAAN ni como necesidad actual.
+- Efecto: `datos/geografia/puntos.csv`, `alias.csv` y semilla 01. José debe
+  coordinar el siguiente escenario y matriz con estos UUID antes de calcular
+  rutas para el nuevo catálogo. Los fixtures sintéticos V0/V1 no se reasignan.
+- Comprobación local: siete pruebas Python; semilla y smoke ejecutados en
+  PostgreSQL temporal, reejecución conservadora, alias y correspondencia CSV/SQL,
+  guardas de identidad y conservación de otras filas. No se aplicó SQL a Supabase real.
+
+## D005 Aclaraciones y caducidad de V2
+
+- Fecha de registro: 2026-10-16T22:47-05:00.
+- Usuario comunicó acuerdo con Noel: aclaración creada por orquestador, máximo una activa por ejecución; bot llama API y API ejecuta RPC con service_role.
+- Reply válido: chat de origen, mensaje de pregunta y autor original, también en grupos. Deduplicar chat:message_id; no sobrescribir respuesta aceptada.
+- Se acepta texto o ubicación estática compartida como reply. Ubicación no crea ni valida un lugar de entrega.
+- Usuario aprobó 30 minutos desde envío confirmado, configurable. Al vencer pasa a espera_revision, conserva evidencia y genera alerta; resultado vencida no reactiva nada.
+- Reservas vencidas y envíos inciertos requieren revisión, sin reenvío automático. Fallidos también se dejan visibles para revisión.
+- Implementación local: migraciones 0006/0007 y docs/V2_EMILIA.md. No acredita aplicación remota ni integración del bot de Noel.
