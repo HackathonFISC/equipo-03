@@ -14,3 +14,6 @@ python-telegram-bot
 # Cálculo y pruebas de José.
 ortools==9.15.6755
 pytest==9.1.1
+
+# Adaptador Gemini de Emilia (versión restringida en requirements-lock.txt).
+httpx
