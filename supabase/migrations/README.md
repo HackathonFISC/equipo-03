@@ -81,5 +81,40 @@ Añade tres columnas de reserva a `avisos` y cuatro funciones, ejecutables solo 
 La reserva cancela con motivo un aviso que dejó de ser vigente; una reserva vencida lo deja `incierto`
 y nunca se reenvía solo. No crea avisos, no aprueba planes y no sustituye a 0002 ni a 0003.
 
-Verificación local: PostgreSQL 16 con las migraciones 0001 a 0008 aplicadas antes (sin 0009 ni 0010 de Emilia); smoke completo
+Verificación local: PostgreSQL 16 con las migraciones 0001 a 0010 aplicadas antes; smoke completo
 aprobado. Esa prueba no usa Supabase ni concurrencia real de varios procesos. Sin aplicar a Supabase.
+
+## Aprobación de planes (0003, Noel)
+
+Aplicar una vez `0003_aprobacion.sql`, completo, **después de 0009** (usa `escenarios_planificacion_v3` y su
+snapshot); el número 0003 estaba reservado a Noel desde 0001, no indica el orden. Después ejecutar
+`../tests/0003_aprobacion_smoke.sql`, completo: usa datos sintéticos, inserta usuarios temporales en
+`auth.users` y termina en ROLLBACK.
+
+Añade dos funciones, ejecutables solo por service_role: `ra_aprobar_plan` y `ra_rechazar_plan`. La API debe
+pasar el usuario tomado del token verificado, nunca uno enviado por el navegador. Los errores empiezan por el
+código de D003 (`sin_permiso`, `version_obsoleta`, `politica_no_activa`, `plan_no_verificado`,
+`cobertura_critica_pendiente`).
+
+`ra_aprobar_plan`, en una sola transacción: exige coordinador activo; que los datos y la política que la
+persona revisó sean los del plan y no exista una versión posterior; política activa; que las entradas
+(depósito, flota, incidentes, puntos, política) sean las del cálculo (compara `ra_snapshot_planificacion_v3`
+con el snapshot guardado al cerrar); verificación independiente válida, solver factible y ejecución esperando
+validación; y ningún crítico sin atender. Después crea la aprobación, deja el plan `aprobado`, pasa la
+ejecución a `pendiente` en la etapa `comunicacion` y registra un evento. Repetir la misma aprobación devuelve
+el acuse sin duplicar; otra distinta se rechaza.
+
+**Decisión sobre los bloqueos (revisar con el equipo):** 0001 exige cero bloqueos en un plan aprobado. Una
+aprobación solo puede levantar tres: "Sin verificación independiente ni aprobación autorizada…", "Política
+sintética: el cálculo no acredita autorización operativa ni calidad del agua." y "ENSAYO SINTÉTICO: sin
+aprobación operativa ni publicación comunitaria.". La persona debe **reconocer cada uno** en la llamada; si
+falta alguno se rechaza. Cualquier otro (cobertura crítica, solver sin solución, verificación inválida) no se
+levanta con una confirmación. Los bloqueos reconocidos quedan en el evento y en `planes.propuesta`. La
+publicación sigue limitada por destinos autorizados (`destinos.autorizado`), que la bandeja (0011) comprueba.
+
+`ra_rechazar_plan` deja el plan `rechazado` y la ejecución en `espera_revision`, con el motivo en el evento.
+
+Verificación local: PostgreSQL 16 con 0001 a 0011 aplicadas; smoke aprobado (también se comprobó que falla si
+se quita el control de vigencia de entradas) y smoke de 0011 aprobado con 0003 instalada. No usa Supabase ni
+concurrencia real de varios procesos. Sin aplicar a Supabase. La etapa `comunicacion` no la procesa aún ningún
+trabajador: el trabajador de Emilia solo toma ingesta, territorial, priorización y planificación.
