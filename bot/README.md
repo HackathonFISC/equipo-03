@@ -161,3 +161,24 @@ Con API y Telegram simulados (`httpx.MockTransport`):
 
 - V4: activar `AVISOS_ACTIVOS` cuando se aplique la migración 0011 y haya un plan aprobado.
   Envío de un aviso real a un chat de prueba: sin probar contra Telegram.
+
+
+## Pines fuera del catálogo
+
+No hace falta una clave de Google Maps. Reportar primero el problema con texto;
+si el lugar no se reconoce, responder a la pregunta geográfica del bot con
+Adjuntar → Ubicación y seleccionar un pin fijo del lugar donde falta agua.
+El pin puede estar fuera del catálogo. La API verifica autor, pregunta y plazo;
+no se asocia una ubicación suelta al último reporte por suposición.
+
+El panel Reportes muestra las coordenadas, precisión informada y un enlace al mapa
+inmediatamente después de aceptar la respuesta, incluso antes de reprocesarla.
+GET /reportes requiere sesión del panel, igual que las consultas de incidentes.
+El pin resuelve automáticamente la ubicación del reporte, sin revisión del coordinador. No crea ni aprueba un punto de distribución.
+Las preguntas geográficas incluyen instrucciones para adjuntar el pin; las
+preguntas mixtas mantienen pendientes los datos no geográficos.
+
+Reiniciar API y bot, y reconstruir el frontend para usar esta mejora. Utiliza
+las tablas y RPC existentes de aclaraciones y la nueva migración 0018 de localización automática. Para resolver direcciones sin pin, configurar GOOGLE_MAPS_API_KEY. Ver [guía](../docs/LOCALIZACION_AUTOMATICA.md).
+Prueba manual: enviar un reporte con un barrio desconocido, responder a la pregunta
+con un pin fijo, y abrir el reporte en el panel con sesión iniciada.

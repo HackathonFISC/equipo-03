@@ -14,23 +14,37 @@ def guardar(path, datos):
         f.write('\n')
 
 
+def con_rutas_google(solicitud, habilitado):
+    if not habilitado:
+        return solicitud
+    from geografia.rutas_google import RutasGoogle, ErrorRutas
+    proveedor = RutasGoogle.cargar()
+    if proveedor is None:
+        raise ErrorRutas('Configura GOOGLE_MAPS_API_KEY y habilita Routes API.')
+    datos = solicitud.model_dump(mode='json')
+    datos['matriz'] = proveedor.para_solicitud(solicitud).model_dump(mode='json')
+    return SolicitudResolverRutas.model_validate(datos)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='modo', required=True)
     local = sub.add_parser('local')
     local.add_argument('--con-ia', action='store_true')
     local.add_argument('--salida', required=True)
+    local.add_argument('--rutas-google', action='store_true')
     preparar = sub.add_parser('preparar')
     preparar.add_argument('--coordinador-uid', required=True, type=UUID)
     preparar.add_argument('--motivo', required=True)
     preparar.add_argument('--salida', required=True)
+    preparar.add_argument('--rutas-google', action='store_true')
     registrar = sub.add_parser('registrar')
     registrar.add_argument('--coordinador-uid', required=True, type=UUID)
     registrar.add_argument('--motivo', required=True)
     registrar.add_argument('--entrada', required=True)
     args = parser.parse_args()
     if args.modo == 'local':
-        solicitud = preparar_escenario()
+        solicitud = con_rutas_google(preparar_escenario(), args.rutas_google)
         decisor = None
         if args.con_ia:
             from agentes.planificacion_gemini import DecisorGeminiPlanificacion
@@ -42,7 +56,7 @@ def main():
         print(json.dumps({'estado': resultado.estado, 'valido': bool(resultado.informe and resultado.informe.valido),
                           'modo': 'gemini' if args.con_ia else 'reglas', 'publicacion': 'bloqueada'}))
     elif args.modo == 'preparar':
-        s = preparar_escenario(coordinador_id=args.coordinador_uid, motivo=args.motivo)
+        s = con_rutas_google(preparar_escenario(coordinador_id=args.coordinador_uid, motivo=args.motivo), args.rutas_google)
         guardar(args.salida, s.model_dump(mode='json'))
         print('Escenario revisable guardado; sin escritura en Supabase. Conservar este archivo para reintentos.')
     else:

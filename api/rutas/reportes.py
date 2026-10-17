@@ -5,6 +5,7 @@ import httpx
 from fastapi import APIRouter, Depends, Query, Response
 from postgrest.exceptions import APIError
 
+from api.auth import usuario_autenticado
 from api.dependencias import obtener_db, verificar_secreto_bot
 from api.errores_http import ErrorApi
 from api.esquemas import NuevoReporteTelegram, ReporteListado
@@ -58,7 +59,9 @@ def crear_reporte(datos: NuevoReporteTelegram, respuesta: Response, db=Depends(o
 @router.get(
     "",
     response_model=list[ReporteListado],
-    responses={k: v for k, v in RESPUESTAS_ERROR.items() if k != 403},
+    dependencies=[Depends(usuario_autenticado)],
+    responses={403: {"model": ErrorDominio, "description": "Falta una sesión válida."},
+               503: RESPUESTAS_ERROR[503]},
     summary="Listar reportes para el panel",
 )
 def listar(limite: int = Query(50, ge=1, le=200), db=Depends(obtener_db)):

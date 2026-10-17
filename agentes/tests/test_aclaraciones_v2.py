@@ -46,3 +46,32 @@ def test_contrato_admite_ubicacion_sola_y_rechaza_doble_contenido():
         RespuestaAclaracion(**contexto,texto='Texto',ubicacion_compartida=ubicacion)
     with pytest.raises(ValueError):
         RespuestaAclaracion(**contexto)
+
+
+def test_pin_resuelve_solo_geografia_en_aclaracion_mixta():
+    reporte=ReporteRegistrado.model_validate_json((RAIZ/'contratos/ejemplos/reporte_registrado.json').read_text())
+    respuesta={'aclaracion_id':str(uuid4()),'respuesta_ubicacion':dict(latitud=8.9,longitud=-79.7,fuente='compartida')}
+    class Extractor:
+        def extraer(self,texto):
+            return ExtraccionReporteLLM(resumen='Reporte de agua',ubicacion_declarada=None,
+                campos=dict(tipo_problema='sin_suministro'),evidencia_textual=[reporte.entrada.texto],
+                faltantes=['ubicacion', 'personas_afectadas'],requiere_aclaracion=True,fuera_de_alcance=False)
+    resultado=interpretar_reporte(reporte,Extractor(),aclaraciones=[respuesta])
+    assert resultado.siguiente_etapa=='ingesta'
+    assert resultado.reporte.interpretacion.faltantes==['personas_afectadas']
+    assert resultado.reporte.interpretacion.requiere_aclaracion
+
+
+def test_territorial_conserva_pin_fuera_del_catalogo_sin_crear_destino():
+    from agentes.territorial import resolver_reporte
+    reporte=ReporteRegistrado.model_validate_json((RAIZ/'contratos/ejemplos/reporte_registrado.json').read_text())
+    extraccion=ExtraccionReporteLLM(resumen='Falta agua',ubicacion_declarada='Barrio nuevo',
+        campos=dict(tipo_problema='sin_suministro'),evidencia_textual=['Falta agua'],
+        faltantes=[],requiere_aclaracion=False,fuera_de_alcance=False)
+    salida=resolver_reporte({'reporte':{'interpretacion':extraccion.model_dump(mode='json'),
+        'texto':reporte.entrada.texto,'ubicacion_compartida':dict(latitud=8.9,longitud=-79.7,fuente='compartida')},
+        'catalogo':[], 'aclaraciones':[]})
+    assert salida['estado']=='localizada'
+    assert salida['ubicacion']['latitud']==8.9
+    assert salida['ubicacion']['representa_punto_atencion'] is None
+    assert 'punto_atencion_id' not in salida

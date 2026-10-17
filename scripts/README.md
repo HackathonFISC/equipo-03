@@ -16,3 +16,6 @@ Desde la raíz del repositorio:
 
 No hay instalador automático de BD ni script general de arranque. Los comandos
 revisados de API, bot y panel están en [README](../README.md).
+
+
+`ensayar_v3 local` y `preparar` aceptan `--rutas-google` para obtener una matriz vial con la clave del servidor. Ver [guía](../docs/RUTAS_GOOGLE.md).

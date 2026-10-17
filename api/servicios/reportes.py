@@ -6,6 +6,7 @@ reintentar el mismo mensaje repara lo que falte sin crear duplicados.
 Convención de identidad: supabase/IDENTIDAD_REPORTES.md.
 """
 import logging
+from datetime import datetime, timezone
 from uuid import UUID
 
 from postgrest.exceptions import APIError
@@ -21,7 +22,7 @@ from api.esquemas import (
     SeguimientoPanel,
 )
 from contratos.errores import CodigoError
-from contratos.modelos import EntradaReporte, ExtraccionReporteLLM, ReporteRegistrado
+from contratos.modelos import EntradaReporte, ExtraccionReporteLLM, ReporteRegistrado, Ubicacion
 
 logger = logging.getLogger("api.reportes")
 
@@ -193,11 +194,42 @@ def _leer_interpretacion(valor) -> ExtraccionReporteLLM | None:
         return None
 
 
+def _ubicacion_reportada(fila) -> Ubicacion | None:
+    """Último pin aceptado; nunca se infiere de texto ni se valida como entrega."""
+    respuestas = sorted(
+        (a for a in fila.get("aclaraciones", []) if a.get("respondida_en") and a.get("respuesta_ubicacion")),
+        key=lambda a: a["respondida_en"], reverse=True,
+    )
+    valores = [a["respuesta_ubicacion"] for a in respuestas]
+    valores.append(fila.get("ubicacion_compartida"))
+    for valor in valores:
+        if not isinstance(valor, dict):
+            continue
+        try:
+            return Ubicacion.model_validate({
+                "latitud": valor.get("latitud"), "longitud": valor.get("longitud"),
+                "precision_metros": valor.get("precision_metros"),
+                "fuente": "compartida", "representa_punto_atencion": None,
+            })
+        except ValidationError:
+            logger.warning("Ubicación guardada inválida; se omite del panel.")
+    return None
+
+
+def _localizacion_vigente(valor):
+    if not isinstance(valor, dict):
+        return None
+    valor = dict(valor)
+    if valor.get('expira_en') and datetime.fromisoformat(valor['expira_en'].replace('Z', '+00:00')) <= datetime.now(timezone.utc):
+        valor['ubicacion'] = None
+    return valor
+
+
 def listar_reportes(db, limite: int) -> list[ReporteListado]:
     """Reportes más recientes primero, sin identificadores del remitente."""
     filas = (
         db.table("reportes")
-        .select("reporte_id,canal,modalidad,texto,interpretacion,origen,creado_en,ejecuciones(ejecucion_id,estado,etapa)")
+        .select("reporte_id,canal,modalidad,texto,interpretacion,ubicacion_compartida,localizacion_resuelta,origen,creado_en,ejecuciones(ejecucion_id,estado,etapa),aclaraciones(respuesta_ubicacion,respondida_en)")
         .order("creado_en", desc=True)
         .limit(limite)
         .execute()
@@ -210,6 +242,8 @@ def listar_reportes(db, limite: int) -> list[ReporteListado]:
         interpretacion = _leer_interpretacion(fila.get("interpretacion"))
         resultado.append(
             ReporteListado(
+                ubicacion_reportada=_ubicacion_reportada(fila),
+                localizacion_resuelta=_localizacion_vigente(fila.get("localizacion_resuelta")),
                 registrado=RegistradoPanel(
                     reporte_id=fila["reporte_id"],
                     ejecucion_id=ejecucion["ejecucion_id"] if ejecucion else None,

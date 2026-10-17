@@ -48,7 +48,7 @@ class Evidencia(Contrato):
 class Ubicacion(Contrato):
     latitud: Annotated[float, Field(ge=-90, le=90, allow_inf_nan=False, strict=True)]
     longitud: Annotated[float, Field(ge=-180, le=180, allow_inf_nan=False, strict=True)]
-    fuente: Literal["catalogo", "compartida", "coordinador", "escenario"]
+    fuente: Literal["catalogo", "compartida", "coordinador", "escenario", "geocodificada"]
     precision_metros: Cantidad | None = None
     representa_punto_atencion: bool | None = None
 

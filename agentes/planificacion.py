@@ -160,7 +160,20 @@ def procesar_planificacion(ejecucion_id, db, trabajador_id, herramientas=None, d
                                                   p_trabajador_id=trabajador_id)).execute().data
     if toma is None:
         return {'estado': 'no_tomada'}
-    resultado = planificar(toma['solicitud'], herramientas, decisor)
+    from geografia.rutas_google import RutasGoogle, ErrorRutas
+    try:
+        proveedor = RutasGoogle.cargar(automatico=True)
+        if proveedor is not None:
+            solicitud = SolicitudResolverRutas.model_validate(toma['solicitud'])
+            matriz = proveedor.para_solicitud(solicitud)
+            toma = db.rpc('ra_actualizar_matriz_planificacion', {
+                'p_ejecucion_id': str(ejecucion_id), 'p_trabajador_id': trabajador_id,
+                'p_snapshot': toma, 'p_matriz': matriz.model_dump(mode='json')}).execute().data
+    except ErrorRutas as error:
+        resultado = ResultadoPlanificacion(estado='espera_revision', propuesta=None, informe=None,
+            trazas=[dict(agente='planificacion', decision=str(error), herramienta='google.computeRouteMatrix')])
+    else:
+        resultado = planificar(toma['solicitud'], herramientas, decisor)
     return db.rpc('ra_finalizar_planificacion_v3', dict(p_ejecucion_id=str(ejecucion_id),
         p_trabajador_id=trabajador_id, p_snapshot=toma,
         p_resultado=resultado.model_dump(mode='json'))).execute().data

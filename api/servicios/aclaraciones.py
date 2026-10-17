@@ -65,6 +65,7 @@ def reservar(db, trabajador_id: str) -> AclaracionPorEnviar | None:
         return AclaracionPorEnviar(
             aclaracion_id=fila["aclaracion_id"],
             pregunta=fila["pregunta"],
+            campos_solicitados=fila.get("campos_solicitados", []),
             chat_id=int(fila["chat_id"]),
             mensaje_original_id=_mensaje_original(fila.get("mensaje_externo_id")),
         )
