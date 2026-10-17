@@ -1,19 +1,19 @@
 import { necesidadesEjemplo } from '../datos/necesidadesEjemplo.js'
 
-// true mientras la API no tenga GET /necesidades: la página usa los ejemplos.
-// Las necesidades reales llegan en V2 (Territorial y Priorización de Emilia, cálculo de José).
-export const USAR_EJEMPLOS_NECESIDADES = true
+// false: la página lee GET /incidentes. true: usa los ejemplos sintéticos, sin API.
+export const USAR_EJEMPLOS_NECESIDADES = false
 
 const URL_API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
-// Cada elemento: { punto: { nombre } | null, incidente: IncidenteConsolidado, evaluacion: EvaluacionNecesidades }
+// Cada elemento es un IncidentePanel (api/esquemas.py): el incidente consolidado, su punto,
+// sus conteos y evaluacion_necesidad (EvaluacionNecesidades o null) con pendientes_calculo.
 export async function obtenerNecesidades() {
   if (USAR_EJEMPLOS_NECESIDADES) {
     return necesidadesEjemplo
   }
   let respuesta
   try {
-    respuesta = await fetch(`${URL_API}/necesidades`)
+    respuesta = await fetch(`${URL_API}/incidentes`)
   } catch {
     throw new Error('No se pudo conectar con la API. Comprueba que esté en marcha.')
   }

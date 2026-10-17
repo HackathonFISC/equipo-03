@@ -11,6 +11,15 @@ const VULNERABILIDAD = {
   alta: 'Alta',
 }
 
+const PROBLEMA = {
+  sin_suministro: 'Sin suministro',
+  intermitencia: 'Intermitencia',
+  otro: 'Otro',
+  desconocido: null,
+}
+
+const ORIGEN = { real: 'reales', estimado: 'estimados', sintetico: 'sintéticos' }
+
 const VALIDACION = {
   pendiente: 'Pendiente de validar',
   validada: 'Validado',
@@ -34,6 +43,20 @@ const hora = new Intl.DateTimeFormat('es-PA', {
   timeZone: 'America/Panama',
 })
 
+// Pendiente que deja la RPC de Emilia al separar un reporte o cambiar el lote.
+function requiereRecalculo(item) {
+  return item.evaluacion_necesidad === null && item.pendientes_calculo.some((p) => /recalcul/i.test(p))
+}
+
+// Primeros 8 caracteres, como el código que da el bot; el ID completo queda en el title.
+function Id({ valor }) {
+  return (
+    <code className="id-corto" title={valor}>
+      {valor.slice(0, 8)}
+    </code>
+  )
+}
+
 function plural(n, uno, varios) {
   return `${n} ${n === 1 ? uno : varios}`
 }
@@ -51,7 +74,19 @@ function Dato({ nombre, valor }) {
   )
 }
 
-function Urgencia({ evaluacion }) {
+function Urgencia({ evaluacion, recalculo }) {
+  if (evaluacion === null) {
+    return (
+      <section className="bloque" aria-label="Urgencia">
+        <h3>Urgencia</h3>
+        <p className="sin-puntaje">
+          {recalculo
+            ? 'Requiere recálculo: la agrupación cambió y el puntaje anterior ya no vale.'
+            : 'Sin evaluación de necesidad todavía.'}
+        </p>
+      </section>
+    )
+  }
   const calculada = evaluacion.estado_prioridad === 'calculada'
   return (
     <section className="bloque" aria-label="Urgencia">
@@ -92,6 +127,7 @@ function Urgencia({ evaluacion }) {
 }
 
 function Confianza({ incidente }) {
+  const problema = PROBLEMA[incidente.tipo_problema]
   return (
     <section className="bloque" aria-label="Confianza">
       <h3>Confianza</h3>
@@ -105,12 +141,14 @@ function Confianza({ incidente }) {
         <Dato nombre="Estado del incidente" valor={VALIDACION[incidente.estado_validacion] ?? incidente.estado_validacion} />
         <Dato
           nombre="Reportes"
-          valor={`${plural(incidente.reportes_ids.length, 'vinculado', 'vinculados')}, ${plural(
+          valor={`${plural(incidente.reportes_vinculados, 'vinculado', 'vinculados')}, ${plural(
             incidente.reportes_independientes,
             'independiente',
             'independientes',
           )}`}
         />
+        <Dato nombre="Problema" valor={problema === undefined ? incidente.tipo_problema : problema} />
+        <Dato nombre="Detectado" valor={hora.format(new Date(incidente.primera_deteccion_en))} />
       </dl>
       {incidente.conflictos.length > 0 && (
         <div className="lista-corta">
@@ -137,23 +175,33 @@ function Confianza({ incidente }) {
 }
 
 function TarjetaNecesidad({ item }) {
-  const { punto, incidente, evaluacion } = item
-  const clase = evaluacion.clase_prioridad
-  const urgente = evaluacion.requiere_revision_urgente || incidente.requiere_revision_urgente
-  const ventana = evaluacion.ventana_atencion
+  const { punto } = item
+  const evaluacion = item.evaluacion_necesidad
+  const recalculo = requiereRecalculo(item)
+  const clase = evaluacion?.clase_prioridad
+  const urgente = evaluacion?.requiere_revision_urgente || item.requiere_revision_urgente
+  const ventana = evaluacion?.ventana_atencion
+  const lugar = [punto?.corregimiento, punto?.distrito].filter(Boolean).join(', ')
+  const pendientes = [...new Set([...(evaluacion?.pendientes ?? []), ...item.pendientes_calculo])]
 
   return (
     <li className="necesidad" data-clase={clase ?? 'sin_clase'}>
       <header className="necesidad-cabecera">
-        {evaluacion.posicion && (
+        {evaluacion?.posicion && (
           <span className="posicion" aria-label={`Posición ${evaluacion.posicion}`}>
             {evaluacion.posicion}
           </span>
         )}
         <div className="necesidad-titulo">
-          <h2>{punto?.nombre ?? 'Punto sin nombre'}</h2>
+          <h2>{punto?.nombre ?? 'Lugar sin identificar'}</h2>
+          {lugar && <p className="necesidad-demanda">{lugar}</p>}
+          {!punto && item.sector_id && (
+            <p className="necesidad-demanda">
+              Sector <Id valor={item.sector_id} />, sin punto identificado
+            </p>
+          )}
           <p className="necesidad-demanda">
-            {evaluacion.demanda_litros === null
+            {evaluacion?.demanda_litros == null
               ? 'Demanda por confirmar'
               : `${numero.format(evaluacion.demanda_litros)} litros`}
           </p>
@@ -165,31 +213,34 @@ function TarjetaNecesidad({ item }) {
         </div>
         <div className="sellos">
           {clase && <span className="sello-clase">{clase === 'critico' ? 'Crítico' : 'General'}</span>}
+          {recalculo && <span className="sello-recalculo">Requiere recálculo</span>}
           {urgente && <span className="sello-urgente">Revisión urgente</span>}
         </div>
       </header>
 
       <div className="bloques">
-        <Urgencia evaluacion={evaluacion} />
-        <Confianza incidente={incidente} />
+        <Urgencia evaluacion={evaluacion} recalculo={recalculo} />
+        <Confianza incidente={item} />
       </div>
 
-      {evaluacion.pendientes.length > 0 && (
+      {pendientes.length > 0 && (
         <div className="pendientes">
           <h3>Qué falta para entrar al orden de atención</h3>
           <ul>
-            {evaluacion.pendientes.map((p) => (
+            {pendientes.map((p) => (
               <li key={p}>{p}</li>
             ))}
           </ul>
         </div>
       )}
 
-      {evaluacion.supuestos.length > 0 && (
+      {evaluacion?.supuestos.length > 0 && (
         <p className="supuestos">Supuestos: {evaluacion.supuestos.join(' ')}</p>
       )}
       <p className="pie">
-        Política {evaluacion.politica_version}, datos {evaluacion.datos_version}.
+        Incidente <Id valor={item.incidente_id} /> versión {item.version}, ejecución{' '}
+        <Id valor={item.ejecucion_id} />, datos {ORIGEN[item.origen] ?? item.origen}
+        {evaluacion && `; política ${evaluacion.politica_version}, versión de datos ${evaluacion.datos_version}`}.
       </p>
     </li>
   )
@@ -229,16 +280,21 @@ export default function Necesidades() {
   // El orden lo decide el cálculo (posición); la página no reordena por su cuenta.
   const { enOrden, pendientes } = useMemo(() => {
     const calculadas = items
-      .filter((i) => i.evaluacion.estado_prioridad === 'calculada')
-      .sort((a, b) => a.evaluacion.posicion - b.evaluacion.posicion)
-    const sinPuntaje = items.filter((i) => i.evaluacion.estado_prioridad !== 'calculada')
+      .filter((i) => i.evaluacion_necesidad?.estado_prioridad === 'calculada')
+      .sort((a, b) => a.evaluacion_necesidad.posicion - b.evaluacion_necesidad.posicion)
+    const sinPuntaje = items.filter((i) => i.evaluacion_necesidad?.estado_prioridad !== 'calculada')
     return { enOrden: calculadas, pendientes: sinPuntaje }
   }, [items])
 
   return (
     <section className="necesidades" aria-labelledby="titulo-necesidades">
       <header className="necesidades-cabecera">
-        <h1 id="titulo-necesidades">Necesidades</h1>
+        <div className="necesidades-titulo">
+          <h1 id="titulo-necesidades">Necesidades</h1>
+          <button type="button" className="actualizar" onClick={reintentar} disabled={cargando}>
+            {cargando ? 'Actualizando…' : 'Actualizar'}
+          </button>
+        </div>
         <p>Puntos de atención con falta de agua, en el orden en que se atenderían.</p>
       </header>
 
@@ -248,7 +304,7 @@ export default function Necesidades() {
         </p>
       )}
 
-      {cargando && <p className="mensaje">Cargando necesidades…</p>}
+      {cargando && items.length === 0 && <p className="mensaje">Cargando necesidades…</p>}
 
       {error && (
         <div className="mensaje mensaje-error" role="alert">
@@ -270,7 +326,7 @@ export default function Necesidades() {
           <h2 className="grupo-titulo">Orden de atención</h2>
           <ol className="lista-necesidades">
             {enOrden.map((item) => (
-              <TarjetaNecesidad key={item.evaluacion.incidente_id} item={item} />
+              <TarjetaNecesidad key={item.incidente_id} item={item} />
             ))}
           </ol>
         </>
@@ -285,7 +341,7 @@ export default function Necesidades() {
           </p>
           <ul className="lista-necesidades">
             {pendientes.map((item) => (
-              <TarjetaNecesidad key={item.evaluacion.incidente_id} item={item} />
+              <TarjetaNecesidad key={item.incidente_id} item={item} />
             ))}
           </ul>
         </>
