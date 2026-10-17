@@ -41,7 +41,11 @@ def construir_solicitud(snapshot):
     for i in incidentes:
         if i['origen']!=e['origen'] or i['incidente_id'] not in entradas or entradas[i['incidente_id']]['version_incidente']!=i['version']:
             raise RevisionPuente('Incidente desactualizado o de otro origen; revisar el lote antes de planificar.')
-    politica = PoliticaPrioridad.model_validate({k:v for k,v in snapshot['politica'].items() if k in PoliticaPrioridad.model_fields})
+    politica_original = {k:deepcopy(v) for k,v in snapshot['politica'].items() if k in PoliticaPrioridad.model_fields}
+    politica = PoliticaPrioridad.model_validate(politica_original)
+    # Validar sin normalizar las fechas del JSON que la RPC compara con la BD.
+    politica_solicitud = politica.model_dump(mode='json')
+    politica_solicitud.update(politica_original)
     if politica.estado!='activa' or politica.politica_version!=e['entrada_priorizacion']['politica']['politica_version']:
         raise RevisionPuente('La política revisada dejó de estar activa o cambió de versión.')
     for n in evaluaciones:
@@ -88,7 +92,7 @@ def construir_solicitud(snapshot):
     # recursos inventados y por eso se etiqueta sintético, con modo ensayo en BD.
     solicitud=dict(esquema_version='1.0',ejecucion_id=e['ejecucion_id'],creado_en=e['creado_en'],origen='sintetico',
         plan_id=str(uuid5(UUID(e['ejecucion_id']),'necesidades-v3:'+e['datos_version'])),version=1,
-        datos_version=e['datos_version'],politica=politica.model_dump(mode='json'),deposito=deposito,vehiculos=vehiculos,
+        datos_version=e['datos_version'],politica=politica_solicitud,deposito=deposito,vehiculos=vehiculos,
         puntos=puntos,necesidades=evaluaciones,matriz=matriz,
         servicios=[deepcopy(s) for s in base['servicios'] if s['punto_atencion_id'] in puntos_ids],
         limite_solver_segundos=base['limite_solver_segundos'],recargas_permitidas=False,entregas_parciales_permitidas=False)

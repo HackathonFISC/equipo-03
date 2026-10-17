@@ -135,3 +135,21 @@ def test_no_reactiva_cisterna_retirada_y_conserva_deficit(snapshot):
     resultado=planificar(salida)
     assert resultado.informe.valido and len(resultado.propuesta.no_atendidos)==2
     assert sum(n.demanda_pendiente_litros for n in resultado.propuesta.no_atendidos)==6000
+
+
+@pytest.mark.parametrize("fecha", ["2026-10-17T05:00:00+00:00", "2026-10-17T00:00:00.123456-05:00"])
+def test_conserva_representacion_original_de_confirmacion_para_rpc(snapshot, fecha):
+    snapshot['politica']['confirmacion_activacion']['confirmado_en'] = fecha
+    snapshot['ejecucion']['entrada_priorizacion']['politica'] = deepcopy(snapshot['politica'])
+    antes = deepcopy(snapshot)
+    salida = construir_solicitud(snapshot)
+    # Postgres compara JSONB: Z y +00:00 son textos distintos aun siendo el mismo instante.
+    assert salida['politica'] == snapshot['politica']
+    assert snapshot == antes
+    SolicitudResolverRutas.model_validate(salida)
+
+
+def test_conservar_json_original_no_omite_validacion_de_politica(snapshot):
+    snapshot['politica']['confirmacion_activacion']['confirmado_en'] = 'fecha-invalida'
+    with pytest.raises(ValueError):
+        construir_solicitud(snapshot)
