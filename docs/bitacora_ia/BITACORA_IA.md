@@ -6,7 +6,7 @@ Cada fuente conserva sus filas y su huella SHA-256. Regenerar antes de la entreg
 
 ## Fuente: emilia.md
 
-SHA-256: `dc54b3f0fd35e2db7425e8bea08e0e8fd2a1bc65b4ee0bfc9865a56a5fb306fd`
+SHA-256: `6d11f1b7a37d9140c2bef21062124f829b66f612f5c6611263104ee2a7cdad06`
 
 # Bitácora de IA: emilia
 
@@ -61,9 +61,25 @@ smokes 0016/0017 en PostgreSQL local (PGlite); integración de cinco agentes con
 automático, 15 000 L y seis avisos de ensayo. Destino no habilitado bloqueado y
 avisos cancelados al cambiar necesidades. No prueba Gemini/Telegram reales.
 
+## Ampliaciones recuperadas en la revisión documental del 17 de octubre
+
+Estas entradas se incorporan retrospectivamente desde los commits indicados. La hora
+citada es la del commit (UTC−05:00), no una hora reconstruida de uso de IA. El historial
+identifica cambios incorporados; no demuestra por sí solo despliegue, pruebas reales
+ni aceptación humana. Se conserva el registro histórico anterior sin sustituirlo.
+
+| Fecha y hora | Herramienta | Uso | Salida aprovechada | Cambios y revisión humana |
+| --- | --- | --- | --- | --- |
+| 2026-10-17; commit 09:39 UTC−05:00 | Codex; atribución de esta sesión, contrastada con código e historial | Incorporar localización fuera del catálogo y tiempos viales estimados; commit ddba5fe | geografia/google.py y rutas_google.py; localización por pin o dirección, matriz dirigida para solver/verificador, snapshot reservado, enlaces/vista previa y migraciones 0018/0019. Alcance en LOCALIZACION_AUTOMATICA.md y RUTAS_GOOGLE.md. | Resultado ambiguo o fallo no inventa ubicación ni tiempos; localizar un reporte no crea una necesidad ni autoriza reparto. El commit incluye integración API/bot/panel; este registro no añade una autorización retrospectiva ni atribuye todo su código a Emilia. Google real y despliegue no se acreditan por el commit; pruebas locales de esta revisión registradas aparte. |
+| 2026-10-17; commit 10:43 UTC−05:00 | Codex; atribución de esta sesión, contrastada con código e historial | Incorporar transcripción de audio de Telegram; commit 5ccd146 | agentes/transcripcion.py, comun/audio.py, migración 0020 y conexión al circuito existente. Audio se conserva como texto con fuente transcripcion_audio, incluido reply de aclaración y evidencia; grabación no persistida. Guía AUDIO_TELEGRAM.md y pruebas Python/SQL. | Backend Gemini sujeto a disponibilidad; transcripción no valida cantidades ni lugares. La integración API/bot/panel está incluida en el commit; no se modifica en esta revisión. Sin acreditar Telegram/Gemini reales, calidad OGG/Opus ni aplicación remota de 0020. |
+| 2026-10-17; commit 11:15 UTC−05:00 | Codex; atribución de esta sesión, contrastada con código e historial | Incorporar descripción de fotos y lectura de texto visible; commit 8a623af | agentes/imagen.py, comun/imagen.py, migración 0022, procedencia descripcion_imagen, evidencia foto e integración de reportes/respuestas con deduplicación. Guía IMAGENES_TELEGRAM.md y pruebas Python/SQL. | No inferir población, duración, vulnerabilidad o prioridad de la apariencia. No guardar foto/base64; descripción automática falible. Commit incluye API/bot/panel y esquemas; no se editan aquí. Sin acreditar prueba real con foto, Gemini o Telegram, ni aplicación remota de 0022. |
+| 2026-10-17; registro retrospectivo de esta sesión | Codex y SQL Editor de Supabase | Registrar actuación administrativa omitida del historial inicial | Se ejecutó 0009_planificacion_v3.sql y el SQL Editor mostró Success. Se contrastó la 0003 nueva de Noel en una copia temporal y se probaron smokes locales; la consulta remota posterior de columnas de 0011 devolvió 42703. | Describe aquel momento, no el estado remoto actual. Los intentos posteriores de navegación/copia no ejecutaron 0011, 0003 ni 0012; no atribuirles despliegue. La petición 0011 terminó entregando la ruta para ejecución del usuario. No se habilitaron destinos ni enviaron avisos en esa actuación. |
+| 2026-10-17; consolidación solicitada por Emilia | Codex y PostgreSQL temporal PGlite | Auditar las tres fuentes frente al árbol 543ea2d, recuperar omisiones y regenerar consolidación | Tres huellas de fuente desactualizadas; añadidas entradas retrospectivas de 0018/0019, audio 0020, fotos 0022 y actuación administrativa 0009. 149 pruebas específicas aprobadas, cuatro advertencias de dependencias; seis smoke SQL y recorrido local con matriz Google simulada, cinco agentes, 15 000 L, seis avisos, bloqueo de destino e invalidación/cancelación correctos. Informe REVISION_2026-10-17.md. | Fuentes de Noel/José conservadas byte a byte. Consolidación literal mediante scripts/auditar_entrega.py, con hashes de fuentes actualizados. Sin ejecutar SQL remoto, activar flags/destinos, llamar proveedores reales, editar código funcional, aprobar planes ni enviar mensajes. Revisión humana final y despliegue no se presumen; sin commit/push. |
+| 2026-10-17; verificador de esquemas solicitado por Emilia | Codex y PostgreSQL temporal PGlite | Preparar consulta de solo lectura para comprobar instalación estructural de migraciones canónicas hasta 0022 | Archivo entregado fuera del repo en deliverables/verificacion_v4/verificar_todos_los_esquemas.sql: 1291 controles de tablas, columnas/tipos/nullabilidad, enums/dominios, restricciones, índices, triggers, RLS, firmas/cuerpos de RPC y denegación a anon/authenticated. Ejecutado sobre cadena local completa: TODO_OK; control negativo al quitar ra_reservar_aviso detecta la firma ausente. | No ejecutado en Supabase real ni sustituye los smoke funcionales. Diferencias de cuerpo/formato requieren revisión, no reinstalación automática. 0002 no existe en el árbol revisado; copias históricas de bandeja no son migraciones adicionales. Sin modificar datos remotos ni código funcional; sin commit/push. |
+
 ## Fuente: jose.md
 
-SHA-256: `9d4c83820f51e970e1b8157ef3d9a55cb29b9b4f1e12c262636097ddebc5c84d`
+SHA-256: `efeaf89bceab4759bee2922023cb476dcc3ef3c24cf477fe3ef082bd093f5087`
 
 # Bitácora de IA: jose
 
@@ -135,7 +151,7 @@ SHA-256: `9d4c83820f51e970e1b8157ef3d9a55cb29b9b4f1e12c262636097ddebc5c84d`
 
 ## Fuente: noel.md
 
-SHA-256: `d25e61bb00a05e077de51259c83cc80f39f4f5b6094d0b4bc25a583cbbf66f3f`
+SHA-256: `d950238959a7cf402e01994ec49102b6366cde5edc5f537e9b14b3c306aafec7`
 
 # Bitácora de IA: noel
 
