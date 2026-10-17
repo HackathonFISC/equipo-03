@@ -92,6 +92,8 @@ class BaseFalsa:
             def execute(self):
                 if nombre == "ra_incidentes_contexto_v2":
                     return Respuesta(copy.deepcopy(base.incidentes))
+                if nombre == "ra_contexto_lote_confirmado_v2":
+                    return Respuesta(None)
                 if base.error:
                     raise base.error
                 return Respuesta(base.resultado)
@@ -139,6 +141,38 @@ def error_rpc(mensaje, codigo="55000"):
 
 
 # --- Lo que arma la API ---
+
+
+def test_revisar_b_conserva_confirmaciones_de_a_y_recalcula_contexto(cliente, db, monkeypatch):
+    from api.servicios import priorizacion
+    cliente.post(URL, json=cuerpo(revisiones=[revision(INCIDENTE_A), revision(INCIDENTE_B)]))
+    anterior = next(e for e in db.envios()[0]['p_lote']['entradas']
+                    if e['solicitud_demanda']['incidente_id'] == INCIDENTE_A)
+    monkeypatch.setattr(priorizacion, 'entradas_confirmadas', lambda *_: {INCIDENTE_A: copy.deepcopy(anterior)})
+    respuesta = cliente.post(URL, json=cuerpo(motivo='Cambio solamente B', revisiones=[revision(INCIDENTE_B, personas_atendidas=150)]))
+    assert respuesta.status_code == 202 and respuesta.json()['sin_revisar'] == 0
+    actual = next(e for e in db.envios()[-1]['p_lote']['entradas']
+                  if e['solicitud_demanda']['incidente_id'] == INCIDENTE_A)
+    assert actual['solicitud_demanda']['demanda'] == anterior['solicitud_demanda']['demanda']
+    assert actual['evaluacion']['confirmacion_clase'] == anterior['evaluacion']['confirmacion_clase']
+    assert actual['evaluacion']['confirmacion_vulnerabilidad'] == anterior['evaluacion']['confirmacion_vulnerabilidad']
+    assert actual['evaluacion']['datos_version'] != anterior['evaluacion']['datos_version']
+    assert actual['evaluacion']['puntaje'] is None and actual['evaluacion']['posicion'] is None
+    # Repetir no cambia la huella aunque la entrada reutilizada ya esté adaptada al nuevo lote.
+    monkeypatch.setattr(priorizacion, 'entradas_confirmadas', lambda *_: {INCIDENTE_A: copy.deepcopy(actual)})
+    repetida = cliente.post(URL, json=cuerpo(motivo='Cambio solamente B', revisiones=[revision(INCIDENTE_B, personas_atendidas=150)]))
+    assert repetida.json()['datos_version'] == respuesta.json()['datos_version']
+
+
+def test_consultar_confirmaciones_exige_sesion_y_devuelve_solo_versiones(cliente, monkeypatch):
+    from api.servicios.confirmaciones_necesidades import entradas_confirmadas
+    monkeypatch.setattr('api.servicios.confirmaciones_necesidades.entradas_confirmadas',
+                        lambda *_: {INCIDENTE_A: {'version_incidente': 1, 'dato_privado': 'no exponer'}})
+    url = URL + '/confirmaciones?politica_version=pol-1'
+    r = cliente.get(url)
+    assert r.status_code == 200 and r.json() == [{'incidente_id': INCIDENTE_A, 'version': 1}]
+    assert callable(entradas_confirmadas)
+    assert cliente.get(url, headers={'Authorization': ''}).status_code == 403
 
 
 def test_sin_revisiones_cubre_todos_los_incidentes_y_deja_todo_pendiente(cliente, db):

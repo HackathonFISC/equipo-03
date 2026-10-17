@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { consultarEtapa, listarPoliticas, prepararPriorizacion } from '../api/priorizacion.js'
+import { consultarEtapa, consultarConfirmaciones, listarPoliticas, prepararPriorizacion } from '../api/priorizacion.js'
 import { lugaresDelAmbito, razonDeLugar, SIN_LUGAR } from './lugares.js'
 import './FormularioRevision.css'
 import { useBorrador } from '../useBorrador.js'
@@ -265,6 +265,7 @@ export default function FormularioRevision({ items, calculo, alEnviar, alActuali
   const [filas, setFilas] = useBorrador('revision.filas', {})
   const [excluidos, setExcluidos] = useBorrador('revision.excluidos', {})
   const [envio, setEnvio] = useState({ estado: 'libre' })
+  const [confirmaciones, setConfirmaciones] = useState({ clave: '', lista: [] })
 
   // Busca una ejecución que acepte el lote: etapa priorización y un estado que la RPC admita.
   useEffect(() => {
@@ -292,16 +293,29 @@ export default function FormularioRevision({ items, calculo, alEnviar, alActuali
     return () => { cancelado = true }
   }, [])
 
-  // Los puntos que aún no tienen cálculo vienen marcados: son los que hay que confirmar.
-  const incluido = (item) => excluidos[item.incidente_id] === undefined
+  const politicaElegida = politica || (politicas.lista.length === 1 ? politicas.lista[0].politica_version : '')
+  const versiones = items.map((i) => `${i.incidente_id}:${i.version}`).sort().join(',')
+  const claveConfirmaciones = `${ejecucion.id}:${politicaElegida}:${versiones}`
+  useEffect(() => {
+    if (!ejecucion.id || !politicaElegida) return
+    let cancelado = false
+    consultarConfirmaciones(ejecucion.id, politicaElegida)
+      .then((lista) => { if (!cancelado) setConfirmaciones({ clave: claveConfirmaciones, lista }) })
+      .catch(() => { if (!cancelado) setConfirmaciones({ clave: claveConfirmaciones, lista: [] }) })
+    return () => { cancelado = true }
+  }, [ejecucion.id, politicaElegida, claveConfirmaciones])
+  const conservada = (item) => confirmaciones.clave === claveConfirmaciones && confirmaciones.lista.some(
+    (c) => c.incidente_id === item.incidente_id && c.version === item.version,
+  )
+  // Solo los puntos modificados requieren datos nuevos. El servidor lo revalida al enviar.
+  const incluido = (item) => !conservada(item) && (excluidos[item.incidente_id] === undefined
     ? item.evaluacion_necesidad?.estado_prioridad !== 'calculada'
-    : !excluidos[item.incidente_id]
+    : !excluidos[item.incidente_id])
   const filaDe = (id) => filas[id] ?? VACIA
   const cambiar = (id, valor) => setFilas((f) => ({ ...f, [id]: valor }))
   const alIncluir = (id, si) => setExcluidos((e) => ({ ...e, [id]: !si }))
 
   const incluidos = items.filter(incluido)
-  const politicaElegida = politica || (politicas.lista.length === 1 ? politicas.lista[0].politica_version : '')
   const detallePolitica = politicas.lista.find((p) => p.politica_version === politicaElegida)
   const conProblemas = incluidos.filter((i) => problemasDe(filaDe(i.incidente_id)).length > 0)
   const incompletos = incluidos.filter((i) => faltantesDe(filaDe(i.incidente_id)).length > 0)
@@ -393,9 +407,17 @@ export default function FormularioRevision({ items, calculo, alEnviar, alActuali
 
           <section className="rev-bloque" aria-labelledby="rev-paso2">
             <h3 id="rev-paso2"><span className="rev-paso">2</span> Confirma los datos de cada punto</h3>
-            <p className="rev-ayuda">Los puntos sin cálculo ya vienen marcados. Desmarca los que no quieras revisar ahora.</p>
+            <p className="rev-ayuda">Revisa los puntos modificados. Las confirmaciones anteriores se conservan únicamente si sus datos siguen vigentes.</p>
             <div className="rev-puntos">
-              {items.map((item) => (
+              {items.map((item) => conservada(item) ? (
+                <p key={item.incidente_id} className="rev-ok">
+                  {item.punto?.nombre ?? 'Punto'}: confirmación anterior vigente. Se conservarán sus datos y se recalculará su prioridad.{' '}
+                  <button type="button" onClick={() => {
+                    setConfirmaciones((c) => ({ ...c, lista: c.lista.filter((v) => v.incidente_id !== item.incidente_id) }))
+                    alIncluir(item.incidente_id, true)
+                  }}>Modificar estos datos</button>
+                </p>
+              ) : (
                 <PuntoRevision
                   key={item.incidente_id} item={item} valor={filaDe(item.incidente_id)} incluir={incluido(item)}
                   alCambiar={cambiar} alIncluir={alIncluir} problemaLugar={lugares.problemas[item.incidente_id]}
@@ -409,7 +431,7 @@ export default function FormularioRevision({ items, calculo, alEnviar, alActuali
             <p className="rev-resumen" role="status">
               {incluidos.length} de {items.length} puntos con revisión
               {incompletos.length > 0 ? `; ${incompletos.length} con datos pendientes` : incluidos.length > 0 ? '; todos completos' : ''}.
-              {' '}Todos los puntos del ámbito viajan en el envío; los que no revisas quedan pendientes.
+              {' '}Todos los puntos participan en el cálculo. Se conservan las confirmaciones vigentes; los demás que no revises quedan pendientes.
             </p>
             {lugaresPorValidar > 0 && (
               <p className="rev-aviso-lugar-pendiente" role="note">

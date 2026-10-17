@@ -20,6 +20,7 @@ from pydantic import ValidationError
 from api.errores_http import ErrorApi
 from api.esquemas import PrepararPriorizacion, ResultadoPriorizacion, RevisionIncidente
 from api.servicios.aclaraciones import _una_fila
+from api.servicios.confirmaciones_necesidades import entradas_confirmadas, adaptar_entrada
 from contratos.errores import CodigoError
 from contratos.estados import EstadoValidacion
 from contratos.modelos import EvaluacionNecesidades, PoliticaPrioridad
@@ -144,7 +145,7 @@ def _revisiones(datos: PrepararPriorizacion, incidentes: list[dict]) -> dict[str
     return revisiones
 
 
-def _datos_version(origen: str, datos: PrepararPriorizacion, incidentes: list[dict], revisiones: dict) -> str:
+def _datos_version(origen: str, datos: PrepararPriorizacion, incidentes: list[dict], revisiones: dict, conservadas=None) -> str:
     """Cambia si cambia cualquier entrada del lote; repetir el mismo envío da la misma versión (idempotente)."""
     entradas = sorted(
         (
@@ -154,9 +155,17 @@ def _datos_version(origen: str, datos: PrepararPriorizacion, incidentes: list[di
         )
         for i in incidentes
     )
+    # La ejecución y datos_version cambian al reutilizar; la evidencia confirmada no.
+    conservadas_comparables = {
+        iid: {k: ({c: valor for c, valor in v.items() if c not in {'ejecucion_id', 'datos_version', 'creado_en'}}
+                  if k in {'solicitud_demanda', 'evaluacion'} else v)
+              for k, v in entrada.items()}
+        for iid, entrada in (conservadas or {}).items()
+    }
     huella = hashlib.sha256(
         json.dumps(
-            {"politica": datos.politica_version, "motivo": datos.motivo, "entradas": entradas},
+            {"politica": datos.politica_version, "motivo": datos.motivo, "entradas": entradas,
+             "confirmaciones_conservadas": conservadas_comparables},
             sort_keys=True,
             ensure_ascii=False,
             default=str,
@@ -294,11 +303,17 @@ def preparar_lote(db, usuario_id: UUID, ejecucion_id: UUID, datos: PrepararPrior
     _comprobar_ambito(incidentes, origen)
     politica = _politica(db, datos.politica_version)
     revisiones = _revisiones(datos, incidentes)
-    datos_version = _datos_version(origen, datos, incidentes, revisiones)
+    conservadas = {k: v for k, v in entradas_confirmadas(db, ejecucion_id, politica).items() if k not in revisiones}
+    # Rechazar también una versión que cambió entre las dos lecturas del contexto.
+    por_id = {str(i['incidente_id']): i for i in incidentes}
+    conservadas = {k: v for k, v in conservadas.items()
+                   if k in por_id and v['version_incidente'] == por_id[k]['version']}
+    datos_version = _datos_version(origen, datos, incidentes, revisiones, conservadas)
     ahora = _marca_de_tiempo(ejecucion, datos_version)
     try:
         entradas = [
-            _entrada(
+            adaptar_entrada(conservadas[str(i['incidente_id'])], ejecucion_id, datos_version, ahora)
+            if str(i['incidente_id']) in conservadas else _entrada(
                 ejecucion_id=ejecucion_id,
                 origen=origen,
                 datos_version=datos_version,
@@ -343,7 +358,8 @@ def preparar_lote(db, usuario_id: UUID, ejecucion_id: UUID, datos: PrepararPrior
             repetido=bool(fila.get("repetido", False)),
             datos_version=datos_version,
             incidentes=len(entradas),
-            sin_revisar=sum(1 for i in incidentes if str(i["incidente_id"]) not in revisiones),
+            sin_revisar=sum(1 for i in incidentes if str(i["incidente_id"]) not in revisiones
+                           and str(i['incidente_id']) not in conservadas),
         )
     except (ValueError, KeyError, TypeError, ValidationError):
         logger.error("La RPC %s devolvió una forma inesperada", RPC_PREPARAR)

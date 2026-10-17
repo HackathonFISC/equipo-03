@@ -1,5 +1,9 @@
 import { llamarConSesion } from './sesion.js'
 
+export function consultarConfirmaciones(ejecucionId, politica) {
+  return llamarConSesion(`/ejecuciones/${encodeURIComponent(ejecucionId)}/priorizacion/confirmaciones?politica_version=${encodeURIComponent(politica)}`)
+}
+
 // POST /ejecuciones/{id}/priorizacion: deja pendiente el lote que revisó el coordinador.
 // El servidor arma el lote con los incidentes reales; aquí solo se envía lo que la persona confirmó.
 export function prepararPriorizacion(ejecucionId, cuerpo) {

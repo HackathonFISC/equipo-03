@@ -34,6 +34,20 @@ router = APIRouter(
 ERRORES_INFRAESTRUCTURA = (APIError, httpx.HTTPError)
 
 
+@router.get('/{ejecucion_id}/priorizacion/confirmaciones')
+def confirmaciones(ejecucion_id: UUID, politica_version: str,
+                   usuario: UsuarioAutenticado = Depends(coordinador_actual), db=Depends(obtener_db)):
+    """Solo identidades/versiones reutilizables; POST vuelve a comprobar su vigencia."""
+    from api.servicios.confirmaciones_necesidades import entradas_confirmadas
+    try:
+        politica = priorizacion._politica(db, politica_version)
+        return [{'incidente_id': iid, 'version': entrada['version_incidente']}
+                for iid, entrada in entradas_confirmadas(db, ejecucion_id, politica).items()]
+    except ERRORES_INFRAESTRUCTURA:
+        raise ErrorApi(CodigoError.PROVEEDOR_NO_DISPONIBLE,
+                       'No se pudieron consultar las confirmaciones vigentes.', recuperable=True) from None
+
+
 @router.post(
     "/{ejecucion_id}/priorizacion",
     response_model=ResultadoPriorizacion,

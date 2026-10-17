@@ -6,7 +6,7 @@ Cada fuente conserva sus filas y su huella SHA-256. Regenerar antes de la entreg
 
 ## Fuente: emilia.md
 
-SHA-256: `6d11f1b7a37d9140c2bef21062124f829b66f612f5c6611263104ee2a7cdad06`
+
 
 # Bitácora de IA: emilia
 
@@ -79,12 +79,17 @@ ni aceptación humana. Se conserva el registro histórico anterior sin sustituir
 
 ## Fuente: jose.md
 
+<<<<<<< HEAD
+SHA-256: `c2c4d6b48f2ee058400c39f2c936f2a1661dc1b5445016293867f01a81131656`
+=======
 SHA-256: `efeaf89bceab4759bee2922023cb476dcc3ef3c24cf477fe3ef082bd093f5087`
+>>>>>>> 1c4df16bd6f82be4d1a0ff3ee6651e27739e93d3
 
 # Bitácora de IA: jose
 
 | Fecha y hora | Herramienta | Uso | Salida aprovechada | Cambios y revisión humana |
 | --- | --- | --- | --- | --- |
+| 2026-10-17 12:52 UTC−05:00 | Codex | Ajustar confirmaciones por incidente por solicitud explicita de Jose, autorizando API y frontend. | Reutilizacion parcial de entradas humanas persistidas con comparacion de ambito individual y guarda SQL 0017; conserva autor, fecha y datos sin conservar ranking. Formulario identifica puntos vigentes y ofrece modificar. POST revalida y nueva version estable en reenvios. | Regresiones: 638 pruebas y 33 subpruebas correctas; tras ampliar idempotencia y consulta autenticada, 49 focalizadas correctas; lint/build frontend correctos. Primera prueba en sandbox atascada por TestClient, detenida solo esa instancia y repetida fuera; nueve fallos iniciales del doble de BD corregidos para reconocer nueva consulta. Sin nueva migracion, escrituras remotas, envios, commit o push. Confirmaciones vencidas, conflictos y cambios del propio incidente siguen requiriendo revision. |
 | 2026-10-17 12:35 UTC−05:00 | Codex y documentacion oficial Gemini | Diagnosticar captura HTTP 429 tras prepago comunicado de 5 USD. | Clave del entorno de herramientas distinta de .env; codigo da prioridad al entorno. Prueba sintetica directa usando explicitamente .env: primer intento 400 por nivel minimal; corregido a low del proyecto obtiene HTTP 200. | No se conoce entorno efectivo del proceso API del usuario ni saldo/proyecto facturado. La generacion con clave del archivo funciona ahora; indicar reinicio API limpiando variable heredada en su terminal. No se reactivaron reportes, enviaron datos ciudadanos ni expusieron claves. Sin cambios de codigo, commit o push. |
 | 2026-10-17 12:02 UTC−05:00 | Codex | Activar envio automatico de avisos por instruccion explicita de Jose. | bot/bandeja.py: AVISOS_ACTIVOS pasa de False a True; sintaxis Python comprobada. | Se conservan reserva, autorizacion, vigencia, deduplicacion y registro existentes. Usuario reiniciara el bot; no se inicio receptor, envio adicional ni modifico estado remoto. Sin commit ni push. |
 | 2026-10-17 11:58 UTC−05:00 | Codex, Supabase, API y Telegram | Comunicar plan sintetico aprobado por solicitud de Jose a quienes reportaron en sus dos puntos; autorizacion explicita adicional para incluir el grupo de origen. | Comprobado plan version 1 aprobado/vigente; habilitados dos destinos de ensayo y suscripciones solo a su sector, seleccionados ambos sectores. Trabajador creo exactamente dos avisos pendientes; envio puntual mediante reserva API y enviar_uno existente: ambos enviados con identificador de Telegram y fecha persistidos. | Nuevo Arraijan 3000 L y Escuela El Coco 2100 L, con etiqueta ENSAYO SINTETICO, SIN ENTREGA REAL. Sin difusion general ni otro receptor getUpdates; AVISOS_ACTIVOS permanece False. Acuse de Telegram no acredita lectura ni entrega de agua. Evidencia y respaldo privados fuera del repositorio, sin publicar chat IDs ni secretos. Sin cambios de codigo, commit ni push. |
@@ -151,7 +156,7 @@ SHA-256: `efeaf89bceab4759bee2922023cb476dcc3ef3c24cf477fe3ef082bd093f5087`
 
 ## Fuente: noel.md
 
-SHA-256: `d950238959a7cf402e01994ec49102b6366cde5edc5f537e9b14b3c306aafec7`
+
 
 # Bitácora de IA: noel
 
