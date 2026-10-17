@@ -20,7 +20,7 @@ class NuevoReporteTelegram(BaseModel):
     message_id: IdPositivo
     # 4000 es el máximo de Texto en contratos/modelos.py; Telegram admite hasta 4096.
     texto: Annotated[str, Field(min_length=1, max_length=4000)]
-    fuente_texto: Literal["escrito", "transcripcion_audio"] = "escrito"
+    fuente_texto: Literal["escrito", "transcripcion_audio", "descripcion_imagen"] = "escrito"
 
     @field_validator("chat_id")
     @classmethod
@@ -34,7 +34,7 @@ class EntradaPanel(BaseModel):
     canal: Literal["telegram", "panel"]
     modalidad: Literal["texto", "voz", "foto", "ubicacion"]
     texto: str | None
-    fuente_texto: Literal["escrito", "transcripcion_audio"] = "escrito"
+    fuente_texto: Literal["escrito", "transcripcion_audio", "descripcion_imagen"] = "escrito"
 
 
 class RegistradoPanel(BaseModel):
@@ -161,11 +161,11 @@ class RespuestaDelBot(Peticion):
     message_id: IdPositivo
     texto: Annotated[str, Field(min_length=1, max_length=4000)] | None = None
     ubicacion: UbicacionTelegram | None = None
-    fuente_texto: Literal["escrito", "transcripcion_audio"] = "escrito"
+    fuente_texto: Literal["escrito", "transcripcion_audio", "descripcion_imagen"] = "escrito"
 
     @model_validator(mode="after")
     def un_contenido(self):
-        if self.fuente_texto == "transcripcion_audio" and self.texto is None:
+        if self.fuente_texto != "escrito" and self.texto is None:
             raise ValueError("Una transcripción requiere texto")
         if (self.texto is None) == (self.ubicacion is None):
             raise ValueError("La respuesta lleva texto o ubicación, uno de los dos")
@@ -521,3 +521,30 @@ class AudioTelegram(Peticion):
 class AudioTranscrito(BaseModel):
     texto: str
     fuente_texto: Literal['transcripcion_audio'] = 'transcripcion_audio'
+
+
+class ImagenTelegram(Peticion):
+    usuario_telegram_id: IdPositivo
+    chat_id: Annotated[int, Field(strict=True)]
+    message_id: IdPositivo
+    mime_type: Literal['image/jpeg', 'image/png']
+    imagen_base64: str = Field(min_length=1, max_length=6990508, repr=False)
+    caption: str = Field(default='', max_length=1024)
+
+    @field_validator('chat_id')
+    @classmethod
+    def chat_no_cero_imagen(cls, valor):
+        if valor == 0:
+            raise ValueError('chat_id no puede ser 0')
+        return valor
+
+    @model_validator(mode='after')
+    def archivo_valido(self):
+        from comun.imagen import decodificar_imagen
+        decodificar_imagen(self.imagen_base64, self.mime_type)
+        return self
+
+
+class ImagenInterpretada(BaseModel):
+    texto: str
+    fuente_texto: Literal['descripcion_imagen'] = 'descripcion_imagen'

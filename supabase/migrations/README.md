@@ -266,3 +266,10 @@ Después de 0018. `ra_actualizar_matriz_planificacion` permite al trabajador ree
 ### 0020 — Transcripciones de audio
 
 Después de 0019. Agrega reportes.fuente_texto y aclaraciones.respuesta_fuente_texto, con valor previo escrito. La RPC ra_aceptar_respuesta_audio conserva controles de autor, pregunta, plazo e idempotencia y marca la procedencia en la misma transacción. Solo service_role puede ejecutarla. No guarda grabaciones ni cambia permisos de distribución. Prueba local: `../tests/0020_integracion_local.mjs`.
+
+## 0022: fotos de Telegram
+
+Después de 0020_transcripciones_audio.sql y 0021_validar_lugar.sql, aplicar
+0022_descripciones_imagen.sql. Agrega procedencia descripcion_imagen y una RPC
+para respuestas por foto con los controles de autor, plazo y repetición existentes.
+Ver [guía de fotos](../../docs/IMAGENES_TELEGRAM.md).

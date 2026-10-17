@@ -210,6 +210,9 @@ function FilaReporte({ item, alQuitar }) {
           {registrado.entrada.fuente_texto === 'transcripcion_audio' && (
             <p className="ficha-resumen">Transcripción automática de un mensaje de audio.</p>
           )}
+          {registrado.entrada.fuente_texto === 'descripcion_imagen' && (
+            <p className="ficha-resumen">Descripción automática de una foto y su texto adjunto. Imagen original no conservada.</p>
+          )}
           {ubicacion && (
             <div className="evidencia">
               <h3>{localizacion ? 'Ubicación resuelta automáticamente' : 'Ubicación recibida por Telegram'}</h3>

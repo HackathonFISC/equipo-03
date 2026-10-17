@@ -207,3 +207,7 @@ con un pin fijo, y abrir el reporte en el panel con sesión iniciada.
 ## Audio
 
 Notas de voz y archivos OGG/MP3/WAV/FLAC de hasta 2 minutos y 2 MiB. En grupos, solo replies al bot o menciones en la descripción del archivo. La transcripción se hace en la API y sigue como reporte o aclaración, con los mismos límites y controles. Requiere migración 0020 y GEMINI_API_KEY en el backend. Ver [guía](../docs/AUDIO_TELEGRAM.md).
+
+## Fotos de Telegram
+
+Fotos individuales de hasta 5 MiB con texto adjunto opcional. Requiere migración 0022 y GEMINI_API_KEY. Ver [guía de imágenes](../docs/IMAGENES_TELEGRAM.md).

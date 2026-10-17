@@ -47,6 +47,16 @@
           "default": null,
           "title": "Texto"
         },
+        "fuente_texto": {
+          "default": "escrito",
+          "enum": [
+            "escrito",
+            "transcripcion_audio",
+            "descripcion_imagen"
+          ],
+          "title": "Fuente Texto",
+          "type": "string"
+        },
         "adjunto_id": {
           "anyOf": [
             {
@@ -110,7 +120,8 @@
             "catalogo",
             "compartida",
             "coordinador",
-            "escenario"
+            "escenario",
+            "geocodificada"
           ],
           "title": "Fuente",
           "type": "string"
