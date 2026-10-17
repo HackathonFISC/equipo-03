@@ -66,3 +66,11 @@ reservas de Planificación. No crea cuentas ni aprueba/publica planes. Permite
 varios coordinadores activos; el alta es administrativa y separada de la migración.
 Guía, firmas, comandos y límites en [V3_EMILIA](../../docs/V3_EMILIA.md).
 Probada en PostgreSQL temporal; 0009 no aplicada a Supabase real por Codex.
+
+
+## Ensayos aislados para cerrar V2 (0010)
+
+`0010_ensayos_priorizacion_v2.sql` requiere 0008 y catálogo, no 0009. Conserva las
+firmas V2 y aísla los casos calculable/insuficiente sin cambiar Telegram. Ejecutar
+su smoke completo con ROLLBACK. No aplicada por Codex a Supabase real. Guía y
+consulta para Noel: [ENSAYO_PRIORIZACION_V2](../../docs/ENSAYO_PRIORIZACION_V2.md).
