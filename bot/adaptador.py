@@ -15,9 +15,9 @@ from telegram.error import BadRequest, Forbidden, TelegramError
 
 logger = logging.getLogger("bot.adaptador")
 
-# Apagado hasta que Emilia aplique la migración con las RPC de aclaración en Supabase.
-# Mientras sea False: no se consultan pendientes y un reply al bot se trata como reporte nuevo.
-ACLARACIONES_ACTIVAS = False
+# Requiere la migración 0006 de Emilia (ya aplicada) y GUARDAR_DESTINO_ORIGEN = True en la API.
+# Con False: no se consultan pendientes y un reply al bot se trata como reporte nuevo.
+ACLARACIONES_ACTIVAS = True
 
 INTERVALO_SEGUNDOS = 7  # Acordado: consultar cada 5–10 s.
 MAX_POR_CICLO = 10  # Evita que un lote grande bloquee el bot en un solo ciclo.

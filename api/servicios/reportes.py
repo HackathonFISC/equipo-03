@@ -29,10 +29,9 @@ CANAL = "telegram"
 ORIGEN = "sintetico"  # D003: todos los reportes de V1 se guardan como sintéticos.
 UNICA_VIOLACION = "23505"
 
-# reportes.destino_origen_id llega con la migración de aclaraciones de Emilia (V2).
-# Mientras no esté aplicada en Supabase, el destino se registra pero no se enlaza al reporte.
-# Pasar a True solo después de aplicar esa migración.
-GUARDAR_DESTINO_ORIGEN = False
+# reportes.destino_origen_id existe desde la migración 0006 de Emilia, ya aplicada en Supabase.
+# Con False, el destino se registra pero no se enlaza al reporte y sus aclaraciones pasan a revisión.
+GUARDAR_DESTINO_ORIGEN = True
 
 
 def _buscar(db, tabla: str, columnas: str, **filtros) -> dict | None:
