@@ -1,6 +1,6 @@
 """Pruebas de las rutas de la bandeja de salida con RPC simuladas (sin red ni claves).
 
-Las RPC reales son de la migración 0010; aquí solo se comprueba lo que hace la API con lo que devuelven.
+Las RPC reales son de la migración 0011; aquí solo se comprueba lo que hace la API con lo que devuelven.
 """
 import json
 from uuid import uuid4

@@ -16,7 +16,7 @@ from bot.plantillas import texto_aviso
 
 logger = logging.getLogger("bot.bandeja")
 
-# Requiere la migración 0010 aplicada. Con False, el bot no consulta avisos pendientes.
+# Requiere la migración 0011 aplicada. Con False, el bot no consulta avisos pendientes.
 AVISOS_ACTIVOS = False
 
 INTERVALO_SEGUNDOS = 7

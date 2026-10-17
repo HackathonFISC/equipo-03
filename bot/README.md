@@ -84,7 +84,7 @@ El plazo de 30 minutos y el cambio a `espera_revision` los controla la RPC de Em
 
 ## Envío de avisos aprobados (V4)
 
-`bandeja.py`, si `AVISOS_ACTIVOS` es `True` (hoy `False`: requiere la migración 0010):
+`bandeja.py`, si `AVISOS_ACTIVOS` es `True` (hoy `False`: requiere la migración 0011):
 
 1. Cada 7 segundos pide a la API el siguiente aviso vigente (hasta 10 por ciclo).
 2. Arma el mensaje con `plantillas.py` a partir de lugar, litros, ventana y versión. El bot no
@@ -125,5 +125,5 @@ Con API y Telegram simulados (`httpx.MockTransport`):
 
 ## Pendiente
 
-- V4: activar `AVISOS_ACTIVOS` cuando se aplique la migración 0010 y haya un plan aprobado.
+- V4: activar `AVISOS_ACTIVOS` cuando se aplique la migración 0011 y haya un plan aprobado.
   Envío de un aviso real a un chat de prueba: sin probar contra Telegram.
