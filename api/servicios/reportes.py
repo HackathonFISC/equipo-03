@@ -107,9 +107,9 @@ def _destino(db, chat_id: int, usuario_telegram_id: int, remitente_ref: str) -> 
 
 
 def _reporte(
-    db, remitente_ref: str, destino_id: str, mensaje_externo_id: str, texto: str
+    db, remitente_ref: str, destino_id: str, mensaje_externo_id: str, texto: str, fuente_texto: str = "escrito"
 ) -> tuple[dict, bool]:
-    columnas = "reporte_id,remitente_ref,creado_en,texto"
+    columnas = "reporte_id,remitente_ref,creado_en,texto,fuente_texto"
 
     def buscar():
         return _buscar(
@@ -129,6 +129,7 @@ def _reporte(
                 "mensaje_externo_id": mensaje_externo_id,
                 "modalidad": "texto",
                 "texto": texto,
+                **({"fuente_texto": fuente_texto} if fuente_texto != "escrito" else {}),
                 "origen": ORIGEN,
                 **({"destino_origen_id": destino_id} if GUARDAR_DESTINO_ORIGEN else {}),
             },
@@ -165,7 +166,7 @@ def registrar_reporte_telegram(db, datos: NuevoReporteTelegram) -> tuple[Reporte
     mensaje_externo_id = f"{datos.chat_id}:{datos.message_id}"
     remitente_ref = _remitente(db, str(datos.usuario_telegram_id))
     destino_id = _destino(db, datos.chat_id, datos.usuario_telegram_id, remitente_ref)
-    fila, nuevo = _reporte(db, remitente_ref, destino_id, mensaje_externo_id, datos.texto)
+    fila, nuevo = _reporte(db, remitente_ref, destino_id, mensaje_externo_id, datos.texto, datos.fuente_texto)
     ejecucion_id = _ejecucion(db, fila["reporte_id"])
     registrado = ReporteRegistrado(
         ejecucion_id=ejecucion_id,
@@ -177,7 +178,8 @@ def registrar_reporte_telegram(db, datos: NuevoReporteTelegram) -> tuple[Reporte
             mensaje_externo_id=mensaje_externo_id,
             remitente_ref=UUID(str(remitente_ref)),
             modalidad="texto",
-            texto=datos.texto,
+            texto=fila["texto"],
+            fuente_texto=fila.get("fuente_texto", "escrito"),
         ),
     )
     return registrado, nuevo
@@ -229,7 +231,7 @@ def listar_reportes(db, limite: int) -> list[ReporteListado]:
     """Reportes más recientes primero, sin identificadores del remitente."""
     filas = (
         db.table("reportes")
-        .select("reporte_id,canal,modalidad,texto,interpretacion,ubicacion_compartida,localizacion_resuelta,origen,creado_en,ejecuciones(ejecucion_id,estado,etapa),aclaraciones(respuesta_ubicacion,respondida_en)")
+        .select("reporte_id,canal,modalidad,texto,fuente_texto,interpretacion,ubicacion_compartida,localizacion_resuelta,origen,creado_en,ejecuciones(ejecucion_id,estado,etapa),aclaraciones(respuesta_ubicacion,respondida_en)")
         .order("creado_en", desc=True)
         .limit(limite)
         .execute()
@@ -250,7 +252,8 @@ def listar_reportes(db, limite: int) -> list[ReporteListado]:
                     creado_en=fila["creado_en"],
                     origen=fila["origen"],
                     entrada=EntradaPanel(
-                        canal=fila["canal"], modalidad=fila["modalidad"], texto=fila["texto"]
+                        canal=fila["canal"], modalidad=fila["modalidad"], texto=fila["texto"],
+                        fuente_texto=fila.get("fuente_texto", "escrito")
                     ),
                 ),
                 interpretado=InterpretadoPanel(interpretacion=interpretacion)

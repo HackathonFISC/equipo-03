@@ -116,7 +116,7 @@ def aceptar_respuesta(db, datos: RespuestaDelBot) -> ResultadoRespuesta:
         ).model_dump(mode="json")
     fila = _una_fila(
         db.rpc(
-            RPC_ACEPTAR_RESPUESTA,
+            "ra_aceptar_respuesta_audio" if datos.fuente_texto == "transcripcion_audio" else RPC_ACEPTAR_RESPUESTA,
             {
                 "p_chat_id": str(datos.chat_id),
                 "p_pregunta_mensaje_id": str(datos.pregunta_mensaje_id),

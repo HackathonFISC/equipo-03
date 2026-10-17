@@ -77,17 +77,21 @@ def interpretar_reporte(reporte: ReporteRegistrado, extractor: Extractor, *, int
         raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Un reporte interpretado de agua requiere evidencia textual.')
     evidencia = Evidencia(
         evidencia_id=uuid5(reporte.reporte_id, 'texto_original'), reporte_id=reporte.reporte_id,
-        tipo='texto', referencia=f'reportes/{reporte.reporte_id}/texto',
-        descripcion='Texto original persistido; las citas se cotejaron ignorando solo acentos, mayúsculas y espacios, conservando el fragmento original.',
+        tipo='audio' if reporte.entrada.fuente_texto == 'transcripcion_audio' else 'texto', referencia=f'reportes/{reporte.reporte_id}/texto',
+        descripcion=('Transcripción automática persistida; citas cotejadas contra la transcripción, no contra el audio original.'
+                     if reporte.entrada.fuente_texto == 'transcripcion_audio' else
+                     'Texto original persistido; las citas se cotejaron ignorando solo acentos, mayúsculas y espacios, conservando el fragmento original.'),
         campos_respaldados=['entrada.texto'],
     )
     evidencias = [evidencia]
     ubicacion_compartida = reporte.entrada.ubicacion_compartida
     for aclaracion in aclaraciones:
-        tipo = 'ubicacion' if aclaracion.get('respuesta_ubicacion') else 'texto'
+        tipo = ('ubicacion' if aclaracion.get('respuesta_ubicacion') else
+                'audio' if aclaracion.get('respuesta_fuente_texto') == 'transcripcion_audio' else 'texto')
         evidencias.append(Evidencia(evidencia_id=uuid5(reporte.reporte_id, 'aclaracion:' + str(aclaracion['aclaracion_id'])),
             reporte_id=reporte.reporte_id, tipo=tipo, referencia='aclaraciones/' + str(aclaracion['aclaracion_id']),
-            descripcion='Respuesta aceptada con identidad y pregunta verificadas; se conserva separada del texto original.',
+            descripcion=('Transcripción automática de respuesta de audio; identidad y pregunta verificadas; no se conserva el audio original.'
+                         if tipo == 'audio' else 'Respuesta aceptada con identidad y pregunta verificadas; se conserva separada del texto original.'),
             campos_respaldados=['ubicacion_compartida' if tipo == 'ubicacion' else 'interpretacion']))
         if tipo == 'ubicacion':
             from contratos.modelos import Ubicacion
@@ -139,7 +143,8 @@ def reconstruir_reporte(filas: dict) -> ReporteRegistrado:
     return ReporteRegistrado.model_validate({
         'esquema_version': r['esquema_version'], 'ejecucion_id': e['ejecucion_id'],
         'creado_en': r['creado_en'], 'origen': r['origen'], 'reporte_id': r['reporte_id'],
-        'entrada': {k: r.get(k) for k in ('canal', 'mensaje_externo_id', 'remitente_ref', 'modalidad', 'texto', 'ubicacion_compartida')},
+        'entrada': {**{k: r.get(k) for k in ('canal', 'mensaje_externo_id', 'remitente_ref', 'modalidad', 'texto', 'ubicacion_compartida')},
+                    'fuente_texto': r.get('fuente_texto', 'escrito')},
     })
 
 

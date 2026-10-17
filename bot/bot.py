@@ -22,6 +22,8 @@ o TELEGRAM_CHAT_IDS_PRUEBA. Opcionales: API_URL (por defecto http://127.0.0.1:80
 BOT_LIMITE_USUARIO, BOT_LIMITE_TOTAL y BOT_VENTANA_MINUTOS.
 """
 import asyncio
+import base64
+from math import ceil
 import html
 import logging
 import os
@@ -44,6 +46,7 @@ from telegram.ext import (
     filters,
 )
 
+from comun.audio import MAX_AUDIO_BYTES, MAX_AUDIO_SEGUNDOS, MIMES_AUDIO, decodificar_audio
 from bot import adaptador, bandeja, limites
 from bot.adaptador import MENSAJES_RESULTADO, ciclo_envio, entregar_respuesta, es_reply_al_bot
 
@@ -56,6 +59,10 @@ MAX_TEXTO = 4000  # Máximo del contrato; Telegram admite hasta 4096.
 # Acuse neutral: el bot no sabe si es un reporte hasta que lo analiza la Ingesta.
 MENSAJE_RECIBIDO = "Recibimos tu mensaje. Código: {codigo}."
 MENSAJE_REPETIDO = "Ya habíamos recibido este mensaje. Código: {codigo}."
+MENSAJE_AUDIO_LIMITE = "Envía un audio de hasta 2 minutos y 2 MB, o escribe el reporte."
+MENSAJE_AUDIO_FORMATO = "Envía una nota de voz o un archivo OGG, MP3, WAV o FLAC. También puedes escribir el reporte."
+MENSAJE_AUDIO_FALLO = "No pudimos transcribir tu audio ahora. Inténtalo más tarde o escribe el mensaje."
+MENSAJE_AUDIO_INCIERTO = "No se entendió el audio con claridad. Envía una grabación más clara o escribe el mensaje."
 # Mensaje sin relación con el agua (saludo, prueba, charla): la Ingesta lo cierra como fuera de alcance y no
 # puede preguntar. El bot lo orienta con preguntas concretas y abre la respuesta enlazada: lo que la persona
 # conteste llega como reporte nuevo.
@@ -97,7 +104,7 @@ MENSAJE_SOLO_TEXTO = (
 )
 MENSAJE_AYUDA = (
     "Hola. Soy el bot de H2Oeste y sirvo para reportar falta de agua.\n\n"
-    "Escribe en un solo mensaje:\n"
+    "Escribe o envía un audio de hasta 2 minutos y 2 MB con estos datos:\n"
     "• Dónde: el lugar o punto de atención.\n"
     "• Desde cuándo no llega el agua.\n"
     "• Cuántas personas están afectadas.\n"
@@ -255,6 +262,8 @@ async def _responder_aclaracion(mensaje, chat, usuario, cliente, contenido: dict
                 "Recibimos la ubicación del problema y quedó asociada a tu reporte para localizarlo automáticamente. "
                 "No confirma un punto de distribución."
             )
+        elif contenido.get("fuente_texto") == "transcripcion_audio" and resultado in {"aceptada", "repetida"}:
+            await mensaje.reply_text("Recibimos tu respuesta transcrita del audio.")
         else:
             await mensaje.reply_text(MENSAJES_RESULTADO[resultado])
     return resultado
@@ -293,6 +302,11 @@ async def atender_boton(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 
 async def recibir_texto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await _recibir_contenido(update, context, update.effective_message.text or "")
+
+
+async def _recibir_contenido(update: Update, context: ContextTypes.DEFAULT_TYPE, texto: str,
+                            *, fuente_texto="escrito", limite_verificado=False, audio_dirigido=False) -> None:
     """Texto de un chat autorizado: respuesta de aclaración si es reply al bot; si no, reporte."""
     origen = _origen_valido(update, context)
     if origen is None:
@@ -300,9 +314,9 @@ async def recibir_texto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     chat, mensaje, usuario = origen
     cliente: httpx.AsyncClient = context.application.bot_data["cliente_api"]
 
-    texto = mensaje.text or ""
     dirigido = es_reply_al_bot(mensaje, _id_del_bot(context))
     texto, mencionado = _sin_mencion(texto, _usuario_del_bot(context))
+    mencionado = mencionado or audio_dirigido
     pregunta_id = _pregunta_a_responder(mensaje, chat, usuario, dirigido)
     if _es_grupo(chat) and not (dirigido or mencionado or pregunta_id is not None):
         # En grupos solo se atiende lo dirigido al bot o la respuesta de quien tiene una pregunta abierta;
@@ -316,11 +330,14 @@ async def recibir_texto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         await mensaje.reply_text(MENSAJE_LARGO)
         return
 
-    if not await _dentro_del_limite(mensaje, usuario, context):
+    if not limite_verificado and not await _dentro_del_limite(mensaje, usuario, context):
         return
 
     if pregunta_id is not None:
-        resultado = await _responder_aclaracion(mensaje, chat, usuario, cliente, {"texto": texto}, pregunta_id)
+        resultado = await _responder_aclaracion(mensaje, chat, usuario, cliente, {
+            "texto": texto,
+            **({"fuente_texto": fuente_texto} if fuente_texto != "escrito" else {}),
+        }, pregunta_id)
         if resultado != "no_encontrada":
             return
         # No era respuesta a una pregunta (por ejemplo, un reply a "Recibimos tu reporte"): es un reporte nuevo.
@@ -337,6 +354,7 @@ async def recibir_texto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
                 "chat_id": chat.id,
                 "message_id": mensaje.message_id,
                 "texto": texto,
+                **({"fuente_texto": fuente_texto} if fuente_texto != "escrito" else {}),
             },
         )
     except httpx.HTTPError as error:
@@ -349,11 +367,12 @@ async def recibir_texto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         # La pregunta de aclaración llegará después y solo traerá el id de este mensaje: se guarda quién lo envió.
         adaptador.recordar_autor(chat.id, mensaje.message_id, usuario.id)
     if respuesta.status_code == 201 and codigo:
+        prefijo = "Transcribimos tu audio. " if fuente_texto == "transcripcion_audio" else ""
         if parece_reporte_de_agua(texto):
-            await mensaje.reply_text(MENSAJE_RECIBIDO.format(codigo=codigo))
+            await mensaje.reply_text(prefijo + MENSAJE_RECIBIDO.format(codigo=codigo))
         else:
             await mensaje.reply_text(
-                MENSAJE_ORIENTA.format(codigo=codigo),
+                prefijo + MENSAJE_ORIENTA.format(codigo=codigo),
                 reply_markup=ForceReply(selective=True, input_field_placeholder=PISTA_ORIENTA),
             )
     elif respuesta.status_code == 200 and codigo:
@@ -362,6 +381,64 @@ async def recibir_texto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         # 403 aquí significa que API_SECRETO_BOT no coincide con el de la API.
         logger.error("La API respondió con el código %s", respuesta.status_code)
         await mensaje.reply_text(MENSAJE_FALLO)
+
+
+async def recibir_audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    origen = _origen_valido(update, context)
+    if origen is None:
+        return
+    chat, mensaje, usuario = origen
+    dirigido = es_reply_al_bot(mensaje, _id_del_bot(context))
+    _, mencionado = _sin_mencion(getattr(mensaje, 'caption', None) or '', _usuario_del_bot(context))
+    pregunta_id = _pregunta_a_responder(mensaje, chat, usuario, dirigido)
+    if _es_grupo(chat) and not (dirigido or mencionado or pregunta_id is not None):
+        return
+    media = getattr(mensaje, 'voice', None) or getattr(mensaje, 'audio', None)
+    if media is None:
+        return
+    duracion = media.duration
+    duracion = ceil(duracion.total_seconds()) if hasattr(duracion, 'total_seconds') else duracion
+    tamano = getattr(media, 'file_size', None)
+    if not duracion or duracion > MAX_AUDIO_SEGUNDOS or (tamano is not None and tamano > MAX_AUDIO_BYTES):
+        await mensaje.reply_text(MENSAJE_AUDIO_LIMITE)
+        return
+    mime = getattr(media, 'mime_type', None) or ('audio/ogg' if getattr(mensaje, 'voice', None) else '')
+    mime = {'audio/x-wav':'audio/wav','audio/x-flac':'audio/flac','audio/opus':'audio/ogg'}.get(mime, mime)
+    if mime not in MIMES_AUDIO:
+        await mensaje.reply_text(MENSAJE_AUDIO_FORMATO)
+        return
+    if not await _dentro_del_limite(mensaje, usuario, context):
+        return
+    try:
+        archivo = await media.get_file()
+        if getattr(archivo, 'file_size', None) is not None and archivo.file_size > MAX_AUDIO_BYTES:
+            await mensaje.reply_text(MENSAJE_AUDIO_LIMITE)
+            return
+        audio = await archivo.download_as_bytearray()
+        if len(audio) > MAX_AUDIO_BYTES:
+            await mensaje.reply_text(MENSAJE_AUDIO_LIMITE)
+            return
+        codificado = base64.b64encode(audio).decode('ascii')
+        decodificar_audio(codificado, mime)
+    except (TelegramError, httpx.HTTPError, ValueError):
+        await mensaje.reply_text(MENSAJE_AUDIO_FALLO)
+        return
+    cliente = context.application.bot_data['cliente_api']
+    try:
+        respuesta = await cliente.post('/audio/transcribir', timeout=75, json={
+            'usuario_telegram_id':usuario.id, 'chat_id':chat.id, 'message_id':mensaje.message_id,
+            'mime_type':mime, 'duracion_segundos':duracion, 'audio_base64':codificado})
+        if respuesta.status_code != 200:
+            await mensaje.reply_text(MENSAJE_AUDIO_INCIERTO if respuesta.status_code == 422 else MENSAJE_AUDIO_FALLO)
+            return
+        texto = respuesta.json()['texto']
+        if not isinstance(texto, str) or not texto.strip() or len(texto) > MAX_TEXTO:
+            raise ValueError()
+    except (httpx.HTTPError, ValueError, KeyError, TypeError):
+        await mensaje.reply_text(MENSAJE_AUDIO_FALLO)
+        return
+    await _recibir_contenido(update, context, texto, fuente_texto='transcripcion_audio',
+                            limite_verificado=True, audio_dirigido=dirigido or mencionado)
 
 
 async def recibir_ubicacion(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -490,6 +567,7 @@ def main() -> None:
     app.add_handler(CallbackQueryHandler(atender_boton))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, recibir_texto))
     app.add_handler(MessageHandler(filters.LOCATION, recibir_ubicacion))
+    app.add_handler(MessageHandler(filters.VOICE | filters.AUDIO, recibir_audio))
 
     if publico:
         logger.warning(

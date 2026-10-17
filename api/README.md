@@ -310,3 +310,8 @@ Ver [activación y límites](../docs/LOCALIZACION_AUTOMATICA.md).
 ### Rutas Google
 
 Con sesión: GET `/planes/destinos-localizados` lista reportes con coordenadas vigentes y depósitos activos. POST `/planes/ruta-localizada` recibe `{deposito_id, reportes_ids}` (1–6 IDs únicos); devuelve orden vial, minutos, metros y navegación, sin guardar un plan ni asignar litros. GET `/planes` agrega `navegacion_url` y `tramos_navegacion` por cisterna, usando coordenadas del snapshot. Ver [guía](../docs/RUTAS_GOOGLE.md).
+
+
+### Transcripción de audio (0020)
+
+POST `/audio/transcribir` es exclusivo del bot: recibe identidad Telegram, mime_type, duracion_segundos y audio_base64 (máximo 2 minutos/2 MiB). Devuelve texto y fuente_texto=transcripcion_audio. No almacena la grabación. POST /reportes y /aclaraciones/respuestas admiten esa procedencia con el secreto del bot. GET /reportes muestra fuente_texto en registrado.entrada. Requiere migración 0020 antes de iniciar la API. Ver [audio](../docs/AUDIO_TELEGRAM.md).

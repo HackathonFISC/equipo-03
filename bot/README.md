@@ -202,3 +202,8 @@ Reiniciar API y bot, y reconstruir el frontend para usar esta mejora. Utiliza
 las tablas y RPC existentes de aclaraciones y la nueva migración 0018 de localización automática. Para resolver direcciones sin pin, configurar GOOGLE_MAPS_API_KEY. Ver [guía](../docs/LOCALIZACION_AUTOMATICA.md).
 Prueba manual: enviar un reporte con un barrio desconocido, responder a la pregunta
 con un pin fijo, y abrir el reporte en el panel con sesión iniciada.
+
+
+## Audio
+
+Notas de voz y archivos OGG/MP3/WAV/FLAC de hasta 2 minutos y 2 MiB. En grupos, solo replies al bot o menciones en la descripción del archivo. La transcripción se hace en la API y sigue como reporte o aclaración, con los mismos límites y controles. Requiere migración 0020 y GEMINI_API_KEY en el backend. Ver [guía](../docs/AUDIO_TELEGRAM.md).
