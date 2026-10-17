@@ -86,3 +86,5 @@
 .rev-calculo { margin: 0; font-size: 14px; color: var(--tinta); }
 .rev-calculo-ok { color: var(--exito); font-weight: 600; }
 .rev-calculo-aviso { color: var(--ambar); font-weight: 600; }
+
+.rev-aviso-lugar { margin: 0 0 12px; padding: 10px 14px; background: var(--error-fondo); border-left: 4px solid var(--ladrillo); border-radius: 8px; color: var(--ladrillo); font-size: 14px; }
