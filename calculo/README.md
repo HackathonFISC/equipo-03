@@ -4,6 +4,15 @@
 
 demanda, prioridad, matriz, solver, verificador, orden_llegada
 
+## Tools de necesidad V2
+
+Disponibles `calculo.demanda.validate_need` y `calculo.prioridad.score_needs` con los contratos compartidos. Consultar [reglas y límites de V2](NECESIDADES_V2.md).
+
+```powershell
+.\.venv\Scripts\python.exe -m calculo.demo_v2
+.\.venv\Scripts\python.exe -m pytest calculo/tests/test_necesidades_v2.py -q
+```
+
 ## Solver mínimo V1
 
 Desde la raíz del repositorio, con el entorno V0 instalado:

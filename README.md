@@ -46,6 +46,15 @@ Consulta [el alcance del ensayo V1](calculo/README.md). La demo calcula rutas lo
 
 ## Evals
 
+Para probar demanda y prioridad de V2 sin servicios externos:
+
+```powershell
+.\.venv\Scripts\python.exe -m calculo.demo_v2
+.\.venv\Scripts\python.exe -m pytest calculo/tests/test_necesidades_v2.py -q
+```
+
+Consultar [las tools de V2](calculo/NECESIDADES_V2.md). La demo usa confirmaciones ficticias y no activa la política del escenario compartido.
+
 Al menos 15 casos de prueba, métrica y resultados.
 
 ## Bitácora de IA
