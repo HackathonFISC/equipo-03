@@ -1,5 +1,9 @@
 # Ingesta de texto V1
 
+Actualización A4 del 17/10: el código actual requiere **0015** después de 0014.
+Ver [guía vigente de robustez](../docs/INGESTA_A4.md) antes de desplegar.
+Las descripciones V1 siguientes conservan el contexto de su implementación inicial.
+
 Emilia mantiene `ingesta.py`, `gemini.py`, `trazas.py` y las RPC de la migración
 0005. Noel crea reportes y ejecuciones; el bot y la API continúan siendo suyos.
 Ingesta lee directamente Supabase mediante `comun.db`; no necesita un endpoint
@@ -57,7 +61,9 @@ normal de BD solo imprime estado, etapa e ID de ejecución, sin el reporte.
 `ra_tomar_ingesta` bloquea la fila de ejecución y comprueba estado `pendiente`
 y etapa `ingesta`. Solo un consumidor obtiene la fila; los demás reciben null
 y no llaman a Gemini. La toma registra trabajador, intento y reserva de 180
-segundos. Gemini tiene un timeout de 45 segundos y no se reintenta automáticamente.
+segundos. Gemini tiene un timeout de 45 segundos por intento. Desde 0015, un error
+recuperable confirmado puede programar hasta dos reintentos en BD, separados por
+cinco y diez segundos. El trabajador reanuda; la llamada individual no tiene bucle HTTP.
 
 `ra_finalizar_ingesta` comprueba dueño de la reserva, vencimiento y snapshot del
 reporte. Guarda extracción/evidencias, evento y transición en **una transacción**.
@@ -69,7 +75,9 @@ puede ejecutar estas RPC; usan SECURITY INVOKER y no habilitan acceso público.
 | Texto de agua interpretado | pendiente | territorial |
 | Necesita aclaración | espera_aclaracion | ingesta |
 | Fuera del alcance de agua | completada | terminada |
-| Entrada o proveedor inválido | fallida | ingesta |
+| Entrada o respuesta no recuperable inválida | fallida | ingesta |
+| Error recuperable confirmado con presupuesto | espera_validacion hasta el plazo | ingesta |
+| Presupuesto agotado o configuración inválida | espera_revision | ingesta |
 
 La rama fuera de alcance es una decisión conservadora de implementación: no
 avanza ni envía una aclaración de agua a una entrada ajena al problema. Revisar
@@ -98,13 +106,15 @@ trabajador: un consumidor anterior no puede finalizar con una reserva obsoleta.
   no se accede a Storage ni se supone que ya se transcribieron.
 - Fechas con zona, unidades y UUID según los contratos existentes. No se
   alteran contratos, semilla, prioridad, planes, aprobaciones ni avisos.
-- Cada cita debe ser fragmento literal del original. Ubicación, institución y
+- Cada cita se coteja ignorando solo acentos, mayúsculas y espacios; se conserva el fragmento literal original. Ubicación, institución y
   vulnerabilidad declaradas también son texto literal. La evidencia estructurada
   referencia el original; cotejar una cita no demuestra que una afirmación sea
   verdadera en el mundo real ni que todos los matices semánticos sean correctos.
-- Guardia numérica V1: dígitos con horas/días (conversión a horas) y población
+- Guardia numérica actual: dígitos con horas/h/hr/hrs/hs, días y semanas
+  (conversión a horas), «medio día» = 12 horas, y población
   expresada como personas/habitantes/residentes/vecinos/afectados o «somos N».
-  No acepta cifras extraídas sin respaldo en esas formas. Cantidades solo en
+  «Somos N familias» no significa N personas; no se multiplica por un promedio.
+  Una cifra extraída sin respaldo queda null con faltante y aclaración. Cantidades solo en
   palabras o expresiones ambiguas se dejan en null y requieren aclaración.
   No se convierte desconocido en cero. Ampliar el lenguaje requiere pruebas.
 - El sistema separa instrucciones del reporte, rechaza campos extra y nunca
@@ -152,8 +162,9 @@ Google explica que el límite incluye tokens de razonamiento y recomienda
 para evitar respuestas vacías o truncadas. Es una mitigación, no una garantía
 contra indisponibilidad ni una prueba de la causa de un fallo histórico.
 
-No hay reparación de JSON truncado, aceptación de campos extra ni reintento
-automático. Las comprobaciones de citas, cantidades y permisos siguen vigentes.
+No hay reparación de JSON truncado ni aceptación de campos extra. Desde 0015
+los errores recuperables tienen reintento persistido y acotado; la llamada HTTP
+individual sigue siendo única. Las comprobaciones de citas, cantidades y permisos siguen vigentes.
 Un HTTP 503 es disponibilidad del proveedor, distinto de JSON fuera del contrato.
 
 Verificación local: 554 pruebas Python, 66 subpruebas; comprobaciones nuevas de
@@ -164,6 +175,7 @@ la configuración corregida recibieron HTTP 503: validación real corregida pend
 Evidencia sin contenido ciudadano en `agentes/evidencias/gemini_diagnostico.json`.
 
 Para usar el cambio, actualizar el código y reiniciar el trabajador (o la API que
-lo administra); no iniciar otro trabajador paralelo. No requiere SQL ni reinicio
-del bot. Las ejecuciones fallidas no se reactivan por actualizar el código.
+lo administra); no iniciar otro trabajador paralelo. El cambio A4 requiere 0015
+y su smoke después de 0014; no requiere reiniciar el bot. Las ejecuciones fallidas
+históricas no se reactivan por actualizar el código.
 El panel de Noel debe distinguir el fallo actual de la interpretación histórica.

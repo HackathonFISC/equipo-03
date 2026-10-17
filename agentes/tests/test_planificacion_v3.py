@@ -144,5 +144,8 @@ def test_llm_recibe_resumen_sin_instrucciones_de_las_fuentes(base):
 
 def test_no_extiende_ensayo_a_operacion_real_sin_acuerdo(base):
     d=base.model_dump(mode='json');d['origen']='real'
-    with pytest.raises(ValueError,match='ensayos sintéticos separados'):
-        planificar(d)
+    t=Mock(); decisor=Mock()
+    resultado=planificar(d,t,decisor)
+    assert resultado.estado=='espera_revision' and resultado.propuesta is None
+    assert resultado.trazas[0]['codigo']=='origen_planificacion_no_habilitado'
+    t.solve_routes.assert_not_called(); decisor.decidir.assert_not_called()

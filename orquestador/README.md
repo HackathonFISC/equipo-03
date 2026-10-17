@@ -53,3 +53,38 @@ Comunicación. La aprobación de Noel entrega esa etapa; faltas de selección o
 destino quedan en espera_validacion, no en un bucle de envío. El filtro
 `--planificacion-id` sigue limitado al ensayo V3. No arrancar un segundo proceso
 si la API ya administra el trabajador. Requiere 0012; ver [V4](../docs/V4_EMILIA.md).
+
+## Recuperación acotada del trabajador
+
+El candidato de corrección del 17/10 protege cada vuelta de mantenimiento y
+selección con espera exponencial (intervalo, doble, hasta 60 segundos). Después
+de cinco fallos consecutivos sale con código 1; `--max-fallos` admite 1–20.
+Una vuelta completada reinicia el contador. `--una-vuelta` fallida sale 1.
+Las excepciones se registran con traceback y mensaje saneado.
+
+Si una etapa falla después de reservar, `ra_marcar_error_trabajador` (0014) marca
+revisión solo si conserva el mismo propietario y estado ejecutando. Un cierre
+ya confirmado o una reserva ajena no se modifica. Si no se confirma esa marca,
+el vencimiento existente sigue siendo la recuperación conservadora. No se
+reintenta una llamada de efecto incierto ni se reenvían avisos.
+
+`--archivo-salud` escribe atómicamente `ultima_vuelta_exitosa` con zona UTC solo
+tras completar una vuelta. ServicioAgentes expone esa marca o null; falta que
+Noel la incluya en `/salud/agentes`. Instalar 0014 antes de este trabajador.
+La marca acredita mantenimiento/selección local completados, no entrega física
+ni conectividad integral. Ver `docs/REVISION_EMILIA_20261017.md`.
+
+## Ingesta recuperable A4
+
+Con el código A4 instalar **0015 después de 0014**, antes de reiniciar el
+trabajador. El preflight comprueba metadatos de Gemini y columnas de 0015 antes
+de reservar; errores transitorios se recuperan con el backoff existente, errores
+de configuración detienen con mensaje explícito. El modelo verificado se conserva
+durante el proceso. No hay llamadas HTTP repetidas dentro de una extracción.
+
+Los errores recuperables confirmados de Ingesta esperan cinco/diez segundos en
+`espera_validacion/ingesta`; mantenimiento reanuda solo los que tienen fecha
+persistida. Dos reintentos adicionales como máximo, después revisión humana.
+Las reservas inciertas siguen el tratamiento conservador de 0014. Una espera
+programada no bloquea el proceso ni ocupa uno de los veinte pendientes seleccionados.
+Ver `docs/INGESTA_A4.md`; no reactivar fallos históricos automáticamente.

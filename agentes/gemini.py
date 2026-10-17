@@ -20,6 +20,13 @@ class ErrorIngesta(RuntimeError):
         super().__init__(mensaje)
 
 
+class ErrorConfiguracionGemini(ErrorIngesta):
+    """Requiere corregir configuración; no consumir el presupuesto por reporte."""
+    def __init__(self, mensaje):
+        super().__init__(CodigoError.PROVEEDOR_NO_DISPONIBLE, mensaje, True,
+                         campos=['configuracion_gemini'])
+
+
 @dataclass(frozen=True)
 class ConfiguracionGemini:
     clave: str = field(repr=False)
@@ -32,8 +39,7 @@ class ConfiguracionGemini:
         clave = (valores.get('GEMINI_API_KEY') or '').strip()
         modelo = (valores.get('GEMINI_MODEL') or 'gemini-3.8-flash').strip()
         if not clave or not re.fullmatch(r'[A-Za-z0-9._-]+', modelo):
-            raise ErrorIngesta(CodigoError.PROVEEDOR_NO_DISPONIBLE,
-                               'Revisa GEMINI_API_KEY y GEMINI_MODEL en la configuración local.', True)
+            raise ErrorConfiguracionGemini('Revisa GEMINI_API_KEY y GEMINI_MODEL en la configuración local.')
         return cls(clave, modelo)
 
 
@@ -47,9 +53,12 @@ institucion_declarada y vulnerabilidad_declarada deben ser fragmentos literales
 del texto, no ubicaciones resueltas ni categorías inferidas. evidencia_textual
 contiene solo citas literales del reporte que respaldan la extracción.
 Para horas y población, esta V1 solo acepta cantidades expresadas con dígitos:
-horas/días y cantidades de personas, habitantes, residentes, vecinos o «somos N».
-Puedes convertir días a horas. Si solo se dan números en palabras o una cifra
-sin unidad/personas identificables, devuelve null y pide aclaración.
+horas (h, hr, hrs, hs), días y semanas; personas, habitantes, residentes, vecinos
+o «somos N» cuando N representa personas. Convierte días a 24 horas y semanas
+a 168 horas; la expresión explícita «medio día» representa 12 horas. No conviertas
+familias, hogares o viviendas a personas ni apliques un tamaño promedio. Para otras
+cantidades en palabras, cifras sin unidad o respaldo insuficiente, devuelve null
+y pide aclaración. Nunca intercambies cifras de duración con cifras de población.
 Indica faltantes relevantes y requiere_aclaracion cuando se necesite información
 para interpretar el reporte. La falta de institución o vulnerabilidad no obliga
 por sí sola a pedir aclaración en esta etapa. Si no hay un reporte de agua,
@@ -127,6 +136,34 @@ class ExtractorGemini:
         self.configuracion = configuracion
         self.transporte = transporte
 
+    def _comprobar_http(self, respuesta):
+        if respuesta.status_code in {400, 401, 403, 404}:
+            raise ErrorConfiguracionGemini(
+                f'Gemini rechazó configuración/modelo (HTTP {respuesta.status_code}); revisar GEMINI_API_KEY y GEMINI_MODEL.')
+        if respuesta.status_code != 200:
+            raise ErrorIngesta(CodigoError.PROVEEDOR_NO_DISPONIBLE,
+                f'Gemini rechazó la solicitud (HTTP {respuesta.status_code}).',
+                respuesta.status_code == 429 or respuesta.status_code >= 500)
+
+    def verificar_modelo(self):
+        """Preflight de metadatos: GET sin reportes ni generación de contenido."""
+        try:
+            with httpx.Client(timeout=15, transport=self.transporte, follow_redirects=False) as cliente:
+                respuesta = cliente.get(
+                    f'https://generativelanguage.googleapis.com/v1beta/models/{self.configuracion.modelo}',
+                    headers={'x-goog-api-key': self.configuracion.clave})
+        except httpx.HTTPError:
+            raise ErrorIngesta(CodigoError.PROVEEDOR_NO_DISPONIBLE,
+                'No se pudo verificar GEMINI_MODEL antes de reservar reportes; revisar conexión.', True) from None
+        self._comprobar_http(respuesta)
+        try:
+            cuerpo = respuesta.json()
+            disponible = isinstance(cuerpo, dict) and 'generateContent' in cuerpo.get('supportedGenerationMethods', [])
+        except (ValueError, TypeError):
+            disponible = False
+        if not disponible:
+            raise ErrorConfiguracionGemini('GEMINI_MODEL no acredita generateContent; revisar modelo configurado.')
+
     def extraer(self, texto: str) -> ExtraccionReporteLLM:
         try:
             with httpx.Client(timeout=45, transport=self.transporte, follow_redirects=False) as cliente:
@@ -142,8 +179,5 @@ class ExtractorGemini:
         except httpx.HTTPError:
             raise ErrorIngesta(CodigoError.PROVEEDOR_NO_DISPONIBLE,
                                'Gemini no respondió dentro de la conexión disponible.', True) from None
-        if respuesta.status_code != 200:
-            raise ErrorIngesta(CodigoError.PROVEEDOR_NO_DISPONIBLE,
-                               f'Gemini rechazó la solicitud (HTTP {respuesta.status_code}).',
-                               respuesta.status_code == 429 or respuesta.status_code >= 500) from None
+        self._comprobar_http(respuesta)
         return validar_respuesta_extraccion(respuesta)

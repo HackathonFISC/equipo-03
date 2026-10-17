@@ -5,12 +5,12 @@ from agentes.territorial import procesar_territorial
 from agentes.priorizacion import procesar_priorizacion
 
 
-def avanzar(ejecucion, db, extractor, herramientas=None, decisor_planificacion=None):
+def avanzar(ejecucion, db, extractor, herramientas=None, decisor_planificacion=None, *, trabajador_id=None):
     eid = UUID(ejecucion['ejecucion_id'])
     etapa = ejecucion['etapa']
     if etapa == 'ingesta':
-        return procesar_ejecucion(eid, PersistenciaIngesta(db), extractor)
-    trabajador = f'{etapa}:{uuid4()}'
+        return procesar_ejecucion(eid, PersistenciaIngesta(db), extractor, trabajador_id=trabajador_id)
+    trabajador = trabajador_id or f'{etapa}:{uuid4()}'
     if etapa == 'territorial':
         return procesar_territorial(eid, db, trabajador)
     if etapa == 'priorizacion':

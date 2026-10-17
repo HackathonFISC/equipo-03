@@ -92,11 +92,13 @@ class TestIngesta(unittest.TestCase):
             with self.subTest(campo=campo), self.assertRaises(ErrorIngesta):
                 interpretar_reporte(reporte(), extractor(x))
 
-    def test_rechaza_cantidad_inventada_o_intercambiada(self):
+    def test_cantidad_inventada_o_intercambiada_pide_aclaracion(self):
         for campo, valor in [('horas_sin_agua',999),('horas_sin_agua',120),('personas_afectadas',48)]:
             x = extraccion(); x['campos'][campo] = valor
-            with self.subTest(campo=campo), self.assertRaises(ErrorIngesta):
-                interpretar_reporte(reporte(), extractor(x))
+            with self.subTest(campo=campo):
+                resultado=interpretar_reporte(reporte(), extractor(x))
+                self.assertIsNone(getattr(resultado.reporte.interpretacion.campos,campo))
+                self.assertEqual(resultado.evento.siguiente_estado,'espera_aclaracion')
 
     def test_dias_numericos_se_convierten_a_horas(self):
         r = reporte(); r.entrada.texto = TEXTO.replace('48 horas','2 días')
@@ -154,7 +156,7 @@ class TestIngesta(unittest.TestCase):
         kw = p.finalizar.call_args.kwargs
         self.assertEqual(kw['error'].codigo,'proveedor_no_disponible')
         self.assertTrue(kw['error'].recuperable)
-        self.assertEqual(kw['evento'].siguiente_estado,'fallida')
+        self.assertEqual(kw['evento'].siguiente_estado,'espera_validacion')
 
     def test_fallo_de_cierre_no_dispara_otro_cierre_ni_otra_llamada(self):
         f = filas(); p = Mock(); p.tomar.return_value = f; p.finalizar.side_effect = RuntimeError('respuesta perdida')
