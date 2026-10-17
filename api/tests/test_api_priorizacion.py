@@ -129,6 +129,7 @@ def revision(incidente_id, **cambios):
         "incidente_id": incidente_id, "version_incidente": 1,
         "demanda": {"metodo": "directa", "litros_declarados": 5000.0, "fuente": "Llamada a la junta de agua"},
         "clase_prioridad": "general", "vulnerabilidad": "alta", "horas_sin_agua": 30.0, "personas_atendidas": 120,
+        "capacidad_recepcion_litros": 8000.0,
     }
     return {**base, **cambios}
 
@@ -392,3 +393,30 @@ def test_respuesta_inesperada_de_la_rpc_es_503(cliente, db):
     db.resultado = None
 
     assert cliente.post(URL, json=cuerpo()).status_code == 503
+
+
+def test_la_capacidad_de_recepcion_confirmada_llega_a_la_solicitud_de_validacion(cliente, db):
+    cliente.post(URL, json=cuerpo(revisiones=[revision(INCIDENTE_A)]))
+
+    entradas = {e["solicitud_demanda"]["incidente_id"]: e for e in db.envios()[0]["p_lote"]["entradas"]}
+    confirmada = entradas[INCIDENTE_A]
+    assert confirmada["solicitud_demanda"]["capacidad_recepcion_litros"] == 8000.0
+    assert not any("capacidad" in p.lower() for p in confirmada["evaluacion"]["pendientes"])
+    sin_revisar = entradas[INCIDENTE_B]
+    assert sin_revisar["solicitud_demanda"]["capacidad_recepcion_litros"] is None
+
+
+def test_sin_capacidad_de_recepcion_no_se_inventa_y_queda_pendiente(cliente, db):
+    revisada = revision(INCIDENTE_A)
+    del revisada["capacidad_recepcion_litros"]
+    cliente.post(URL, json=cuerpo(revisiones=[revisada]))
+
+    entrada = next(e for e in db.envios()[0]["p_lote"]["entradas"] if e["solicitud_demanda"]["incidente_id"] == INCIDENTE_A)
+    assert entrada["solicitud_demanda"]["capacidad_recepcion_litros"] is None
+    assert any("capacidad de recepción" in p for p in entrada["evaluacion"]["pendientes"])
+
+
+def test_capacidad_de_recepcion_negativa_se_rechaza(cliente):
+    r = cliente.post(URL, json=cuerpo(revisiones=[revision(INCIDENTE_A, capacidad_recepcion_litros=-1.0)]))
+
+    assert r.status_code == 422

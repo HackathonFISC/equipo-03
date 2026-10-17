@@ -5,6 +5,7 @@ import Aprobacion from './paginas/Aprobacion.jsx'
 import Necesidades from './paginas/Necesidades.jsx'
 import Plan from './paginas/Plan.jsx'
 import Reportes from './paginas/Reportes.jsx'
+import logoCircular from './assets/h2oeste-circular.webp'
 import './App.css'
 import './design-system.css'
 import './editorial.css'
@@ -57,7 +58,7 @@ function App() {
       <a className="saltar-contenido" href="#contenido" onClick={(e) => { e.preventDefault(); contenido.current?.focus() }}>Saltar al contenido</a>
       <aside className="sidebar">
         <a className="marca" href="#reportes" aria-label="H2Oeste, reportes">
-          <span className="marca-simbolo"><svg width="24" height="28" viewBox="0 0 24 28" fill="none" aria-hidden="true"><path d="M12 2S3 12 3 17a9 9 0 0 0 18 0C21 12 12 2 12 2Z" stroke="currentColor" strokeWidth="1.7"/><path d="M7 18a5 5 0 0 0 5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg></span>
+          <img className="marca-logo" src={logoCircular} width="44" height="44" alt="" />
           <span>H2<strong>Oeste</strong><small>Coordinación de distribución</small></span>
         </a>
         <button ref={menuBoton} className="menu-boton" aria-expanded={menuAbierto} aria-controls="navegacion" onClick={() => setMenuAbierto(!menuAbierto)}>{menuAbierto ? 'Cerrar' : 'Menú'}<span aria-hidden="true">{menuAbierto ? '×' : '☰'}</span></button>

@@ -3,7 +3,7 @@
 .marca { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; font-size: 18px; letter-spacing: -.5px; }
 .marca strong { font-weight: 400; color: #b7d8e8; }
 .marca small { display: block; color: #b7c9d8; font-size: 10px; letter-spacing: .2px; margin-top: 4px; }
-.marca-simbolo { display: grid; place-items: center; flex-shrink: 0; width: 38px; height: 44px; background: #20445f; border: 1px solid #45677d; border-radius: 12px; color: #bdeaf7; }
+.marca-logo { flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #45677d; object-fit: cover; }
 .navegacion { display: flex; flex-direction: column; flex: 1; gap: 8px; margin-top: 44px; }
 .nav-etiqueta { margin: 0 10px 10px; font-size: 10px; font-weight: 600; letter-spacing: 1.4px; color: #a8c1d4; }
 .nav-enlace { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid transparent; border-radius: 8px; color: #d9e5ef; text-decoration: none; font-size: 14px; font-weight: 600; }
@@ -40,7 +40,7 @@
 @media (max-width: 480px) {
   .sidebar { padding: 12px 16px; }
   .marca { font-size: 16px; }
-  .marca-simbolo { width: 32px; height: 38px; }
+  .marca-logo { width: 36px; height: 36px; }
   .menu-boton { font-size: 13px; gap: 8px; padding: 8px; }
   .contexto-region { display: none; }
   .workspace-header { padding-inline: 16px; }

@@ -56,6 +56,15 @@ La barra superior cambia de página; la página activa queda en la dirección
   - Después de separar un reporte, la RPC de Emilia invalida las evaluaciones: sello
     **Requiere recálculo** y el motivo en la lista de pendientes.
 - Un incidente sin punto identificado se muestra como "Lugar sin identificar".
+- **Revisar y enviar a priorización** (`src/paginas/FormularioRevision.jsx`, solo con sesión): el
+  coordinador marca los incidentes que revisa y confirma demanda (litros declarados, o personas,
+  dotación y días), capacidad de recepción del punto (sin ella la validación de demanda queda pendiente), clase, vulnerabilidad, horas sin agua, personas y ventana (obligatoria si es
+  crítico). Pide la versión de la política y el motivo. Envía `POST /ejecuciones/{id}/priorizacion`
+  (`src/api/priorizacion.js`). Lo que se deja vacío no se envía y queda pendiente. La ejecución se
+  elige sola: la más reciente con etapa `priorizacion` y estado aceptado por la RPC. Las ventanas
+  se envían con desfase −05:00 (Panamá). Quién confirma y cuándo lo pone el servidor con el token.
+  Repetir el mismo envío no duplica (`repetido`). La API exige cubrir todo el ámbito con un
+  incidente por punto: si falta, devuelve 422 y el mensaje se muestra tal cual.
 - Los ejemplos (`src/datos/necesidadesEjemplo.js`) son sintéticos, se validaron con
   `IncidenteConsolidado` y `EvaluacionNecesidades` y se convierten a la forma de `GET /incidentes`.
   Incluyen un incidente sin evaluación y otro que requiere recálculo.
@@ -117,6 +126,8 @@ Con datos de ejemplo, la página muestra un aviso amarillo para que no se confun
 | `src/index.css` | Colores y tipografía compartidos. |
 | `src/api/reportes.js` | `obtenerReportes()` y `obtenerEjecucion(id)`. |
 | `src/api/necesidades.js` | `obtenerNecesidades()` (lee `GET /incidentes`). |
+| `src/api/priorizacion.js` | `prepararPriorizacion(ejecucionId, cuerpo)` y `consultarEtapa(id)`. |
+| `src/assets/` | Logo circular (cabecera, favicon) y banner de bienvenida (acceso), en WebP optimizado. |
 | `src/api/sesion.js`, `src/api/aprobacion.js` | Inicio y cierre de sesión (Supabase Auth), llamadas a la API con token, `listarPlanes`, `aprobarPlan`, `rechazarPlan`. |
 | `src/api/planes.js` | `obtenerPlanes()`: planes guardados (`GET /planes`) o ejemplos, y `adaptarPlan()`. |
 | `src/paginas/` | Una página por archivo, con su hoja de estilos. |

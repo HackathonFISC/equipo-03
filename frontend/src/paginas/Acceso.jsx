@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { autenticacionConfigurada, iniciarSesion } from '../api/sesion.js'
+import banner from '../assets/h2oeste-bienvenida.webp'
 import './Aprobacion.css'
 
 export default function Acceso({ aviso, alEntrar, conSesion, alSalir }) {
@@ -26,7 +27,7 @@ export default function Acceso({ aviso, alEntrar, conSesion, alSalir }) {
   return (
     <section className="acceso cuenta-pagina" aria-labelledby="acceso-titulo">
       <aside className="acceso-lema" aria-hidden="true">
-        <p className="acceso-marca">H2Oeste</p>
+        <img className="acceso-banner" src={banner} width="1400" height="781" alt="" />
         <p className="acceso-frase">Ningún aviso sale a la comunidad sin la firma de un coordinador.</p>
       </aside>
       <div className="acceso-lado">
