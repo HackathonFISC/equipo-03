@@ -1,4 +1,4 @@
--- Solo fixtures aislados. Requiere 0020 y la semilla 01. Termina en ROLLBACK: no deja datos.
+-- Solo fixtures aislados. Requiere 0021 y la semilla 01. Termina en ROLLBACK: no deja datos.
 BEGIN;
 CREATE FUNCTION pg_temp.debe_fallar(llamada text, esperado text) RETURNS void LANGUAGE plpgsql AS $$
 DECLARE obtenido text:='sin_error';
@@ -18,9 +18,9 @@ BEGIN
   IF NOT FOUND THEN RAISE EXCEPTION 'Falta semilla 01'; END IF;
   ubic:=jsonb_build_object('latitud',punto.latitud,'longitud',punto.longitud,'fuente',punto.fuente_ubicacion,'precision_metros',punto.precision_metros,'representa_punto_atencion',punto.representa_punto_atencion);
   INSERT INTO auth.users(id) VALUES(u),(intruso);
-  INSERT INTO public.usuarios_operativos(usuario_id,rol,activo,motivo) VALUES(u,'coordinador',true,'FIXTURE 0020');
-  INSERT INTO public.remitentes(remitente_ref,canal,identificador_externo) VALUES(m,'telegram','fixture0020:'||m);
-  INSERT INTO public.reportes(reporte_id,remitente_ref,canal,mensaje_externo_id,modalidad,texto,origen) VALUES(r,m,'telegram','fixture0020:'||r,'texto','FIXTURE: reporte de prueba','sintetico');
+  INSERT INTO public.usuarios_operativos(usuario_id,rol,activo,motivo) VALUES(u,'coordinador',true,'FIXTURE 0021');
+  INSERT INTO public.remitentes(remitente_ref,canal,identificador_externo) VALUES(m,'telegram','fixture0021:'||m);
+  INSERT INTO public.reportes(reporte_id,remitente_ref,canal,mensaje_externo_id,modalidad,texto,origen) VALUES(r,m,'telegram','fixture0021:'||r,'texto','FIXTURE: reporte de prueba','sintetico');
   INSERT INTO public.ejecuciones(ejecucion_id,reporte_id,origen) VALUES(e,r,'sintetico');
   INSERT INTO public.incidentes(incidente_id,ejecucion_id,sector_id,punto_atencion_id,ubicacion,primera_deteccion_en,periodo_inicio,periodo_fin,origen,faltantes)
   VALUES(i,e,punto.sector_id,punto.punto_atencion_id,ubic,now()-interval '1 hour',now()-interval '2 hours',now()+interval '1 hour','sintetico',ARRAY[marcador,'Otro faltante que no se toca']);
@@ -61,6 +61,6 @@ BEGIN
   -- La RPC no la puede llamar un usuario de la API pública.
   IF has_function_privilege('authenticated','public.ra_validar_lugar_v1(uuid,uuid,integer,text)','EXECUTE') THEN RAISE EXCEPTION 'authenticated puede ejecutarla'; END IF;
   IF NOT has_function_privilege('service_role','public.ra_validar_lugar_v1(uuid,uuid,integer,text)','EXECUTE') THEN RAISE EXCEPTION 'service_role no puede ejecutarla'; END IF;
-  RAISE NOTICE '0020 validar lugar: correcto';
+  RAISE NOTICE '0021 validar lugar: correcto';
 END $$;
 ROLLBACK;
