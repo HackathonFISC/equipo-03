@@ -3,8 +3,10 @@ from contratos.errores import CodigoError, ErrorDominio, ExcepcionContrato
 from contratos.modelos import EvaluacionNecesidades
 from contratos.solicitudes import SolicitudPriorizarNecesidades, ResultadoPriorizarNecesidades
 
-# Marcador de preparación del ejemplo compartido, no una falta de datos.
+# Marcadores técnicos del ejemplo compartido y del adaptador de Emilia.
+# No representan observaciones ni faltantes de datos.
 CALCULO_PENDIENTE = 'Cálculo de prioridad todavía no ejecutado.'
+MARCADORES_CALCULO_PENDIENTE = frozenset({CALCULO_PENDIENTE, 'prioridad_por_calcular'})
 
 
 def score_needs(entrada: SolicitudPriorizarNecesidades) -> ResultadoPriorizarNecesidades:
@@ -17,10 +19,12 @@ def score_needs(entrada: SolicitudPriorizarNecesidades) -> ResultadoPriorizarNec
             codigo=CodigoError.POLITICA_NO_ACTIVA, mensaje='La política debe activarse antes de calcular prioridades.',
             recuperable=True, campos=['politica.estado'],
         ))
-    calculadas, pendientes, alertas = [], [], []
+    calculadas, pendientes = [], []
+    alertas = [f'Ranking de ensayo con política sintética {politica.politica_version}; '
+               'se conserva el origen de cada necesidad. No constituye autorización operativa.']
     for necesidad in sorted(entrada.necesidades, key=lambda n: str(n.incidente_id)):
         datos = necesidad.model_dump(mode='json')
-        motivos = [m for m in necesidad.pendientes if m != CALCULO_PENDIENTE]
+        motivos = [m for m in necesidad.pendientes if m not in MARCADORES_CALCULO_PENDIENTE]
         if necesidad.estado_demanda != 'validada':
             motivos.append('La demanda no está validada.')
         for campo in ('horas_sin_agua', 'personas_atendidas', 'vulnerabilidad',
@@ -29,8 +33,8 @@ def score_needs(entrada: SolicitudPriorizarNecesidades) -> ResultadoPriorizarNec
                 motivos.append(f'Falta {campo}.')
         if necesidad.clase_prioridad == 'critico' and necesidad.ventana_atencion is None:
             motivos.append('Falta ventana_atencion del punto crítico.')
-        # No atribuir origen real a un cálculo que usa una política sintética.
-        datos['origen'] = 'sintetico'
+        # La procedencia de los datos se conserva; el ranking declara por separado
+        # el origen de la política mediante su versión y la alerta de ensayo.
         datos.update(puntaje=None, componentes=None, posicion=None)
         if motivos:
             datos.update(estado_prioridad='pendiente', pendientes=list(dict.fromkeys(motivos)),
@@ -93,7 +97,7 @@ def score_needs(entrada: SolicitudPriorizarNecesidades) -> ResultadoPriorizarNec
         datos['posicion'] = posicion
     return ResultadoPriorizarNecesidades.model_validate(dict(
         esquema_version=entrada.esquema_version, ejecucion_id=entrada.ejecucion_id,
-        creado_en=entrada.creado_en, origen='sintetico', datos_version=entrada.datos_version,
+        creado_en=entrada.creado_en, origen=entrada.origen, datos_version=entrada.datos_version,
         politica_version=politica.politica_version, evaluaciones=ordenadas + pendientes,
         alertas_revision=alertas,
     ))

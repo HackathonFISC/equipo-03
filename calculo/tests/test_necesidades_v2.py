@@ -276,13 +276,66 @@ def test_version_mezclada_rechazada():
         priorizar(datos)
 
 
-def test_origen_no_oculta_politica_sintetica():
+@pytest.mark.parametrize('origen', ['real', 'estimado', 'sintetico'])
+def test_origen_no_oculta_politica_sintetica(origen):
     datos = lote()
-    datos['origen'] = 'real'
+    datos['origen'] = origen
     for n in datos['necesidades']:
-        n['origen'] = 'real'
+        n['origen'] = origen
     r = priorizar(datos)
-    assert r.origen == 'sintetico' and all(n.origen == 'sintetico' for n in r.evaluaciones)
+    assert r.origen == origen
+    assert all(n.origen == origen for n in r.evaluaciones)
+    assert any(datos['politica']['politica_version'] in alerta and 'sintética' in alerta
+               for alerta in r.alertas_revision)
+
+
+def test_origen_por_necesidad_se_conserva_en_lote_mixto_con_pendientes():
+    datos = lote()
+    for i, n in enumerate(datos['necesidades']):
+        n['origen'] = ('real', 'estimado', 'sintetico')[i % 3]
+    datos['necesidades'][0]['pendientes'] = ['Revisar evidencia contradictoria.']
+    esperados = {n['incidente_id']: n['origen'] for n in datos['necesidades']}
+    r = priorizar(datos)
+    assert {str(n.incidente_id): n.origen for n in r.evaluaciones} == esperados
+    assert any(n.estado_prioridad == 'pendiente' for n in r.evaluaciones)
+
+
+@pytest.mark.parametrize('origen', ['sintetico', 'real', 'estimado'])
+@pytest.mark.parametrize('faltante', [None, 'confirmacion', 'observacion'])
+def test_integracion_adaptador_emilia_con_tools_reales(origen, faltante):
+    from agentes.priorizacion import evaluar_lote, HerramientasJose
+
+    base = fixture('solicitud_priorizar.json')
+    demanda = fixture('solicitud_validar_directa.json')
+    evaluacion = base['necesidades'][0]
+    demanda.update(incidente_id=evaluacion['incidente_id'],
+                   punto_atencion_id=evaluacion['punto_atencion_id'])
+    entrada = dict(solicitud_demanda=demanda, evaluacion=evaluacion)
+    if faltante == 'confirmacion':
+        demanda['demanda']['confirmacion'] = None
+    elif faltante == 'observacion':
+        entrada['pendientes'] = ['Revisar evidencia contradictoria.']
+    contexto = {k: base[k] for k in ('esquema_version', 'ejecucion_id', 'creado_en', 'origen')}
+    contexto['origen'] = origen
+    original = copy.deepcopy(entrada)
+    validaciones = {}
+    r = evaluar_lote(contexto, [entrada], base['politica'], HerramientasJose(),
+                     validaciones=validaciones)
+    n = r.evaluaciones[0]
+    assert entrada == original
+    assert n.origen == origen and r.origen == origen
+    assert validaciones[str(n.incidente_id)]['origen'] == origen
+    assert n.demanda_litros == 2500
+    assert 'prioridad_por_calcular' not in n.pendientes
+    if faltante is None:
+        assert n.estado_demanda == 'validada' and n.estado_prioridad == 'calculada'
+        assert n.puntaje is not None and n.posicion == 1 and not n.pendientes
+    else:
+        assert n.estado_prioridad == 'pendiente' and n.puntaje is None and n.posicion is None
+        if faltante == 'confirmacion':
+            assert n.estado_demanda == 'pendiente' and 'demanda.confirmacion' in n.pendientes
+        else:
+            assert 'Revisar evidencia contradictoria.' in n.pendientes
 
 
 def test_pesos_y_escalas_provienen_de_configuracion():
