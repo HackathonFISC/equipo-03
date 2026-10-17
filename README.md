@@ -44,6 +44,15 @@ Para ejecutar el solver mínimo sintético V1 de José:
 
 Consulta [el alcance del ensayo V1](calculo/README.md). La demo calcula rutas locales con OR-Tools, sin publicar planes ni conectar servicios externos. La salida de referencia y las pruebas ejecutadas están en `evals/resultados/solver_minimo_v1.json` y `evals/resultados/v1_pruebas.xml`.
 
+Para probar selección parcial y verificación independiente de V3:
+
+```powershell
+.\.venv\Scripts\python.exe -m calculo.demo_plan_v3
+.\.venv\Scripts\python.exe -m pytest calculo/tests/test_plan_v3.py -q
+```
+
+Consultar [solver y verificador V3](calculo/PLAN_V3.md). Se prueban seis puntos con dos cisternas, retiro de una cisterna y déficit crítico; siguen pendientes la conexión a persistencia/panel y aprobación del equipo. Las propuestas conservan bloqueos de publicación.
+
 ## Evals
 
 Para probar demanda y prioridad de V2 sin servicios externos:

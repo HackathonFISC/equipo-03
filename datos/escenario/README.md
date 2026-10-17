@@ -17,3 +17,11 @@ Los envoltorios de vehículos y demandas organizan archivos locales; no son nuev
 Se eliminaron las confirmaciones ficticias del ejemplo en las necesidades y solicitudes. Las necesidades conservan estimaciones, pero están pendientes, sin clase confirmada, puntaje ni ranking. El posible caso crítico conserva una alerta de revisión urgente. Confirmar demanda, recepción, criticidad y vulnerabilidad antes de priorizar; activar la política por el servicio autorizado. La política propuesta no habilita un ranking operativo.
 
 La matriz de tiempos sigue en el ejemplo de contratos; su preparación corresponde a `calculo/matriz.py` en V1/V3. Estos tres archivos no constituyen por sí solos una solicitud completa de rutas ni prueban factibilidad. Los horarios son del escenario de reparto sintético, no del cronograma de desarrollo.
+
+## Preparación territorial para V3
+
+`oeste-1.0-ensayo-1/` contiene una versión aparte con los seis UUID del catálogo de Emilia, dos cisternas ficticias, depósito ficticio y matriz manual sintética de siete nodos. Conserva referencias geográficas documentales y distingue los parámetros inventados del ensayo. Sus demandas permanecen pendientes, recepción desconocida y política sin activar. Consultar su README y ejecutar `python scripts/verificar_escenario_v3.py`. Los tres JSON originales de V0 permanecen intactos.
+
+`politica_apoyo_panama_v1.json` define la nueva propuesta de prioridad del proyecto: 40 % duración, 40 % vulnerabilidad y 20 % población, con críticos confirmados primero. Su fundamento y límites están en `docs/politica_prioridad_oeste.md`; los porcentajes no son oficiales del Estado. Se incorpora en `oeste-1.0-ensayo-2/` sin activar política ni confirmar demandas. Comprobar con `python scripts/verificar_escenario_v3.py --carpeta datos/escenario/oeste-1.0-ensayo-2`.
+
+`oeste-1.0-ensayo-3/` añade perfiles domésticos ficticios, demanda por fórmula y recepción calculada a partir de tanques/agua almacenada/margen. Su copia de política y confirmaciones son ficticias para probar validate_need y score_needs: no son activación operativa. Ejecutar `python -m calculo.demo_escenario_v3`; su README documenta hipótesis, fuentes y límites. Los ensayos 1/2 y la política compartida se conservan sin activar.

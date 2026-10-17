@@ -1,0 +1,147 @@
+{
+  "modo": "fixture_sintetico",
+  "datos_version": "oeste-1.0-ensayo-3",
+  "politica_fuente": "datos/escenario/politica_apoyo_panama_v1.json",
+  "confirmacion_fixture": {
+    "usuario_id": "aa753444-c339-56d8-bf03-1a64b6a26678",
+    "confirmado_en": "2026-10-17T07:00:00-05:00",
+    "motivo": "FIXTURE SINTÉTICO: confirmación ficticia solo para pruebas locales; no representa usuario, rol ni autorización reales."
+  },
+  "limite": "Grupos vecinales ficticios asociados a referencias documentales; no son mediciones o diagnósticos de las instalaciones.",
+  "supuestos": [
+    "Cinco personas por familia es una hipótesis de tamaño de grupo, no promedio censal de Panamá Oeste.",
+    "20 L/persona/día durante un día para un ensayo de cobertura doméstica básica de emergencia; no cubre todo uso doméstico o institucional ni es una cuota legal panameña.",
+    "Reserva utilizable igual al agua almacenada solo por hipótesis de este ensayo; la calidad real no se ha comprobado.",
+    "Tanques nominales de 5000 L o banco equivalente de dos tanques de 5000 L. No se afirma que existan en estas instalaciones.",
+    "Margen de almacenamiento 5%, caudal de descarga 300 L/min y preparación 5 min son decisiones arbitrarias de modelado, no normas."
+  ],
+  "referencias": [
+    {
+      "url": "https://www.who.int/teams/environment-climate-change-and-health/water-sanitation-and-health/environmental-health-in-emergencies/humanitarian-emergencies",
+      "uso": "Contexto internacional de abastecimiento básico de emergencia; no ley panameña."
+    },
+    {
+      "url": "https://www.minsa.gob.pa/noticia/centro-de-salud-de-atalaya-cuenta-con-nuevo-tanque-de-reserva-de-agua",
+      "uso": "Ejemplo panameño documentado de tanque de 5000 L en Atalaya; no demuestra capacidades en Panamá Oeste."
+    },
+    {
+      "url": "https://monitoreo.antai.gob.pa/api/submissions/146052/files/39526/download",
+      "uso": "Hipótesis de diseño de cinco habitantes/vivienda como referencia de escala; no censo ni cuota de emergencia."
+    },
+    {
+      "url": "https://sertv.gob.pa/idaan-activa-operativo-de-semana-santa-2026/",
+      "uso": "Antecedente de revisión de dependencia sanitaria; los dos críticos del ensayo son ficticios."
+    }
+  ],
+  "perfiles": [
+    {
+      "punto_atencion_id": "920f8af3-1bfe-5ab6-a4f2-7fbcb323825e",
+      "nombre_referencia": "Junta Comunal Nuevo Arraiján",
+      "familias_sinteticas": 32,
+      "personas_atendidas": 160,
+      "dotacion_litros_persona_dia": 20.0,
+      "dias_cobertura": 1.0,
+      "reserva_utilizable_litros": 200.0,
+      "tanque_nominal_litros": 5000.0,
+      "agua_almacenada_litros": 200.0,
+      "margen_tanque_proporcion": 0.05,
+      "horas_sin_agua": 72.0,
+      "vulnerabilidad": "moderada",
+      "clase_prioridad": "general",
+      "caudal_descarga_litros_minuto": 300.0,
+      "preparacion_descarga_minutos": 5,
+      "supuesto_clasificacion": "CASO FICTICIO: grupo domiciliario; nivel de vulnerabilidad inventado para probar ponderaciones."
+    },
+    {
+      "punto_atencion_id": "1e35ede2-8fc7-51b0-8830-6eec337f6a24",
+      "nombre_referencia": "Junta Comunal de Vista Alegre",
+      "familias_sinteticas": 36,
+      "personas_atendidas": 180,
+      "dotacion_litros_persona_dia": 20.0,
+      "dias_cobertura": 1.0,
+      "reserva_utilizable_litros": 600.0,
+      "tanque_nominal_litros": 10000.0,
+      "agua_almacenada_litros": 600.0,
+      "margen_tanque_proporcion": 0.05,
+      "horas_sin_agua": 48.0,
+      "vulnerabilidad": "sin_condicion_identificada",
+      "clase_prioridad": "general",
+      "caudal_descarga_litros_minuto": 300.0,
+      "preparacion_descarga_minutos": 5,
+      "supuesto_clasificacion": "CASO FICTICIO: grupo domiciliario; nivel de vulnerabilidad inventado para probar ponderaciones."
+    },
+    {
+      "punto_atencion_id": "66597297-f57e-54ac-b7f1-7a66cc35253f",
+      "nombre_referencia": "C.E.B.G. Burunga",
+      "familias_sinteticas": 24,
+      "personas_atendidas": 120,
+      "dotacion_litros_persona_dia": 20.0,
+      "dias_cobertura": 1.0,
+      "reserva_utilizable_litros": 400.0,
+      "tanque_nominal_litros": 5000.0,
+      "agua_almacenada_litros": 400.0,
+      "margen_tanque_proporcion": 0.05,
+      "horas_sin_agua": 36.0,
+      "vulnerabilidad": "alta",
+      "clase_prioridad": "critico",
+      "caudal_descarga_litros_minuto": 300.0,
+      "preparacion_descarga_minutos": 5,
+      "supuesto_clasificacion": "CASO FICTICIO: grupo con personas dependientes sin alternativa suficiente para obtener agua; no describe usuarios reales ni el uso institucional de la instalación."
+    },
+    {
+      "punto_atencion_id": "9459ff87-0377-5622-8255-caaf79dc9898",
+      "nombre_referencia": "Escuela El Coco",
+      "familias_sinteticas": 28,
+      "personas_atendidas": 140,
+      "dotacion_litros_persona_dia": 20.0,
+      "dias_cobertura": 1.0,
+      "reserva_utilizable_litros": 300.0,
+      "tanque_nominal_litros": 5000.0,
+      "agua_almacenada_litros": 300.0,
+      "margen_tanque_proporcion": 0.05,
+      "horas_sin_agua": 96.0,
+      "vulnerabilidad": "moderada",
+      "clase_prioridad": "general",
+      "caudal_descarga_litros_minuto": 300.0,
+      "preparacion_descarga_minutos": 5,
+      "supuesto_clasificacion": "CASO FICTICIO: grupo domiciliario; nivel de vulnerabilidad inventado para probar ponderaciones."
+    },
+    {
+      "punto_atencion_id": "4b89af3e-444a-5103-880c-fe1c886530ed",
+      "nombre_referencia": "C.E. Virgen de Guadalupe",
+      "familias_sinteticas": 32,
+      "personas_atendidas": 160,
+      "dotacion_litros_persona_dia": 20.0,
+      "dias_cobertura": 1.0,
+      "reserva_utilizable_litros": 200.0,
+      "tanque_nominal_litros": 10000.0,
+      "agua_almacenada_litros": 200.0,
+      "margen_tanque_proporcion": 0.05,
+      "horas_sin_agua": 60.0,
+      "vulnerabilidad": "alta",
+      "clase_prioridad": "critico",
+      "caudal_descarga_litros_minuto": 300.0,
+      "preparacion_descarga_minutos": 5,
+      "supuesto_clasificacion": "CASO FICTICIO: grupo con personas dependientes sin alternativa suficiente para obtener agua; no describe usuarios reales ni el uso institucional de la instalación."
+    },
+    {
+      "punto_atencion_id": "b2478919-28e8-592d-ae1f-c450057cb229",
+      "nombre_referencia": "Centro Educativo Guillermo Endara",
+      "familias_sinteticas": 20,
+      "personas_atendidas": 100,
+      "dotacion_litros_persona_dia": 20.0,
+      "dias_cobertura": 1.0,
+      "reserva_utilizable_litros": 500.0,
+      "tanque_nominal_litros": 5000.0,
+      "agua_almacenada_litros": 500.0,
+      "margen_tanque_proporcion": 0.05,
+      "horas_sin_agua": 24.0,
+      "vulnerabilidad": "moderada",
+      "clase_prioridad": "general",
+      "caudal_descarga_litros_minuto": 300.0,
+      "preparacion_descarga_minutos": 5,
+      "supuesto_clasificacion": "CASO FICTICIO: grupo domiciliario; nivel de vulnerabilidad inventado para probar ponderaciones."
+    }
+  ],
+  "personas_por_familia": 5
+}
