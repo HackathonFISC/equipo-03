@@ -21,11 +21,42 @@ Solo un proceso por token: dos procesos con el mismo token se roban los mensajes
 | Variable | Uso |
 | --- | --- |
 | `TELEGRAM_BOT_TOKEN` | Token de BotFather. |
-| `TELEGRAM_CHAT_IDS_PRUEBA` | Chats que el bot atiende, separados por coma. Un grupo tiene ID negativo; un chat privado tiene el ID del usuario. Los demás chats se ignoran en silencio. |
+| `TELEGRAM_ACCESO_PUBLICO` | `true` abre el bot a cualquier persona o grupo (ver «Acceso público»). Vacío o cualquier otro valor lo deja en modo de prueba. |
+| `TELEGRAM_CHAT_IDS_PRUEBA` | Modo de prueba: chats que el bot atiende, separados por coma. Un grupo tiene ID negativo; un chat privado tiene el ID del usuario. Los demás chats se ignoran en silencio. Con el acceso público se ignora. |
 | `API_SECRETO_BOT` | El mismo valor que usa la API, mínimo 16 caracteres. |
 | `API_URL` | Opcional. Por defecto `http://127.0.0.1:8000`. |
+| `BOT_LIMITE_USUARIO` | Opcional. Mensajes por persona en cada ventana (por defecto 8). |
+| `BOT_LIMITE_TOTAL` | Opcional. Mensajes de todas las personas en cada ventana (por defecto 120). |
+| `BOT_VENTANA_MINUTOS` | Opcional. Largo de la ventana (por defecto 10). |
 
-Sin token, sin chats autorizados o sin secreto válido, el bot no arranca y explica qué falta.
+Sin token, sin secreto válido, o sin acceso público ni chats autorizados, el bot no arranca y explica qué falta.
+
+## Acceso público
+
+El bot atiende a cualquiera solo con `TELEGRAM_ACCESO_PUBLICO=true`. Un valor vacío, mal escrito o
+`false` lo deja en modo de prueba, así que un error de configuración nunca lo abre sin querer.
+
+Para abrirlo:
+
+1. En `.env`: `TELEGRAM_ACCESO_PUBLICO=true`. Reinicia el bot; el registro dice `Bot PÚBLICO` y el límite.
+2. En BotFather: `/setjoingroups` en *Enable* si quieres que lo agreguen a grupos. Deja `/setprivacy`
+   en *Enable*: así en un grupo solo ve comandos, menciones y respuestas dirigidas al bot.
+3. Prueba con una cuenta que no esté en la lista: `/start`, un reporte y la respuesta a una pregunta de aclaración.
+
+Qué cambia y qué no:
+
+- **Qué cambia:** el filtro de chats. Cualquier persona o grupo recibe bienvenida, botones y acuse.
+- **Los avisos de los planes no se abren.** Salen solo a los destinos autorizados en la base de datos.
+  Un chat nuevo se registra como destino sin autorizar, y eso no le da avisos.
+- **Límite de mensajes** (`bot/limites.py`): cada reporte llega a la Ingesta y gasta cuota del modelo.
+  Cada persona puede enviar 8 mensajes cada 10 minutos y entre todas 120. Al pasarse, el bot avisa una
+  sola vez por ventana y calla; esos mensajes no llegan a la API. El intento rechazado no cuenta: pasada
+  la ventana, la persona vuelve a poder escribir. Los contadores viven en memoria y se reinician con el bot.
+- **No hay moderación de contenido en el bot.** El texto de cualquiera llega a la Ingesta, que decide si
+  es un reporte de falta de agua o está fuera de alcance. Lo que digan los desconocidos no se cree: pasa
+  por revisión humana antes de afectar un plan.
+- **El bot solo atiende mientras su proceso esté corriendo.** Con la laptop apagada, los mensajes esperan
+  en Telegram y se procesan al volver (Telegram los guarda unas 24 horas).
 
 ## Qué hace con cada mensaje
 
@@ -105,7 +136,8 @@ trata como reporte nuevo y una ubicación pide texto. Al arrancar, el bot indica
 - El registro guarda IDs de chat y mensaje y el largo del texto, nunca el texto de una persona.
 - Los registros de `httpx` se silencian porque la URL de Telegram contiene el token.
 - Los nombres que aparecen en mensajes HTML se escapan.
-- Los chats no autorizados no reciben respuesta.
+- En modo de prueba, los chats no autorizados no reciben respuesta.
+- En modo público, el límite de mensajes protege la cuota del modelo y la bandeja de reportes.
 
 ## Pruebas
 
@@ -120,6 +152,8 @@ Con API y Telegram simulados (`httpx.MockTransport`):
 - `tests/test_bot_aclaraciones.py`: envío, clasificación de errores de Telegram, sin
   reenvío, límite por ciclo, replies, ubicaciones e interruptor apagado.
 - `tests/test_bot_botones_grupos.py`: filtro de grupos, menciones y botones.
+- `tests/test_bot_publico.py`: modo público frente a modo de prueba, valores de `TELEGRAM_ACCESO_PUBLICO`,
+  límite por persona y total, aviso único, reinicio de la ventana y tope de memoria.
 - `tests/test_bot_avisos.py`: plantilla (cantidad, hora de Panamá, versión), envío, fallido e
   incierto sin reenvío, límite por ciclo y avisos apagados por defecto.
 

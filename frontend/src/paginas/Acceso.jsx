@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { autenticacionConfigurada, iniciarSesion } from '../api/sesion.js'
 import logoCircular from '../assets/h2oeste-circular.webp'
-import banner from '../assets/h2oeste-bienvenida.webp'
 import paisaje from '../assets/h2oeste-paisaje.webp'
 import './Aprobacion.css'
 import './Acceso.css'
@@ -21,35 +20,13 @@ function Icono({ nombre }) {
   )
 }
 
-// Cuenta de quien ya inició sesión (se abre desde el encabezado del panel).
-function MiCuenta({ alSalir }) {
-  return (
-    <section className="acceso cuenta-pagina" aria-labelledby="acceso-titulo">
-      <aside className="acceso-lema" aria-hidden="true">
-        <img className="acceso-banner" src={banner} width="1400" height="781" alt="" />
-        <p className="acceso-frase">Ningún aviso sale a la comunidad sin la firma de un coordinador.</p>
-      </aside>
-      <div className="acceso-lado">
-        <div className="acceso-form">
-          <h2 id="acceso-titulo">Mi cuenta</h2>
-          <p className="aprob-suave">Tienes una sesión iniciada. Los permisos para decidir se verifican al consultar los planes.</p>
-          <button type="button" onClick={alSalir}>Cerrar sesión</button>
-          <a className="acceso-volver" href="#reportes">Volver al panel</a>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-export default function Acceso({ aviso, alEntrar, conSesion, alSalir }) {
+export default function Acceso({ aviso, alEntrar }) {
   const [correo, setCorreo] = useState('')
   const [contrasena, setContrasena] = useState('')
   const [verClave, setVerClave] = useState(false)
   const [mayusculas, setMayusculas] = useState(false)
   const [error, setError] = useState(null)
   const [enviando, setEnviando] = useState(false)
-
-  if (conSesion) return <MiCuenta alSalir={alSalir} />
 
   async function enviar(evento) {
     evento.preventDefault()

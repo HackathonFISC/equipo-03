@@ -63,6 +63,7 @@ de reportes; no equivale a una prueba de conectividad externa. Ver
 | `POST /reportes` | Bot | Sí | Registra un mensaje de Telegram. 201 si es nuevo, 200 si ya estaba. |
 | `GET /reportes?limite=50` | Panel | No (V1) | Lista reportes, del más reciente al más antiguo (1 a 200). |
 | `GET /ejecuciones/{ejecucion_id}` | Panel | Token | Estado, etapa y traza de los agentes. 403 sin sesión válida; 404 si no existe. |
+| `GET /eventos` | Panel | Token | Registro general de eventos, del más nuevo al más antiguo. Filtros opcionales: `agente`, `actor_tipo`, `ejecucion_id`; `limite` (1–200, 100 por defecto). Sin `detalles`, `entrada_ids`, `salida_ids` ni `usuario_id`. 403 sin sesión; 422 filtro inválido; 503. |
 | `POST /aclaraciones/reservar` | Bot | Sí | Reserva la siguiente pregunta pendiente. 204 si no hay. |
 | `POST /aclaraciones/{aclaracion_id}/envio` | Bot | Sí | Registra `enviado`, `fallido` o `incierto`. 204. |
 | `POST /aclaraciones/respuestas` | Bot | Sí | Entrega un reply a una pregunta. Siempre 200 con un resultado. |

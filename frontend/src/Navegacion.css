@@ -1,0 +1,45 @@
+/* Barra lateral. Se carga después de App.css y editorial.css y las reemplaza donde coinciden. */
+.sidebar { background: linear-gradient(180deg, #102a43 0%, #0d2338 100%); border-right: 1px solid #1d4562; padding: 28px 14px 20px; }
+
+/* Marca */
+.sidebar .marca { gap: 12px; padding: 0 6px 24px; border-bottom: 1px solid #234e6d; font-size: 21px; font-weight: 600; letter-spacing: -.6px; }
+.sidebar .marca strong { color: #9fd3e6; font-weight: 600; }
+.sidebar .marca small { margin-top: 3px; font-size: 11px; font-weight: 400; letter-spacing: 0; color: #b7c9d8; }
+.sidebar .marca-logo { width: 46px; height: 46px; border-color: #3f6580; }
+
+/* Grupos */
+.sidebar .navegacion { gap: 0; margin-top: 26px; }
+.nav-grupo { margin: 0 12px 10px; font-size: 12px; font-weight: 600; letter-spacing: .2px; color: #a9c0d1; }
+.nav-grupo + .nav-lista + .nav-grupo { margin-top: 28px; }
+.nav-lista { list-style: none; margin: 0; padding: 0; }
+.nav-lista > li { position: relative; }
+
+/* El flujo de trabajo es una secuencia: los pasos se unen con una línea. */
+.nav-pasos > li:not(:last-child)::after { content: ''; position: absolute; left: 25px; top: 42px; bottom: -8px; width: 2px; background: #2d5673; }
+
+.sidebar .nav-enlace { align-items: flex-start; gap: 12px; padding: 10px 12px; border: 0; border-radius: 10px; color: #e4edf4; font-size: 14px; font-weight: 600; line-height: 1.3; box-shadow: none; }
+.sidebar .nav-enlace small { margin-top: 2px; font-size: 12px; line-height: 1.35; color: #a9c0d1; }
+.sidebar .nav-enlace:hover { background: rgb(255 255 255 / 6%); }
+.sidebar .nav-enlace[aria-current='page'] { background: rgb(117 197 222 / 15%); box-shadow: none; color: #fff; }
+.sidebar .nav-enlace[aria-current='page'] small { color: #d3e6f0; }
+
+.nav-paso, .nav-icono { position: relative; z-index: 1; flex: none; display: grid; place-items: center; width: 28px; height: 28px; margin-top: 1px; border: 1.5px solid #4b7a96; background: #112b44; color: #cfe1ee; transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease; }
+.nav-paso { border-radius: 50%; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.nav-icono { border-radius: 8px; }
+.nav-enlace:hover .nav-paso, .nav-enlace:hover .nav-icono { border-color: #75c5de; }
+.nav-enlace[aria-current='page'] .nav-paso, .nav-enlace[aria-current='page'] .nav-icono { background: #75c5de; border-color: #75c5de; color: #102a43; }
+
+/* Nota al pie */
+.sidebar .sidebar-nota { margin-top: auto; padding: 14px 16px; border-radius: 10px; background: rgb(255 255 255 / 5%); border-left: 3px solid #75c5de; }
+.sidebar .sidebar-nota p { margin: 0; font-size: 13px; font-weight: 600; line-height: 1.4; color: #e4edf4; }
+.sidebar .sidebar-nota small { margin-top: 4px; font-size: 12px; line-height: 1.4; color: #b7c9d8; }
+.sidebar .navegacion { flex: 1; }
+.sidebar .sidebar-nota { margin-top: 32px; }
+@media (min-height: 760px) { .sidebar .sidebar-nota { margin-top: auto; } }
+
+@media (max-width: 900px) {
+  .sidebar { padding: 16px 20px; }
+  .sidebar .marca { padding: 0; border-bottom: 0; }
+  .sidebar .navegacion { margin-top: 20px; padding-top: 4px; border-top: 1px solid #234e6d; }
+  .sidebar .navegacion { padding-top: 20px; }
+}

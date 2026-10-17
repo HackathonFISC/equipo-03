@@ -1,6 +1,10 @@
 """Bot de Telegram de H2Oeste (V2: reportes y aclaraciones).
 
-Único proceso que recibe mensajes del bot. Atiende solo los chats autorizados:
+Único proceso que recibe mensajes del bot. Tiene dos modos de acceso:
+- Público (TELEGRAM_ACCESO_PUBLICO=true): atiende a cualquier persona o grupo, con un límite de
+  mensajes por persona y en total (bot/limites.py).
+- De prueba (por defecto): atiende solo los chats de TELEGRAM_CHAT_IDS_PRUEBA.
+Qué hace con cada mensaje:
 - En chats privados, un texto nuevo se envía a la API como reporte (POST /reportes).
 - En grupos, solo se atiende lo dirigido al bot: reply a un mensaje suyo o mención.
 - /start, /ayuda y /help muestran botones: «Reportar falta de agua» y «Qué debo escribir».
@@ -13,8 +17,9 @@ Arranque, desde la raíz del repositorio y con el entorno virtual activo
 (la API debe estar corriendo):
     python -m bot.bot
 
-Variables de .env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_IDS_PRUEBA, API_SECRETO_BOT
-y, opcional, API_URL (por defecto http://127.0.0.1:8000).
+Variables de .env: TELEGRAM_BOT_TOKEN, API_SECRETO_BOT y, según el modo, TELEGRAM_ACCESO_PUBLICO
+o TELEGRAM_CHAT_IDS_PRUEBA. Opcionales: API_URL (por defecto http://127.0.0.1:8000),
+BOT_LIMITE_USUARIO, BOT_LIMITE_TOTAL y BOT_VENTANA_MINUTOS.
 """
 import asyncio
 import html
@@ -38,7 +43,7 @@ from telegram.ext import (
     filters,
 )
 
-from bot import adaptador, bandeja
+from bot import adaptador, bandeja, limites
 from bot.adaptador import MENSAJES_RESULTADO, ciclo_envio, entregar_respuesta, es_reply_al_bot
 
 logger = logging.getLogger("bot")
@@ -53,6 +58,14 @@ MENSAJE_REPETIDO = "Ya habíamos recibido este mensaje. Código: {codigo}."
 MENSAJE_LARGO = f"Tu mensaje es demasiado largo (máximo {MAX_TEXTO} caracteres). Envíalo más corto."
 MENSAJE_FALLO = "No pudimos guardar tu reporte ahora. Inténtalo de nuevo en unos minutos."
 MENSAJE_FALLO_RESPUESTA = "No pudimos guardar tu respuesta ahora. Inténtalo de nuevo en unos minutos."
+MENSAJE_LIMITE_USUARIO = (
+    "Estás enviando mensajes muy seguido. Espera unos minutos y vuelve a escribir. "
+    "Los mensajes que ya enviaste siguen en revisión."
+)
+MENSAJE_LIMITE_GLOBAL = (
+    "Estamos recibiendo muchos mensajes y no podemos atender más por ahora. "
+    "Inténtalo de nuevo en unos minutos."
+)
 MENSAJE_SOLO_TEXTO = (
     "Para reportar, escribe el problema con texto. "
     "La ubicación solo se usa para responder a una pregunta del bot."
@@ -97,6 +110,24 @@ def leer_chats_autorizados(valor: str) -> set[int]:
     return ids
 
 
+def leer_acceso_publico(valor: str) -> bool:
+    """Solo un sí explícito abre el bot a cualquiera; un valor vacío o desconocido lo deja cerrado."""
+    return valor.strip().lower() in {"1", "true", "si", "sí", "yes"}
+
+
+def _entero_positivo(nombre: str, por_defecto: int) -> int:
+    valor = os.getenv(nombre, "").strip()
+    if not valor:
+        return por_defecto
+    try:
+        numero = int(valor)
+    except ValueError:
+        numero = 0
+    if numero < 1:
+        raise ValueError(f"{nombre} debe ser un número entero mayor que 0")
+    return numero
+
+
 def _codigo(respuesta: httpx.Response) -> str | None:
     """Primeros 8 caracteres del reporte_id de la respuesta, o None si no es legible."""
     try:
@@ -105,16 +136,37 @@ def _codigo(respuesta: httpx.Response) -> str | None:
         return None
 
 
+def _chat_permitido(context, chat_id: int) -> bool:
+    """Con acceso público, cualquier chat; si no, solo los de TELEGRAM_CHAT_IDS_PRUEBA."""
+    datos = context.application.bot_data
+    return bool(datos.get("acceso_publico")) or chat_id in datos["chats_autorizados"]
+
+
+async def _dentro_del_limite(mensaje, usuario, context) -> bool:
+    """Cuenta el mensaje contra el límite. Si no cabe, avisa (una vez por ventana) y devuelve False."""
+    limite: limites.LimiteMensajes | None = context.application.bot_data.get("limite")
+    if limite is None:
+        return True
+    decision = limite.evaluar(usuario.id)
+    if decision == limites.PERMITIDO:
+        return True
+    logger.warning("Mensaje no enviado a la API por límite (%s): usuario=%s", decision, usuario.id)
+    if decision == limites.AVISO_USUARIO:
+        await mensaje.reply_text(MENSAJE_LIMITE_USUARIO)
+    elif decision == limites.AVISO_GLOBAL:
+        await mensaje.reply_text(MENSAJE_LIMITE_GLOBAL)
+    return False
+
+
 def _origen_valido(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """(chat, mensaje, usuario) si el mensaje viene de un chat autorizado y de una persona."""
+    """(chat, mensaje, usuario) si el mensaje viene de un chat permitido y de una persona."""
     chat = update.effective_chat
     mensaje = update.effective_message
     usuario = update.effective_user
     if chat is None or mensaje is None:
         return None
 
-    autorizados: set[int] = context.application.bot_data["chats_autorizados"]
-    if chat.id not in autorizados:
+    if not _chat_permitido(context, chat.id):
         # Silencio hacia el remitente: no se responde a chats no autorizados.
         logger.warning("Mensaje ignorado de un chat no autorizado (id=%s)", chat.id)
         return None
@@ -182,8 +234,7 @@ async def atender_boton(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     mensaje = consulta.message
     chat = mensaje.chat if mensaje else None
     usuario = consulta.from_user
-    autorizados: set[int] = context.application.bot_data["chats_autorizados"]
-    if chat is None or chat.id not in autorizados or usuario is None or usuario.is_bot:
+    if chat is None or not _chat_permitido(context, chat.id) or usuario is None or usuario.is_bot:
         return
     if consulta.data == BOTON_INSTRUCCIONES:
         await mensaje.reply_text(MENSAJE_AYUDA)
@@ -216,6 +267,9 @@ async def recibir_texto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         return
     if len(texto) > MAX_TEXTO:
         await mensaje.reply_text(MENSAJE_LARGO)
+        return
+
+    if not await _dentro_del_limite(mensaje, usuario, context):
         return
 
     if adaptador.ACLARACIONES_ACTIVAS and dirigido:
@@ -269,6 +323,8 @@ async def recibir_ubicacion(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         return  # En grupos, una ubicación compartida en la conversación no es para el bot.
     if not adaptador.ACLARACIONES_ACTIVAS or not dirigido:
         await mensaje.reply_text(MENSAJE_SOLO_TEXTO)
+        return
+    if not await _dentro_del_limite(mensaje, usuario, context):
         return
     cliente: httpx.AsyncClient = context.application.bot_data["cliente_api"]
     resultado = await _responder_aclaracion(mensaje, chat, usuario, cliente, {
@@ -331,14 +387,24 @@ def main() -> None:
     if not token:
         sys.exit("Falta TELEGRAM_BOT_TOKEN en .env")
 
+    publico = leer_acceso_publico(os.getenv("TELEGRAM_ACCESO_PUBLICO", ""))
     try:
         autorizados = leer_chats_autorizados(os.getenv("TELEGRAM_CHAT_IDS_PRUEBA", ""))
     except ValueError:
         sys.exit("TELEGRAM_CHAT_IDS_PRUEBA debe tener IDs numéricos separados por comas")
-    if not autorizados:
+    if not publico and not autorizados:
         sys.exit(
-            "TELEGRAM_CHAT_IDS_PRUEBA está vacío: sin chats autorizados el bot no atiende a nadie"
+            "Sin chats autorizados el bot no atiende a nadie. Llena TELEGRAM_CHAT_IDS_PRUEBA "
+            "o pon TELEGRAM_ACCESO_PUBLICO=true para atender a cualquier persona."
         )
+    try:
+        limite = limites.LimiteMensajes(
+            por_usuario=_entero_positivo("BOT_LIMITE_USUARIO", limites.POR_USUARIO),
+            en_total=_entero_positivo("BOT_LIMITE_TOTAL", limites.EN_TOTAL),
+            ventana=_entero_positivo("BOT_VENTANA_MINUTOS", int(limites.VENTANA_SEGUNDOS // 60)) * 60.0,
+        )
+    except ValueError as error:
+        sys.exit(str(error))
 
     secreto = os.getenv("API_SECRETO_BOT", "").strip()
     if len(secreto) < LARGO_MINIMO_SECRETO:
@@ -357,6 +423,8 @@ def main() -> None:
         .build()
     )
     app.bot_data["chats_autorizados"] = autorizados
+    app.bot_data["acceso_publico"] = publico
+    app.bot_data["limite"] = limite
     app.bot_data["trabajador_id"] = f"bot:{uuid4()}"
     app.bot_data["cliente_api"] = httpx.AsyncClient(
         base_url=url_api, headers={"X-Secreto-Bot": secreto}, timeout=10
@@ -366,7 +434,13 @@ def main() -> None:
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, recibir_texto))
     app.add_handler(MessageHandler(filters.LOCATION, recibir_ubicacion))
 
-    logger.info("Bot iniciado. Chats autorizados: %d. Ctrl+C para detenerlo.", len(autorizados))
+    if publico:
+        logger.warning(
+            "Bot PÚBLICO: atiende a cualquier persona o grupo. Límite: %d mensajes por persona y %d en total cada %d min.",
+            limite.por_usuario, limite.en_total, int(limite.ventana // 60),
+        )
+    else:
+        logger.info("Bot de prueba. Chats autorizados: %d. Ctrl+C para detenerlo.", len(autorizados))
     # callback_query: pulsaciones de los botones del mensaje de bienvenida.
     app.run_polling(allowed_updates=["message", "callback_query"])
 

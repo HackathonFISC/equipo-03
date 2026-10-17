@@ -79,6 +79,13 @@ class EventoPanel(BaseModel):
     creado_en: AwareDatetime
 
 
+class EventoRegistro(EventoPanel):
+    """Un evento del registro general: la traza de una decisión más su ejecución y su origen."""
+
+    ejecucion_id: UUID
+    origen: Literal["real", "estimado", "sintetico"]
+
+
 class EjecucionPanel(BaseModel):
     ejecucion_id: UUID
     reporte_id: UUID | None

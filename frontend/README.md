@@ -39,6 +39,28 @@ La barra superior cambia de página; la página activa queda en la dirección
   borde con suavidad; las barras de aporte crecen una vez. Con "reducir movimiento" en el sistema todo se desactiva
   (regla en `index.css`).
 
+### Barra lateral y cuenta (`src/App.jsx`, `Navegacion.css`, `MenuCuenta.jsx`, `paginas/Cuenta.jsx`)
+
+- **Barra lateral:** dos grupos. "Flujo de trabajo" (Reportes → Necesidades → Plan → Aprobación) son pasos numerados y unidos
+  por una línea, porque son una secuencia. "Seguimiento" (Eventos) no es un paso y lleva ícono. `Navegacion.css` se carga
+  después de `App.css` y `editorial.css` y reemplaza sus reglas de la barra.
+- **Menú de la cuenta (encabezado):** avatar con iniciales, nombre y rol. Abre un menú con "Ver mi cuenta" y "Cerrar sesión"
+  desde cualquier página. Se cierra con Esc o al hacer clic fuera.
+- **Mi cuenta:** perfil, qué puedes hacer y cuándo vence la sesión. El nombre y el vencimiento salen del token (solo para
+  mostrar; `src/perfil.js`); el rol sale de `GET /sesion`. Si esa consulta falla, dice "Rol sin comprobar". La API
+  sigue comprobando los permisos en cada acción.
+
+### Eventos (`src/paginas/Eventos.jsx`)
+
+- Registro de decisiones: lee `GET /eventos` (últimos 200) y los muestra en una línea de tiempo, del más reciente al
+  más antiguo. Cada evento dice quién actuó (agente o persona), qué decidió, el resultado, la herramienta, cuánto tardó,
+  en qué estado quedó la ejecución y el origen del dato.
+- Se actualiza sola cada 5 s (`iniciarSondeo`); el botón Pausar la detiene para leer con calma. Lo que llega después se
+  resalta un momento.
+- Filtros: por quién lo hizo (cada agente, o Personas y sistema) y por ejecución, para seguir un reporte de punta a punta.
+  Los eventos que dejan la ejecución esperando a una persona o con fallo se marcan en ámbar y en rojo.
+- Sin sesión o con la sesión vencida vuelve al acceso. No muestra texto de ciudadanos ni datos internos de los agentes.
+
 ### Reportes (`src/paginas/Reportes.jsx`)
 
 - Lista de `GET /reportes`, del más reciente al más antiguo.
@@ -150,6 +172,8 @@ Con datos de ejemplo, la página muestra un aviso amarillo para que no se confun
 | `src/App.jsx`, `App.css` | Barra superior y navegación entre páginas. |
 | `src/index.css` | Colores y tipografía compartidos. |
 | `src/api/reportes.js` | `obtenerReportes()` y `obtenerEjecucion(id)`. |
+| `src/api/eventos.js` | `obtenerEventos()` (lee `GET /eventos`). |
+| `src/perfil.js` | Nombre, iniciales, rol y permisos que se muestran en la cuenta (con prueba en `tests/perfil.test.mjs`). |
 | `src/api/necesidades.js` | `obtenerNecesidades()` (lee `GET /incidentes`). |
 | `src/api/priorizacion.js` | `prepararPriorizacion(ejecucionId, cuerpo)` y `consultarEtapa(id)`. |
 | `src/assets/` | Logo circular (cabecera, favicon) y banner de bienvenida (acceso), en WebP optimizado. |
