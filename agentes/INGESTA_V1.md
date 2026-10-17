@@ -132,3 +132,38 @@ y [funciones de base de datos de Supabase](https://supabase.com/docs/guides/data
 ## Extensión V2
 
 Con 0006 instalada, el cierre que necesita aclaración crea la pregunta en la misma transacción. La toma devuelve respuestas aceptadas; se reprocesan con el texto original y evidencias separadas. Si falta destino verificable, pasa a revisión. Ver [V2](../docs/V2_EMILIA.md). Los límites anteriores describen V1 antes de esa migración.
+
+## Diagnóstico de Gemini tras una aclaración
+
+El fallo «extracción completa conforme al contrato» agrupaba causas distintas.
+`agentes/gemini.py` ahora las distingue en el mensaje que conserva el error de
+dominio y la traza: `gemini_max_tokens`, `gemini_generacion_interrumpida`,
+`gemini_sin_candidato`, `gemini_sin_contenido`, `gemini_estructura_invalida`,
+`gemini_respuesta_no_json`, `gemini_json_invalido` y `gemini_campos_invalidos`.
+Para incompatibilidad del contrato, campos conserva solo nombres conocidos;
+no guarda valores rechazados, cuerpos del proveedor, pensamientos ni claves.
+No cambia el enum CodigoError ni el contrato HTTP de Noel.
+
+La extracción usa 4096 tokens de salida y nivel `low` en Gemini 3/4; Gemini 2.5
+Flash usa `thinkingBudget=0`. Modelos de otras familias no reciben ese parámetro.
+No cambia el modelo seleccionado en .env ni la configuración de Planificación.
+Google explica que el límite incluye tokens de razonamiento y recomienda
+[controlar el nivel de pensamiento](https://ai.google.dev/gemini-api/docs/generate-content/thinking.md)
+para evitar respuestas vacías o truncadas. Es una mitigación, no una garantía
+contra indisponibilidad ni una prueba de la causa de un fallo histórico.
+
+No hay reparación de JSON truncado, aceptación de campos extra ni reintento
+automático. Las comprobaciones de citas, cantidades y permisos siguen vigentes.
+Un HTTP 503 es disponibilidad del proveedor, distinto de JSON fuera del contrato.
+
+Verificación local: 554 pruebas Python, 66 subpruebas; comprobaciones nuevas de
+configuración por familia, diagnósticos, privacidad y traza. Al repetir solo la
+extracción del reporte fallido, la configuración previa respondió STOP/JSON válido;
+el fallo original es intermitente y no guardó su finishReason. Dos pruebas con
+la configuración corregida recibieron HTTP 503: validación real corregida pendiente.
+Evidencia sin contenido ciudadano en `agentes/evidencias/gemini_diagnostico.json`.
+
+Para usar el cambio, actualizar el código y reiniciar el trabajador (o la API que
+lo administra); no iniciar otro trabajador paralelo. No requiere SQL ni reinicio
+del bot. Las ejecuciones fallidas no se reactivan por actualizar el código.
+El panel de Noel debe distinguir el fallo actual de la interpretación histórica.

@@ -1,0 +1,56 @@
+{
+  "fecha_cliente": "2026-10-17",
+  "alcance": "Diagnóstico de extracción; sin persistencia Supabase ni Telegram",
+  "causa_historica": "No determinable: el adaptador anterior agrupaba causas y no guardó finishReason",
+  "repeticion_configuracion_previa": {
+    "modelo": "gemini-3.8-flash",
+    "http": 200,
+    "respuestas_incluidas": 1,
+    "segundos": 9.18,
+    "finish_reason": "STOP",
+    "caracteres_salida": 422,
+    "tokens": {
+      "promptTokenCount": 335,
+      "candidatesTokenCount": 122,
+      "totalTokenCount": 1379,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 335
+        }
+      ],
+      "thoughtsTokenCount": 922,
+      "serviceTier": "standard"
+    },
+    "contrato_valido": true
+  },
+  "configuracion_corregida": {
+    "modelo": "gemini-3.8-flash",
+    "http": 503,
+    "respuestas_incluidas": 1,
+    "segundos": 0.53,
+    "max_output_tokens": 4096,
+    "thinking_config": {
+      "thinkingLevel": "low"
+    }
+  },
+  "intentos_corregidos": {
+    "numero": 2,
+    "http": [
+      503,
+      503
+    ],
+    "validacion_real": "pendiente por disponibilidad del proveedor"
+  },
+  "validacion_local": {
+    "pruebas": 554,
+    "subpruebas": 66,
+    "avisos_dependencias": 4
+  },
+  "fuente": "https://ai.google.dev/gemini-api/docs/generate-content/thinking.md",
+  "sha256": {
+    "agentes/gemini.py": "33d6ab0648a48399c687cb94ab485e9671907ff3ac7ddabd041741f6c5ce0415",
+    "agentes/ingesta.py": "f71ffccae99e057a6846d5ea9883a6fe89f2da08116696bab8e658ffb67b6eb4",
+    "agentes/tests/test_gemini_diagnostico.py": "ddd337bc52bc74045c6598bd2a537096f4dc3f7e3b8f5c58c5707379b094763d"
+  }
+}

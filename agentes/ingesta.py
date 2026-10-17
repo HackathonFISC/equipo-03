@@ -145,7 +145,7 @@ def procesar_ejecucion(ejecucion_id: UUID, persistencia: PersistenciaIngesta, ex
         resultado = interpretar_reporte(reporte, extractor, intento_ref=trabajador_id, aclaraciones=filas.get('aclaraciones', []))
     except (ErrorIngesta, ValidationError) as error:
         fallo = error if isinstance(error, ErrorIngesta) else ErrorIngesta(CodigoError.CONTRATO_INVALIDO, 'Reporte persistido incompatible con el contrato.')
-        detalle = ErrorDominio(**contexto, codigo=fallo.codigo, mensaje=str(fallo), recuperable=fallo.recuperable, campos=[])
+        detalle = ErrorDominio(**contexto, codigo=fallo.codigo, mensaje=str(fallo), recuperable=fallo.recuperable, campos=fallo.campos)
         evento = EventoTraza(**contexto, evento_id=uuid5(ejecucion_id, f'ingesta:{trabajador_id}'),
                             agente='ingesta', decision='Detener Ingesta y registrar error controlado.',
                             herramienta='gemini.generateContent', entrada_ids=[r['reporte_id']], salida_ids=[],

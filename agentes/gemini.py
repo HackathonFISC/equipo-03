@@ -13,9 +13,10 @@ from contratos.modelos import ExtraccionReporteLLM
 
 
 class ErrorIngesta(RuntimeError):
-    def __init__(self, codigo: CodigoError, mensaje: str, recuperable: bool = False):
+    def __init__(self, codigo: CodigoError, mensaje: str, recuperable: bool = False, *, campos=()):
         self.codigo = codigo
         self.recuperable = recuperable
+        self.campos = list(campos)
         super().__init__(mensaje)
 
 
@@ -56,6 +57,71 @@ marca fuera_de_alcance=true y requiere_aclaracion=false. No geocodifiques ni
 decidas si una ubicación está fuera del área: eso corresponde a Territorial.'''
 
 
+def configuracion_extraccion(modelo: str) -> dict:
+    """Dejar espacio para el JSON; razonamiento acotado para extraer hechos.
+
+    No se fuerzan controles de otra familia: 2.5 usa presupuesto y 3/4 nivel.
+    Modelos desconocidos conservan compatibilidad sin parámetro de pensamiento.
+    """
+    cfg = {'temperature': 0, 'maxOutputTokens': 4096,
+           'responseMimeType': 'application/json',
+           'responseJsonSchema': ExtraccionReporteLLM.model_json_schema()}
+    if re.match(r'^gemini-[34](?:[.-])', modelo):
+        cfg['thinkingConfig'] = {'thinkingLevel': 'low'}
+    elif re.match(r'^gemini-2\.5-flash(?:-|$)', modelo):
+        cfg['thinkingConfig'] = {'thinkingBudget': 0}
+    return cfg
+
+
+def validar_respuesta_extraccion(respuesta: httpx.Response) -> ExtraccionReporteLLM:
+    """Errores específicos seguros: nunca incluir cuerpo, pensamientos o mensajes del proveedor."""
+    try:
+        body = respuesta.json()
+    except ValueError:
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO,
+            'Gemini devolvió una respuesta HTTP que no es JSON [gemini_respuesta_no_json].') from None
+    if not isinstance(body, dict):
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO,
+            'Gemini devolvió una estructura inesperada [gemini_estructura_invalida].')
+    candidatos = body.get('candidates')
+    if not isinstance(candidatos, list) or not candidatos or not isinstance(candidatos[0], dict):
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO,
+            'Gemini no devolvió un candidato de extracción [gemini_sin_candidato].')
+    candidato = candidatos[0]
+    final = candidato.get('finishReason')
+    if final == 'MAX_TOKENS':
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO,
+            'Gemini agotó el límite de salida antes de completar la extracción [gemini_max_tokens].', True)
+    if final != 'STOP':
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO,
+            'Gemini no completó normalmente la generación [gemini_generacion_interrumpida].')
+    content = candidato.get('content')
+    parts = content.get('parts') if isinstance(content, dict) else None
+    if not isinstance(parts, list):
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO,
+            'Gemini terminó sin contenido de extracción [gemini_sin_contenido].')
+    if any(not isinstance(p, dict) or ('text' in p and not isinstance(p['text'], str)) for p in parts):
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO,
+            'Gemini devolvió partes de contenido incompatibles [gemini_estructura_invalida].')
+    texto = ''.join(p.get('text', '') for p in parts if not p.get('thought'))
+    if not texto.strip():
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO,
+            'Gemini terminó sin contenido de extracción [gemini_sin_contenido].')
+    try:
+        return ExtraccionReporteLLM.model_validate_json(texto)
+    except ValidationError as error:
+        errores = error.errors(include_url=False, include_input=False, include_context=False)
+        if any(e['type'] == 'json_invalid' for e in errores):
+            raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO,
+                'El contenido de Gemini no es un JSON completo válido [gemini_json_invalido].') from None
+        # Los nombres no reconocidos del proveedor tampoco se copian a las trazas.
+        conocidos = set(ExtraccionReporteLLM.model_fields)
+        campos = sorted({str(e['loc'][0]) for e in errores if e['loc'] and e['loc'][0] in conocidos})
+        raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO,
+            'El JSON de Gemini no cumple el contrato de extracción [gemini_campos_invalidos].',
+            campos=campos) from None
+
+
 class ExtractorGemini:
     def __init__(self, configuracion: ConfiguracionGemini, *, transporte=None):
         self.configuracion = configuracion
@@ -70,11 +136,7 @@ class ExtractorGemini:
                     json={
                         'systemInstruction': {'parts': [{'text': INSTRUCCIONES}]},
                         'contents': [{'role': 'user', 'parts': [{'text': texto}]}],
-                        'generationConfig': {
-                            'temperature': 0, 'maxOutputTokens': 2048,
-                            'responseMimeType': 'application/json',
-                            'responseJsonSchema': ExtraccionReporteLLM.model_json_schema(),
-                        },
+                        'generationConfig': configuracion_extraccion(self.configuracion.modelo),
                     },
                 )
         except httpx.HTTPError:
@@ -84,12 +146,4 @@ class ExtractorGemini:
             raise ErrorIngesta(CodigoError.PROVEEDOR_NO_DISPONIBLE,
                                f'Gemini rechazó la solicitud (HTTP {respuesta.status_code}).',
                                respuesta.status_code == 429 or respuesta.status_code >= 500) from None
-        try:
-            candidato = respuesta.json()['candidates'][0]
-            if candidato.get('finishReason') != 'STOP':
-                raise ValueError('Generación incompleta')
-            contenido = ''.join(p.get('text', '') for p in candidato['content']['parts'] if not p.get('thought'))
-            return ExtraccionReporteLLM.model_validate_json(contenido)
-        except (ValueError, KeyError, IndexError, TypeError, ValidationError):
-            raise ErrorIngesta(CodigoError.CONTRATO_INVALIDO,
-                               'Gemini no devolvió una extracción completa conforme al contrato.') from None
+        return validar_respuesta_extraccion(respuesta)
